@@ -40,7 +40,7 @@ namespace LibLR1.Utils
 		
 		public override string ToString()
 		{
-			return string.Format("({0}, {1}, {2})", p_x, p_y, p_z);
+			return string.Format("({0}, {1}, {2})", m_x, m_y, m_z);
 		}
 	}
 }

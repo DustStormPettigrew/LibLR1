@@ -500,7 +500,7 @@ namespace LibLR1.Utils
 		public static void WriteFract16BitWithHeader(Stream p_stream, Fract16Bit p_value)
 		{
 			p_stream.WriteByte(TYPE_16BIT_FRACT);
-			WriteShort(stream, p_value.Value);
+			WriteShort(p_stream, p_value.Value);
 		}
 
 		public static void WriteUShortWithHeader(Stream p_stream, ushort p_value)
@@ -523,8 +523,8 @@ namespace LibLR1.Utils
 
 		public static void WriteIntWithHeader(Stream p_stream, int p_value)
 		{
-			stream.WriteByte(TYPE_INT32);
-			WriteInt(stream, value);
+			p_stream.WriteByte(TYPE_INT32);
+			WriteInt(p_stream, p_value);
 		}
 
 		public static void WriteIntegralWithHeader(Stream p_stream, int p_value)
@@ -643,9 +643,9 @@ namespace LibLR1.Utils
 			p_stream.WriteByte(TYPE_LEFT_CURLY);
 			foreach (KeyValuePair<string, T> kvp in p_values)
 			{
-				stream.WriteByte(typeByte);
-				WriteStringWithHeader(stream, kvp.Key);
-				WriteStruct<T>(stream, writeFunc, kvp.Value);
+				p_stream.WriteByte(p_typeByte);
+				WriteStringWithHeader(p_stream, kvp.Key);
+				WriteStruct<T>(p_stream, p_writeFunc, kvp.Value);
 			}
 			p_stream.WriteByte(TYPE_RIGHT_CURLY);
 		}
@@ -668,7 +668,7 @@ namespace LibLR1.Utils
 		public static void WriteStruct<T>(Stream p_stream, WriteObject<T> p_writeFunc, T p_value)
 		{
 			p_stream.WriteByte(TYPE_LEFT_CURLY);
-			writeFunc(p_stream, p_value);
+			p_writeFunc(p_stream, p_value);
 			p_stream.WriteByte(TYPE_RIGHT_CURLY);
 		}
 
