@@ -4,33 +4,33 @@ namespace LibLR1.Utils
 {
 	public class Fract16Bit
 	{
-		private short m_Value;
+		private short m_value;
 		
-		public short Value { get { return m_Value; } set { m_Value = value; } }
+		public short Value { get { return m_value; } set { m_value = value; } }
 		public float AsFloat
 		{
-			get { return m_Value / 256f; }
-			set { m_Value = (short)(value * 256); }
+			get { return m_value / 256f; }
+			set { m_value = (short)(value * 256); }
 		}
 		
 		public Fract16Bit()
 			: this(0f)
 		{
 		}
-		
-		public Fract16Bit(float value)
+
+		public Fract16Bit(float p_value)
 		{
-			AsFloat = value;
+			AsFloat = p_value;
 		}
-		
-		public Fract16Bit(short value)
+
+		public Fract16Bit(short p_value)
 		{
-			m_Value = value;
+			m_value = p_value;
 		}
-		
-		public static Fract16Bit FromStream(Stream stream)
+
+		public static Fract16Bit FromStream(Stream p_stream)
 		{
-			return new Fract16Bit(BinaryFileHelper.ReadShort(stream));
+			return new Fract16Bit(BinaryFileHelper.ReadShort(p_stream));
 		}
 	}
 }

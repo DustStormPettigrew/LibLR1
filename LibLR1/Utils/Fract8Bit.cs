@@ -4,13 +4,13 @@ namespace LibLR1.Utils
 {
 	public class Fract8Bit
 	{
-		private sbyte m_Value;
+		private sbyte m_value;
 		
-		public sbyte Value { get { return m_Value; } set { m_Value = value; } }
+		public sbyte Value { get { return m_value; } set { m_value = value; } }
 		public float AsFloat
 		{
-			get { return m_Value / 16f; }
-			set { m_Value = (sbyte)(value * 16); }
+			get { return m_value / 16f; }
+			set { m_value = (sbyte)(value * 16); }
 		}
 		
 		public Fract8Bit()
@@ -18,19 +18,19 @@ namespace LibLR1.Utils
 		{
 		}
 		
-		public Fract8Bit(float value)
+		public Fract8Bit(float p_value)
 		{
-			AsFloat = value;
+			AsFloat = p_value;
 		}
 		
-		public Fract8Bit(sbyte value)
+		public Fract8Bit(sbyte p_value)
 		{
-			m_Value = value;
+			m_value = p_value;
 		}
 		
-		public static Fract8Bit FromStream(Stream stream)
+		public static Fract8Bit FromStream(Stream p_stream)
 		{
-			return new Fract8Bit(BinaryFileHelper.ReadSByte(stream));
+			return new Fract8Bit(BinaryFileHelper.ReadSByte(p_stream));
 		}
 	}
 }

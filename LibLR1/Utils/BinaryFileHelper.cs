@@ -32,38 +32,38 @@ namespace LibLR1.Utils
 		
 		#region Compression
 		
-		public static MemoryStream Decompress(string path)
+		public static MemoryStream Decompress(string p_filepath)
 		{
-			using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read))
+			using (FileStream fs = new FileStream(p_filepath, FileMode.Open, FileAccess.Read))
 			{
 				return Decompress(fs);
 			}
 		}
 		
-		public static MemoryStream Decompress(Stream streamIn)
+		public static MemoryStream Decompress(Stream p_streamIn)
 		{
 			Dictionary<byte, byte[]> structs = new Dictionary<byte, byte[]>();
 			MemoryStream msOut = new MemoryStream();
-			while (streamIn.Position < streamIn.Length)
+			while (p_streamIn.Position < p_streamIn.Length)
 			{
-				byte block_id = ReadByte(streamIn);
-				RecursiveDecompress(block_id, streamIn, msOut, structs);
+				byte block_id = ReadByte(p_streamIn);
+				RecursiveDecompress(block_id, p_streamIn, msOut, structs);
 			}
 			msOut.Position = 0;
 			return msOut;
 		}
 		
-		private static void RecursiveDecompress(byte block_id, Stream streamIn, Stream streamOut, Dictionary<byte, byte[]> structs)
+		private static void RecursiveDecompress(byte p_blockId, Stream p_streamIn, Stream p_streamOut, Dictionary<byte, byte[]> p_structs)
 		{
-			switch (block_id)
+			switch (p_blockId)
 			{
 				case TYPE_STRING:
 				{  // block_id followed by a null-terminated ascii string
-					streamOut.WriteByte(block_id);
+					p_streamOut.WriteByte(p_blockId);
 					while (true)
 					{
-						byte buffer = ReadByte(streamIn);
-						streamOut.WriteByte(buffer);
+						byte buffer = ReadByte(p_streamIn);
+						p_streamOut.WriteByte(buffer);
 						if (buffer == 0)
 						{
 							break;
@@ -74,10 +74,10 @@ namespace LibLR1.Utils
 				case TYPE_FLOAT:
 				case TYPE_INT32:
 				{  // 32-bit little-endian IEEE float or int32
-					streamOut.WriteByte(block_id);
+					p_streamOut.WriteByte(p_blockId);
 					byte[] buffer = new byte[SIZE_32];
-					streamIn.Read(buffer, 0, buffer.Length);
-					streamOut.Write(buffer, 0, buffer.Length);
+					p_streamIn.Read(buffer, 0, buffer.Length);
+					p_streamOut.Write(buffer, 0, buffer.Length);
 					break;
 				}
 				case TYPE_LEFT_CURLY:
@@ -85,57 +85,57 @@ namespace LibLR1.Utils
 				case TYPE_LEFT_BRACKET:
 				case TYPE_RIGHT_BRACKET:
 				{  // just copy the token, nothing else
-					streamOut.WriteByte(block_id);
+					p_streamOut.WriteByte(p_blockId);
 					break;
 				}
 				case TYPE_SBYTE:
 				case TYPE_BYTE:
 				{  // copy a single byte from the stream
-					streamOut.WriteByte(block_id);
-					byte buffer = ReadByte(streamIn);
-					streamOut.WriteByte(buffer);
+					p_streamOut.WriteByte(p_blockId);
+					byte buffer = ReadByte(p_streamIn);
+					p_streamOut.WriteByte(buffer);
 					break;
 				}
 				case TYPE_SHORT:
 				case TYPE_USHORT:
 				{  // copy 16 bits (2 bytes) from the stream
-					streamOut.WriteByte(block_id);
+					p_streamOut.WriteByte(p_blockId);
 					byte[] buffer = new byte[SIZE_16];
-					streamIn.Read(buffer, 0, buffer.Length);
-					streamOut.Write(buffer, 0, buffer.Length);
+					p_streamIn.Read(buffer, 0, buffer.Length);
+					p_streamOut.Write(buffer, 0, buffer.Length);
 					break;
 				}
 				case TYPE_ARRAY:
 				{  // decompression pass.
-					short arraylen = ReadShort(streamIn);
-					byte arraytype = ReadByte(streamIn);
+					short arraylen = ReadShort(p_streamIn);
+					byte arraytype = ReadByte(p_streamIn);
 					for (int i = 0; i < arraylen; i++)
 					{
-						RecursiveDecompress(arraytype, streamIn, streamOut, structs);
+						RecursiveDecompress(arraytype, p_streamIn, p_streamOut, p_structs);
 					}
 					break;
 				}
 				case TYPE_STRUCT:
 				{  // decompression pass
-					byte structid = ReadByte(streamIn);
-					byte structlen = ReadByte(streamIn);
+					byte structid = ReadByte(p_streamIn);
+					byte structlen = ReadByte(p_streamIn);
 					byte[] structdef = new byte[structlen];
-					streamIn.Read(structdef, 0, structlen);
-					structs.Add(structid, structdef);
+					p_streamIn.Read(structdef, 0, structlen);
+					p_structs.Add(structid, structdef);
 					break;
 				}
 				default:
 				{
-					if (structs.ContainsKey(block_id))
+					if (p_structs.ContainsKey(p_blockId))
 					{  // it's a struct
-						for (int i = 0; i < structs[block_id].Length; i++)
+						for (int i = 0; i < p_structs[p_blockId].Length; i++)
 						{
-							RecursiveDecompress(structs[block_id][i], streamIn, streamOut, structs);
+							RecursiveDecompress(p_structs[p_blockId][i], p_streamIn, p_streamOut, p_structs);
 						}
 					}
 					else
 					{  // it's a file-specific block token
-						streamOut.WriteByte(block_id);
+						p_streamOut.WriteByte(p_blockId);
 					}
 					break;
 				}
@@ -146,137 +146,137 @@ namespace LibLR1.Utils
 		
 		#region Basic Read
 		
-		public static byte ReadByte(Stream stream)
+		public static byte ReadByte(Stream p_stream)
 		{
-			return (byte)stream.ReadByte();
+			return (byte)p_stream.ReadByte();
 		}
 		
-		public static sbyte ReadSByte(Stream stream)
+		public static sbyte ReadSByte(Stream p_stream)
 		{
-			return (sbyte)stream.ReadByte();
+			return (sbyte)p_stream.ReadByte();
 		}
 		
-		public static byte ReadByteWithHeader(Stream stream)
+		public static byte ReadByteWithHeader(Stream p_stream)
 		{
-			Expect(stream, TYPE_BYTE);
-			return ReadByte(stream);
+			Expect(p_stream, TYPE_BYTE);
+			return ReadByte(p_stream);
 		}
 		
-		public static sbyte ReadSByteWithHeader(Stream stream)
+		public static sbyte ReadSByteWithHeader(Stream p_stream)
 		{
-			Expect(stream, TYPE_SBYTE);
-			return ReadSByte(stream);
+			Expect(p_stream, TYPE_SBYTE);
+			return ReadSByte(p_stream);
 		}
 		
-		public static Fract8Bit ReadFract8BitWithHeader(Stream stream)
+		public static Fract8Bit ReadFract8BitWithHeader(Stream p_stream)
 		{
-			Expect(stream, TYPE_8BIT_FRACT);
-			return Fract8Bit.FromStream(stream);
+			Expect(p_stream, TYPE_8BIT_FRACT);
+			return Fract8Bit.FromStream(p_stream);
 		}
 		
-		public static ushort ReadUShort(Stream stream)
+		public static ushort ReadUShort(Stream p_stream)
 		{
 			byte[] b_val = new byte[sizeof(ushort)];
-			stream.Read(b_val, 0, b_val.Length);
+			p_stream.Read(b_val, 0, b_val.Length);
 			return BitConverter.ToUInt16(b_val, 0);
 		}
 		
-		public static short ReadShort(Stream stream)
+		public static short ReadShort(Stream p_stream)
 		{
 			byte[] b_val = new byte[sizeof(short)];
-			stream.Read(b_val, 0, b_val.Length);
+			p_stream.Read(b_val, 0, b_val.Length);
 			return BitConverter.ToInt16(b_val, 0);
 		}
 		
-		public static ushort ReadUShortWithHeader(Stream stream)
+		public static ushort ReadUShortWithHeader(Stream p_stream)
 		{
-			Expect(stream, TYPE_USHORT);
-			return ReadUShort(stream);
+			Expect(p_stream, TYPE_USHORT);
+			return ReadUShort(p_stream);
 		}
 		
-		public static short ReadShortWithHeader(Stream stream)
+		public static short ReadShortWithHeader(Stream p_stream)
 		{
-			Expect(stream, TYPE_SHORT);
-			return ReadShort(stream);
+			Expect(p_stream, TYPE_SHORT);
+			return ReadShort(p_stream);
 		}
 		
-		public static Fract16Bit ReadFract16BitWithHeader(Stream stream)
+		public static Fract16Bit ReadFract16BitWithHeader(Stream p_stream)
 		{
-			Expect(stream, TYPE_16BIT_FRACT);
-			return Fract16Bit.FromStream(stream);
+			Expect(p_stream, TYPE_16BIT_FRACT);
+			return Fract16Bit.FromStream(p_stream);
 		}
 		
-		public static uint ReadUInt(Stream stream)
+		public static uint ReadUInt(Stream p_stream)
 		{
 			byte[] b_val = new byte[sizeof(uint)];
-			stream.Read(b_val, 0, b_val.Length);
+			p_stream.Read(b_val, 0, b_val.Length);
 			return BitConverter.ToUInt32(b_val, 0);
 		}
 		
-		public static int ReadInt(Stream stream)
+		public static int ReadInt(Stream p_stream)
 		{
 			byte[] b_val = new byte[sizeof(int)];
-			stream.Read(b_val, 0, b_val.Length);
+			p_stream.Read(b_val, 0, b_val.Length);
 			return BitConverter.ToInt32(b_val, 0);
 		}
 		
-		public static int ReadIntWithHeader(Stream stream)
+		public static int ReadIntWithHeader(Stream p_stream)
 		{
-			Expect(stream, TYPE_INT32);
-			return ReadInt(stream);
+			Expect(p_stream, TYPE_INT32);
+			return ReadInt(p_stream);
 		}
 		
-		public static int ReadIntegralWithHeader(Stream stream)
+		public static int ReadIntegralWithHeader(Stream p_stream)
 		{
-			byte type = Expect(stream, new byte[] { TYPE_SBYTE, TYPE_BYTE, TYPE_INT32, TYPE_USHORT, TYPE_SHORT });
+			byte type = Expect(p_stream, new byte[] { TYPE_SBYTE, TYPE_BYTE, TYPE_INT32, TYPE_USHORT, TYPE_SHORT });
 			switch (type)
 			{
-				case TYPE_SBYTE:  return ReadSByte(stream);
-				case TYPE_BYTE:   return ReadByte(stream);
-				case TYPE_INT32:  return ReadInt(stream);
-				case TYPE_USHORT: return ReadUShort(stream);
-				case TYPE_SHORT:  return ReadShort(stream);
+				case TYPE_SBYTE:  return ReadSByte(p_stream);
+				case TYPE_BYTE:   return ReadByte(p_stream);
+				case TYPE_INT32:  return ReadInt(p_stream);
+				case TYPE_USHORT: return ReadUShort(p_stream);
+				case TYPE_SHORT:  return ReadShort(p_stream);
 			}
-			throw new UnexpectedTypeException(type, stream.Position - 1);
+			throw new UnexpectedTypeException(type, p_stream.Position - 1);
 		}
 		
-		public static float ReadFloat(Stream stream)
+		public static float ReadFloat(Stream p_stream)
 		{
 			byte[] b_val = new byte[sizeof(float)];
-			stream.Read(b_val, 0, b_val.Length);
+			p_stream.Read(b_val, 0, b_val.Length);
 			return BitConverter.ToSingle(b_val, 0);
 		}
 		
-		public static float ReadFloatWithHeader(Stream stream)
+		public static float ReadFloatWithHeader(Stream p_stream)
 		{
-			Expect(stream, TYPE_FLOAT);
-			return ReadFloat(stream);
+			Expect(p_stream, TYPE_FLOAT);
+			return ReadFloat(p_stream);
 		}
 		
-		public static string ReadString(Stream stream)
+		public static string ReadString(Stream p_stream)
 		{
 			string s_val = "";
 			byte b;
-			while ((b = ReadByte(stream)) != 0x00)
+			while ((b = ReadByte(p_stream)) != 0x00)
 			{
 				s_val += (char)b;
 			}
 			return s_val;
 		}
 		
-		public static string ReadStringWithHeader(Stream stream)
+		public static string ReadStringWithHeader(Stream p_stream)
 		{
-			Expect(stream, TYPE_STRING);
-			return ReadString(stream);
+			Expect(p_stream, TYPE_STRING);
+			return ReadString(p_stream);
 		}
 		
 		#endregion
 		
 		#region Complex Read
 		
-		public delegate T ReadObject<T>(Stream stream);
+		public delegate T ReadObject<T>(Stream p_stream);
 		
-		public static T[] ReadArrayBlock<T>(Stream stream, ReadObject<T> readFunc)
+		public static T[] ReadArrayBlock<T>(Stream p_stream, ReadObject<T> p_readFunc)
 		{
 			// [array_len]
 			// {
@@ -285,35 +285,35 @@ namespace LibLR1.Utils
 			//     :
 			//     output[array_len - 1]
 			// }
-			Expect(stream, TYPE_LEFT_BRACKET);
-			int array_len = ReadIntWithHeader(stream);
+			Expect(p_stream, TYPE_LEFT_BRACKET);
+			int array_len = ReadIntWithHeader(p_stream);
 			T[] output = new T[array_len];
-			Expect(stream, TYPE_RIGHT_BRACKET);
-			Expect(stream, TYPE_LEFT_CURLY);
+			Expect(p_stream, TYPE_RIGHT_BRACKET);
+			Expect(p_stream, TYPE_LEFT_CURLY);
 			for (int i = 0; i < array_len; i++)
 			{
-				output[i] = readFunc(stream);
+				output[i] = p_readFunc(p_stream);
 			}
-			Expect(stream, TYPE_RIGHT_CURLY);
+			Expect(p_stream, TYPE_RIGHT_CURLY);
 			return output;
 		}
 		
-		public static List<T> ReadListBlock<T>(Stream stream, ReadObject<T> readFunc)
+		public static List<T> ReadListBlock<T>(Stream p_stream, ReadObject<T> p_readFunc)
 		{
-			Expect(stream, TYPE_LEFT_BRACKET);
-			int array_len = ReadIntWithHeader(stream);
+			Expect(p_stream, TYPE_LEFT_BRACKET);
+			int array_len = ReadIntWithHeader(p_stream);
 			List<T> output = new List<T>();
-			Expect(stream, TYPE_RIGHT_BRACKET);
-			Expect(stream, TYPE_LEFT_CURLY);
+			Expect(p_stream, TYPE_RIGHT_BRACKET);
+			Expect(p_stream, TYPE_LEFT_CURLY);
 			for (int i = 0; i < array_len; i++)
 			{
-				output.Add(readFunc(stream));
+				output.Add(p_readFunc(p_stream));
 			}
-			Expect(stream, TYPE_RIGHT_CURLY);
+			Expect(p_stream, TYPE_RIGHT_CURLY);
 			return output;
 		}
 		
-		public static T[] ReadStructArrayBlock<T>(Stream stream, ReadObject<T> readFunc, byte typeByte)
+		public static T[] ReadStructArrayBlock<T>(Stream p_stream, ReadObject<T> p_readFunc, byte p_typeByte)
 		{
 			// [array_len]
 			// {
@@ -327,37 +327,37 @@ namespace LibLR1.Utils
 			//         output[array_len - 1],
 			//     }
 			// }
-			Expect(stream, TYPE_LEFT_BRACKET);
-			int array_len = ReadIntWithHeader(stream);
+			Expect(p_stream, TYPE_LEFT_BRACKET);
+			int array_len = ReadIntWithHeader(p_stream);
 			T[] output = new T[array_len];
-			Expect(stream, TYPE_RIGHT_BRACKET);
-			Expect(stream, TYPE_LEFT_CURLY);
+			Expect(p_stream, TYPE_RIGHT_BRACKET);
+			Expect(p_stream, TYPE_LEFT_CURLY);
 			for (int i = 0; i < array_len; i++)
 			{
-				Expect(stream, typeByte);
-				output[i] = ReadStruct<T>(stream, readFunc);
+				Expect(p_stream, p_typeByte);
+				output[i] = ReadStruct<T>(p_stream, p_readFunc);
 			}
-			Expect(stream, TYPE_RIGHT_CURLY);
+			Expect(p_stream, TYPE_RIGHT_CURLY);
 			return output;
 		}
 		
-		public static List<T> ReadStructListBlock<T>(Stream stream, ReadObject<T> readFunc, byte typeByte)
+		public static List<T> ReadStructListBlock<T>(Stream p_stream, ReadObject<T> p_readFunc, byte p_typeByte)
 		{
-			Expect(stream, TYPE_LEFT_BRACKET);
-			int array_len = ReadIntWithHeader(stream);
+			Expect(p_stream, TYPE_LEFT_BRACKET);
+			int array_len = ReadIntWithHeader(p_stream);
 			List<T> output = new List<T>();
-			Expect(stream, TYPE_RIGHT_BRACKET);
-			Expect(stream, TYPE_LEFT_CURLY);
+			Expect(p_stream, TYPE_RIGHT_BRACKET);
+			Expect(p_stream, TYPE_LEFT_CURLY);
 			for (int i = 0; i < array_len; i++)
 			{
-				Expect(stream, typeByte);
-				output.Add(ReadStruct<T>(stream, readFunc));
+				Expect(p_stream, p_typeByte);
+				output.Add(ReadStruct<T>(p_stream, p_readFunc));
 			}
-			Expect(stream, TYPE_RIGHT_CURLY);
+			Expect(p_stream, TYPE_RIGHT_CURLY);
 			return output;
 		}
 		
-		public static Dictionary<string, T> ReadDictionaryBlock<T>(Stream stream, ReadObject<T> readFunc, byte typeByte)
+		public static Dictionary<string, T> ReadDictionaryBlock<T>(Stream p_stream, ReadObject<T> p_readFunc, byte p_typeByte)
 		{
 			// [array_len]
 			// {
@@ -374,361 +374,361 @@ namespace LibLR1.Utils
 			//     }
 			// }
 			Dictionary<string, T> output = new Dictionary<string, T>();
-			Expect(stream, TYPE_LEFT_BRACKET);
-			int dict_len = ReadIntWithHeader(stream);
-			Expect(stream, TYPE_RIGHT_BRACKET);
-			Expect(stream, TYPE_LEFT_CURLY);
+			Expect(p_stream, TYPE_LEFT_BRACKET);
+			int dict_len = ReadIntWithHeader(p_stream);
+			Expect(p_stream, TYPE_RIGHT_BRACKET);
+			Expect(p_stream, TYPE_LEFT_CURLY);
 			for (int i = 0; i < dict_len; i++)
 			{
-				Expect(stream, typeByte);
+				Expect(p_stream, p_typeByte);
 				string item_key = i.ToString();
-				if (Next(stream, TYPE_STRING))
+				if (Next(p_stream, TYPE_STRING))
 				{
-					item_key = ReadStringWithHeader(stream);
+					item_key = ReadStringWithHeader(p_stream);
 				}
-				T item_value = ReadStruct<T>(stream, readFunc);
+				T item_value = ReadStruct<T>(p_stream, p_readFunc);
 				output.Add(item_key, item_value);
 			}
-			Expect(stream, TYPE_RIGHT_CURLY);
+			Expect(p_stream, TYPE_RIGHT_CURLY);
 			return output;
 		}
 		
-		public static KeyValuePair<string, T>[] ReadCollidableDictionaryBlock<T>(Stream stream, ReadObject<T> readFunc, byte typeByte)
+		public static KeyValuePair<string, T>[] ReadCollidableDictionaryBlock<T>(Stream p_stream, ReadObject<T> p_readFunc, byte p_typeByte)
 		{
 			// not a fucking clue what this is about.
-			Expect(stream, TYPE_LEFT_BRACKET);
-			int dict_len = ReadIntWithHeader(stream);
+			Expect(p_stream, TYPE_LEFT_BRACKET);
+			int dict_len = ReadIntWithHeader(p_stream);
 			KeyValuePair<string, T>[] output = new KeyValuePair<string, T>[dict_len];
-			Expect(stream, TYPE_RIGHT_BRACKET);
-			Expect(stream, TYPE_LEFT_CURLY);
+			Expect(p_stream, TYPE_RIGHT_BRACKET);
+			Expect(p_stream, TYPE_LEFT_CURLY);
 			for (int i = 0; i < dict_len; i++)
 			{
-				Expect(stream, typeByte);
+				Expect(p_stream, p_typeByte);
 				string item_key = i.ToString();
-				if (Next(stream, TYPE_STRING))
+				if (Next(p_stream, TYPE_STRING))
 				{
-					item_key = ReadStringWithHeader(stream);
+					item_key = ReadStringWithHeader(p_stream);
 				}
-				T item_value = ReadStruct<T>(stream, readFunc);
+				T item_value = ReadStruct<T>(p_stream, p_readFunc);
 				output[i] = new KeyValuePair<string, T>(item_key, item_value);
 			}
-			Expect(stream, TYPE_RIGHT_CURLY);
+			Expect(p_stream, TYPE_RIGHT_CURLY);
 			return output;
 		}
 		
-		public static T ReadStruct<T>(Stream stream, ReadObject<T> readFunc)
+		public static T ReadStruct<T>(Stream p_stream, ReadObject<T> p_readFunc)
 		{
-			Expect(stream, TYPE_LEFT_CURLY);
-			T output = readFunc(stream);
-			Expect(stream, TYPE_RIGHT_CURLY);
+			Expect(p_stream, TYPE_LEFT_CURLY);
+			T output = p_readFunc(p_stream);
+			Expect(p_stream, TYPE_RIGHT_CURLY);
 			return output;
 		}
 		
-		public static byte[] ReadByteArrayBlock(Stream stream)
+		public static byte[] ReadByteArrayBlock(Stream p_stream)
 		{
-			return ReadArrayBlock<byte>(stream, new ReadObject<byte>(ReadByteWithHeader));
+			return ReadArrayBlock<byte>(p_stream, new ReadObject<byte>(ReadByteWithHeader));
 		}
 		
-		public static float[] ReadFloatArrayBlock(Stream stream)
+		public static float[] ReadFloatArrayBlock(Stream p_stream)
 		{
-			return ReadArrayBlock<float>(stream, new ReadObject<float>(ReadFloatWithHeader));
+			return ReadArrayBlock<float>(p_stream, new ReadObject<float>(ReadFloatWithHeader));
 		}
 		
-		public static int[] ReadIntArrayBlock(Stream stream)
+		public static int[] ReadIntArrayBlock(Stream p_stream)
 		{
-			return ReadArrayBlock<int>(stream, new ReadObject<int>(ReadIntWithHeader));
+			return ReadArrayBlock<int>(p_stream, new ReadObject<int>(ReadIntWithHeader));
 		}
 		
-		public static LRQuaternion[] ReadQuaternionArrayBlock(Stream stream)
+		public static LRQuaternion[] ReadQuaternionArrayBlock(Stream p_stream)
 		{
-			return ReadArrayBlock<LRQuaternion>(stream, new ReadObject<LRQuaternion>(LRQuaternion.FromStream));
+			return ReadArrayBlock<LRQuaternion>(p_stream, new ReadObject<LRQuaternion>(LRQuaternion.FromStream));
 		}
 		
-		public static string[] ReadStringArrayBlock(Stream stream)
+		public static string[] ReadStringArrayBlock(Stream p_stream)
 		{
-			return ReadArrayBlock<string>(stream, new ReadObject<string>(ReadStringWithHeader));
+			return ReadArrayBlock<string>(p_stream, new ReadObject<string>(ReadStringWithHeader));
 		}
 		
-		public static LRVector2[] ReadVector2fArrayBlock(Stream stream)
+		public static LRVector2[] ReadVector2fArrayBlock(Stream p_stream)
 		{
-			return ReadArrayBlock<LRVector2>(stream, new ReadObject<LRVector2>(LRVector2.FromStream));
+			return ReadArrayBlock<LRVector2>(p_stream, new ReadObject<LRVector2>(LRVector2.FromStream));
 		}
 		
-		public static LRVector3[] ReadVector3fArrayBlock(Stream stream)
+		public static LRVector3[] ReadVector3fArrayBlock(Stream p_stream)
 		{
-			return ReadArrayBlock<LRVector3>(stream, new ReadObject<LRVector3>(LRVector3.FromStream));
+			return ReadArrayBlock<LRVector3>(p_stream, new ReadObject<LRVector3>(LRVector3.FromStream));
 		}
 		
 		#endregion
 		
 		#region Basic Write
-		
-		public static void WriteByte(Stream stream, byte value)
+
+		public static void WriteByte(Stream p_stream, byte p_value)
 		{
-			stream.WriteByte(value);
+			p_stream.WriteByte(p_value);
 		}
-		
-		public static void WriteSByte(Stream stream, sbyte value)
+
+		public static void WriteSByte(Stream p_stream, sbyte p_value)
 		{
-			stream.WriteByte((byte)value);
+			p_stream.WriteByte((byte)p_value);
 		}
-		
-		public static void WriteByteWithHeader(Stream stream, byte value)
+
+		public static void WriteByteWithHeader(Stream p_stream, byte p_value)
 		{
-			stream.WriteByte(TYPE_BYTE);
-			WriteByte(stream, value);
+			p_stream.WriteByte(TYPE_BYTE);
+			WriteByte(p_stream, p_value);
 		}
-		
-		public static void WriteFract8BitWithHeader(Stream stream, Fract8Bit value)
+
+		public static void WriteFract8BitWithHeader(Stream p_stream, Fract8Bit p_value)
 		{
-			stream.WriteByte(TYPE_8BIT_FRACT);
-			WriteSByte(stream, value.Value);
+			p_stream.WriteByte(TYPE_8BIT_FRACT);
+			WriteSByte(p_stream, p_value.Value);
 		}
-		
-		public static void WriteUShort(Stream stream, ushort value)
+
+		public static void WriteUShort(Stream p_stream, ushort p_value)
 		{
-			byte[] b_val = BitConverter.GetBytes(value);
-			stream.Write(b_val, 0, b_val.Length);
+			byte[] b_val = BitConverter.GetBytes(p_value);
+			p_stream.Write(b_val, 0, b_val.Length);
 		}
-		
-		public static void WriteShort(Stream stream, short value)
+
+		public static void WriteShort(Stream p_stream, short p_value)
 		{
-			byte[] b_val = BitConverter.GetBytes(value);
-			stream.Write(b_val, 0, b_val.Length);
+			byte[] b_val = BitConverter.GetBytes(p_value);
+			p_stream.Write(b_val, 0, b_val.Length);
 		}
-		
-		public static void WriteFract16BitWithHeader(Stream stream, Fract16Bit value)
+
+		public static void WriteFract16BitWithHeader(Stream p_stream, Fract16Bit p_value)
 		{
-			stream.WriteByte(TYPE_16BIT_FRACT);
-			WriteShort(stream, value.Value);
+			p_stream.WriteByte(TYPE_16BIT_FRACT);
+			WriteShort(stream, p_value.Value);
 		}
-		
-		public static void WriteUShortWithHeader(Stream stream, ushort value)
+
+		public static void WriteUShortWithHeader(Stream p_stream, ushort p_value)
 		{
-			stream.WriteByte(TYPE_USHORT);
-			WriteUShort(stream, value);
+			p_stream.WriteByte(TYPE_USHORT);
+			WriteUShort(p_stream, p_value);
 		}
-		
-		public static void WriteUInt(Stream stream, uint value)
+
+		public static void WriteUInt(Stream p_stream, uint p_value)
 		{
-			byte[] b_val = BitConverter.GetBytes(value);
-			stream.Write(b_val, 0, b_val.Length);
+			byte[] b_val = BitConverter.GetBytes(p_value);
+			p_stream.Write(b_val, 0, b_val.Length);
 		}
-		
-		public static void WriteInt(Stream stream, int value)
+
+		public static void WriteInt(Stream p_stream, int p_value)
 		{
-			byte[] b_val = BitConverter.GetBytes(value);
-			stream.Write(b_val, 0, b_val.Length);
+			byte[] b_val = BitConverter.GetBytes(p_value);
+			p_stream.Write(b_val, 0, b_val.Length);
 		}
-		
-		public static void WriteIntWithHeader(Stream stream, int value)
+
+		public static void WriteIntWithHeader(Stream p_stream, int p_value)
 		{
 			stream.WriteByte(TYPE_INT32);
 			WriteInt(stream, value);
 		}
-		
-		public static void WriteIntegralWithHeader(Stream stream, int value)
+
+		public static void WriteIntegralWithHeader(Stream p_stream, int p_value)
 		{
-			if (value >= 0)
+			if (p_value >= 0)
 			{
-				if (value < 256)
+				if (p_value < 256)
 				{
-					WriteByteWithHeader(stream, (byte)value);
+					WriteByteWithHeader(p_stream, (byte)p_value);
 				}
-				else if (value < 65536)
+				else if (p_value < 65536)
 				{
-					WriteUShortWithHeader(stream, (ushort)value);
+					WriteUShortWithHeader(p_stream, (ushort)p_value);
 				}
 				else
 				{
-					WriteIntWithHeader(stream, value);
+					WriteIntWithHeader(p_stream, p_value);
 				}
 			}
 			else
 			{
-				WriteIntWithHeader(stream, value);
+				WriteIntWithHeader(p_stream, p_value);
 			}
 		}
-		
-		public static void WriteFloat(Stream stream, float value)
+
+		public static void WriteFloat(Stream p_stream, float p_value)
 		{
-			byte[] b_val = BitConverter.GetBytes(value);
-			stream.Write(b_val, 0, b_val.Length);
+			byte[] b_val = BitConverter.GetBytes(p_value);
+			p_stream.Write(b_val, 0, b_val.Length);
 		}
-		
-		public static void WriteFloatWithHeader(Stream stream, float value)
+
+		public static void WriteFloatWithHeader(Stream p_stream, float p_value)
 		{
-			stream.WriteByte(TYPE_FLOAT);
-			WriteFloat(stream, value);
+			p_stream.WriteByte(TYPE_FLOAT);
+			WriteFloat(p_stream, p_value);
 		}
-		
-		public static void WriteString(Stream stream, string value)
+
+		public static void WriteString(Stream p_stream, string p_value)
 		{
-			byte[] b_val = Encoding.ASCII.GetBytes(value);
-			stream.Write(b_val, 0, b_val.Length);
-			stream.WriteByte(0x00);
+			byte[] b_val = Encoding.ASCII.GetBytes(p_value);
+			p_stream.Write(b_val, 0, b_val.Length);
+			p_stream.WriteByte(0x00);
 		}
-		
-		public static void WriteStringWithHeader(Stream stream, string value)
+
+		public static void WriteStringWithHeader(Stream p_stream, string p_value)
 		{
-			stream.WriteByte(TYPE_STRING);
-			WriteString(stream, value);
+			p_stream.WriteByte(TYPE_STRING);
+			WriteString(p_stream, p_value);
 		}
 		
 		#endregion
 		
 		#region Complex Write
 		
-		public delegate void WriteObject<T>(Stream stream, T value);
+		public delegate void WriteObject<T>(Stream p_stream, T p_value);
 		
-		public static void WriteArrayBlock<T>(Stream stream, WriteObject<T> writeFunc, T[] values)
+		public static void WriteArrayBlock<T>(Stream p_stream, WriteObject<T> p_writeFunc, T[] p_values)
 		{
-			stream.WriteByte(TYPE_LEFT_BRACKET);
-			WriteIntWithHeader(stream, values.Length);
-			stream.WriteByte(TYPE_RIGHT_BRACKET);
-			stream.WriteByte(TYPE_LEFT_CURLY);
-			for (int i = 0; i < values.Length; i++)
+			p_stream.WriteByte(TYPE_LEFT_BRACKET);
+			WriteIntWithHeader(p_stream, p_values.Length);
+			p_stream.WriteByte(TYPE_RIGHT_BRACKET);
+			p_stream.WriteByte(TYPE_LEFT_CURLY);
+			for (int i = 0; i < p_values.Length; i++)
 			{
-				writeFunc(stream, values[i]);
+				p_writeFunc(p_stream, p_values[i]);
 			}
-			stream.WriteByte(TYPE_RIGHT_CURLY);
+			p_stream.WriteByte(TYPE_RIGHT_CURLY);
 		}
 		
-		public static void WriteListBlock<T>(Stream stream, WriteObject<T> writeFunc, List<T> values)
+		public static void WriteListBlock<T>(Stream p_stream, WriteObject<T> p_writeFunc, List<T> p_values)
 		{
-			stream.WriteByte(TYPE_LEFT_BRACKET);
-			WriteIntWithHeader(stream, values.Count);
-			stream.WriteByte(TYPE_RIGHT_BRACKET);
-			stream.WriteByte(TYPE_LEFT_CURLY);
-			for (int i = 0; i < values.Count; i++)
+			p_stream.WriteByte(TYPE_LEFT_BRACKET);
+			WriteIntWithHeader(p_stream, p_values.Count);
+			p_stream.WriteByte(TYPE_RIGHT_BRACKET);
+			p_stream.WriteByte(TYPE_LEFT_CURLY);
+			for (int i = 0; i < p_values.Count; i++)
 			{
-				writeFunc(stream, values[i]);
+				p_writeFunc(p_stream, p_values[i]);
 			}
-			stream.WriteByte(TYPE_RIGHT_CURLY);
+			p_stream.WriteByte(TYPE_RIGHT_CURLY);
 		}
 		
-		public static void WriteStructArrayBlock<T>(Stream stream, WriteObject<T> writeFunc, T[] values, byte typeByte)
+		public static void WriteStructArrayBlock<T>(Stream p_stream, WriteObject<T> p_writeFunc, T[] p_values, byte p_typeByte)
 		{
-			stream.WriteByte(TYPE_LEFT_BRACKET);
-			WriteIntWithHeader(stream, values.Length);
-			stream.WriteByte(TYPE_RIGHT_BRACKET);
-			stream.WriteByte(TYPE_LEFT_CURLY);
-			for (int i = 0; i < values.Length; i++)
+			p_stream.WriteByte(TYPE_LEFT_BRACKET);
+			WriteIntWithHeader(p_stream, p_values.Length);
+			p_stream.WriteByte(TYPE_RIGHT_BRACKET);
+			p_stream.WriteByte(TYPE_LEFT_CURLY);
+			for (int i = 0; i < p_values.Length; i++)
 			{
-				stream.WriteByte(typeByte);
-				WriteStruct<T>(stream, writeFunc, values[i]);
+				p_stream.WriteByte(p_typeByte);
+				WriteStruct<T>(p_stream, p_writeFunc, p_values[i]);
 			}
-			stream.WriteByte(TYPE_RIGHT_CURLY);
+			p_stream.WriteByte(TYPE_RIGHT_CURLY);
 		}
 		
-		public static void WriteStructListBlock<T>(Stream stream, WriteObject<T> writeFunc, List<T> values, byte typeByte)
+		public static void WriteStructListBlock<T>(Stream p_stream, WriteObject<T> p_writeFunc, List<T> p_values, byte p_typeByte)
 		{
-			stream.WriteByte(TYPE_LEFT_BRACKET);
-			WriteIntWithHeader(stream, values.Count);
-			stream.WriteByte(TYPE_RIGHT_BRACKET);
-			stream.WriteByte(TYPE_LEFT_CURLY);
-			for (int i = 0; i < values.Count; i++)
+			p_stream.WriteByte(TYPE_LEFT_BRACKET);
+			WriteIntWithHeader(p_stream, p_values.Count);
+			p_stream.WriteByte(TYPE_RIGHT_BRACKET);
+			p_stream.WriteByte(TYPE_LEFT_CURLY);
+			for (int i = 0; i < p_values.Count; i++)
 			{
-				stream.WriteByte(typeByte);
-				WriteStruct<T>(stream, writeFunc, values[i]);
+				p_stream.WriteByte(p_typeByte);
+				WriteStruct<T>(p_stream, p_writeFunc, p_values[i]);
 			}
-			stream.WriteByte(TYPE_RIGHT_CURLY);
+			p_stream.WriteByte(TYPE_RIGHT_CURLY);
 		}
-		
-		public static void WriteDictionaryBlock<T>(Stream stream, WriteObject<T> writeFunc, Dictionary<string, T> values, byte typeByte)
+
+		public static void WriteDictionaryBlock<T>(Stream p_stream, WriteObject<T> p_writeFunc, Dictionary<string, T> p_values, byte p_typeByte)
 		{
-			stream.WriteByte(TYPE_LEFT_BRACKET);
-			WriteIntWithHeader(stream, values.Count);
-			stream.WriteByte(TYPE_RIGHT_BRACKET);
-			stream.WriteByte(TYPE_LEFT_CURLY);
-			foreach (KeyValuePair<string, T> kvp in values)
-			{
-				stream.WriteByte(typeByte);
-				WriteStringWithHeader(stream, kvp.Key);
-				WriteStruct<T>(stream, writeFunc, kvp.Value);
-			}
-			stream.WriteByte(TYPE_RIGHT_CURLY);
-		}
-		
-		public static void WriteCollidableDictionaryBlock<T>(Stream stream, WriteObject<T> writeFunc, KeyValuePair<string, T>[] values, byte typeByte)
-		{
-			stream.WriteByte(TYPE_LEFT_BRACKET);
-			WriteIntWithHeader(stream, values.Length);
-			stream.WriteByte(TYPE_RIGHT_BRACKET);
-			stream.WriteByte(TYPE_LEFT_CURLY);
-			foreach (KeyValuePair<string, T> kvp in values)
+			p_stream.WriteByte(TYPE_LEFT_BRACKET);
+			WriteIntWithHeader(p_stream, p_values.Count);
+			p_stream.WriteByte(TYPE_RIGHT_BRACKET);
+			p_stream.WriteByte(TYPE_LEFT_CURLY);
+			foreach (KeyValuePair<string, T> kvp in p_values)
 			{
 				stream.WriteByte(typeByte);
 				WriteStringWithHeader(stream, kvp.Key);
 				WriteStruct<T>(stream, writeFunc, kvp.Value);
 			}
-			stream.WriteByte(TYPE_RIGHT_CURLY);
+			p_stream.WriteByte(TYPE_RIGHT_CURLY);
 		}
-		
-		public static void WriteStruct<T>(Stream stream, WriteObject<T> writeFunc, T value)
+
+		public static void WriteCollidableDictionaryBlock<T>(Stream p_stream, WriteObject<T> p_writeFunc, KeyValuePair<string, T>[] p_values, byte p_typeByte)
 		{
-			stream.WriteByte(TYPE_LEFT_CURLY);
-			writeFunc(stream, value);
-			stream.WriteByte(TYPE_RIGHT_CURLY);
+			p_stream.WriteByte(TYPE_LEFT_BRACKET);
+			WriteIntWithHeader(p_stream, p_values.Length);
+			p_stream.WriteByte(TYPE_RIGHT_BRACKET);
+			p_stream.WriteByte(TYPE_LEFT_CURLY);
+			foreach (KeyValuePair<string, T> kvp in p_values)
+			{
+				p_stream.WriteByte(p_typeByte);
+				WriteStringWithHeader(p_stream, kvp.Key);
+				WriteStruct<T>(p_stream, p_writeFunc, kvp.Value);
+			}
+			p_stream.WriteByte(TYPE_RIGHT_CURLY);
 		}
-		
-		public static void WriteByteArrayBlock(Stream stream, byte[] values)
+
+		public static void WriteStruct<T>(Stream p_stream, WriteObject<T> p_writeFunc, T p_value)
 		{
-			WriteArrayBlock<byte>(stream, new WriteObject<byte>(WriteByteWithHeader), values);
+			p_stream.WriteByte(TYPE_LEFT_CURLY);
+			writeFunc(p_stream, p_value);
+			p_stream.WriteByte(TYPE_RIGHT_CURLY);
 		}
-		
-		public static void WriteFloatArrayBlock(Stream stream, float[] values)
+
+		public static void WriteByteArrayBlock(Stream p_stream, byte[] p_values)
 		{
-			WriteArrayBlock<float>(stream, new WriteObject<float>(WriteFloatWithHeader), values);
+			WriteArrayBlock<byte>(p_stream, new WriteObject<byte>(WriteByteWithHeader), p_values);
 		}
-		
-		public static void WriteIntArrayBlock(Stream stream, int[] values)
+
+		public static void WriteFloatArrayBlock(Stream p_stream, float[] p_values)
 		{
-			WriteArrayBlock<int>(stream, new WriteObject<int>(WriteIntWithHeader), values);
+			WriteArrayBlock<float>(p_stream, new WriteObject<float>(WriteFloatWithHeader), p_values);
 		}
-		
-		public static void WriteQuaternionArrayBlock(Stream stream, LRQuaternion[] values)
+
+		public static void WriteIntArrayBlock(Stream p_stream, int[] p_values)
 		{
-			WriteArrayBlock<LRQuaternion>(stream, new WriteObject<LRQuaternion>(LRQuaternion.ToStream), values);
+			WriteArrayBlock<int>(p_stream, new WriteObject<int>(WriteIntWithHeader), p_values);
 		}
-		
-		public static void WriteStringArrayBlock(Stream stream, string[] values)
+
+		public static void WriteQuaternionArrayBlock(Stream p_stream, LRQuaternion[] p_values)
 		{
-			WriteArrayBlock<string>(stream, new WriteObject<string>(WriteStringWithHeader), values);
+			WriteArrayBlock<LRQuaternion>(p_stream, new WriteObject<LRQuaternion>(LRQuaternion.ToStream), p_values);
 		}
-		
-		public static void WriteVector2fArrayBlock(Stream stream, LRVector2[] values)
+
+		public static void WriteStringArrayBlock(Stream p_stream, string[] p_values)
 		{
-			WriteArrayBlock<LRVector2>(stream, new WriteObject<LRVector2>(LRVector2.ToStream), values);
+			WriteArrayBlock<string>(p_stream, new WriteObject<string>(WriteStringWithHeader), p_values);
 		}
-		
-		public static void WriteVector3fArrayBlock(Stream stream, LRVector3[] values)
+
+		public static void WriteVector2fArrayBlock(Stream p_stream, LRVector2[] p_values)
 		{
-			WriteArrayBlock<LRVector3>(stream, new WriteObject<LRVector3>(LRVector3.ToStream), values);
+			WriteArrayBlock<LRVector2>(p_stream, new WriteObject<LRVector2>(LRVector2.ToStream), p_values);
+		}
+
+		public static void WriteVector3fArrayBlock(Stream p_stream, LRVector3[] p_values)
+		{
+			WriteArrayBlock<LRVector3>(p_stream, new WriteObject<LRVector3>(LRVector3.ToStream), p_values);
 		}
 		
 		#endregion
 		
 		#region Expect/Next
-		
-		public static void Expect(Stream stream, byte expected)
+
+		public static void Expect(Stream p_stream, byte p_expected)
 		{
-			byte actual = ReadByte(stream);
-			if (actual != expected)
+			byte actual = ReadByte(p_stream);
+			if (actual != p_expected)
 			{
-				throw new Exception(string.Format("Invalid data. Expected 0x{0:X2}, got 0x{1:X2}.", expected, actual));
+				throw new Exception(string.Format("Invalid data. Expected 0x{0:X2}, got 0x{1:X2}.", p_expected, actual));
 			}
 		}
 		
-		public static byte Expect(Stream stream, byte[] expected)
+		public static byte Expect(Stream p_stream, byte[] p_expected)
 		{
-			byte actual = ReadByte(stream);
-			if (expected.Contains(actual) == false)
+			byte actual = ReadByte(p_stream);
+			if (p_expected.Contains(actual) == false)
 			{
 				string s_expected = "{ ";
-				for (int i = 0; i < expected.Length; i++)
+				for (int i = 0; i < p_expected.Length; i++)
 				{
-					s_expected += (i == 0 ? "" : ", ") + "0x" + expected[i].ToString("X2");
+					s_expected += (i == 0 ? "" : ", ") + "0x" + p_expected[i].ToString("X2");
 				}
 				s_expected += " }";
 				throw new Exception(string.Format("Invalid data. Expected {0}, got 0x{1:X2}.", s_expected, actual));
@@ -736,18 +736,18 @@ namespace LibLR1.Utils
 			return actual;
 		}
 		
-		public static bool Next(Stream stream, byte expected)
+		public static bool Next(Stream p_stream, byte p_expected)
 		{
-			byte actual = ReadByte(stream);
-			stream.Position--;
-			return actual == expected;
+			byte actual = ReadByte(p_stream);
+			p_stream.Position--;
+			return actual == p_expected;
 		}
 		
-		public static bool Next(Stream stream, byte[] expected)
+		public static bool Next(Stream p_stream, byte[] p_expected)
 		{
-			byte actual = ReadByte(stream);
-			stream.Position--;
-			return expected.Contains(actual);
+			byte actual = ReadByte(p_stream);
+			p_stream.Position--;
+			return p_expected.Contains(actual);
 		}
 		
 		#endregion
