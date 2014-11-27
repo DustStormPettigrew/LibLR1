@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using LibLR1.Exceptions;
 using LibLR1.Utils;
+using LibLR1.IO;
 
 namespace LibLR1
 {
@@ -13,38 +14,44 @@ namespace LibLR1
 		private const byte
 			ID_GHOST_PATH = 0x2C;
 		
-		private GHB_GhostPath m_GhostPath;
-		
-		public GHB_GhostPath GhostPath { get { return m_GhostPath; } set { m_GhostPath = value; } }
-		
-		public GHB(Stream stream)
+		private GHB_GhostPath m_ghostPath;
+
+		public GHB_GhostPath GhostPath
 		{
-			while (stream.Position < stream.Length)
+			get { return m_ghostPath; }
+			set { m_ghostPath = value; }
+		}
+		
+		public GHB(string p_filepath)
+			: this(BinaryFileHelper.Decompress(p_filepath))
+		{
+		}
+
+		public GHB(LRBinaryReader p_reader)
+		{
+			while (p_reader.BaseStream.Position < p_reader.BaseStream.Length)
 			{
-				byte block_id = BinaryFileHelper.ReadByte(stream);
-				switch (block_id)
+				byte blockId = p_reader.ReadByte();
+				switch (blockId)
 				{
 					case ID_GHOST_PATH:
 					{
-						m_GhostPath = BinaryFileHelper.ReadStruct<GHB_GhostPath>(
-							stream,
-							new BinaryFileHelper.ReadObject<GHB_GhostPath>(
-								GHB_GhostPath.FromStream
+						m_ghostPath = p_reader.ReadStruct<GHB_GhostPath>(
+							new LRBinaryReader.ReadObject<GHB_GhostPath>(
+								GHB_GhostPath.Read
 							)
 						);
 						break;
 					}
 					default:
 					{
-						throw new UnexpectedBlockException(block_id, stream.Position - 1);
+						throw new UnexpectedBlockException(
+							blockId,
+							p_reader.BaseStream.Position - 1
+						);
 					}
 				}
 			}
-		}
-		
-		public GHB(string path, bool decompress = true)
-			: this(decompress ? BinaryFileHelper.Decompress(path) : (Stream)(new FileStream(path, FileMode.Open, FileAccess.Read)))
-		{
 		}
 	}
 	
@@ -63,32 +70,31 @@ namespace LibLR1
 		public int[]        Unknown2A;
 		public int          Unknown2B;
 		
-		public static GHB_GhostPath FromStream(Stream stream)
+		public static GHB_GhostPath Read(LRBinaryReader p_reader)
 		{
 			GHB_GhostPath val = new GHB_GhostPath();
-			while (BinaryFileHelper.Next(stream, BinaryFileHelper.TYPE_RIGHT_CURLY) == false)
+			while (p_reader.Next(Token.RIGHT_CURLY) == false)
 			{
-				byte property_id = BinaryFileHelper.ReadByte(stream);
-				switch (property_id)
+				byte propertyId = p_reader.ReadByte();
+				switch (propertyId)
 				{
 					case PROPERTY_NODES:
 					{
-						val.Nodes = BinaryFileHelper.ReadArrayBlock<GHB_Node>(
-							stream,
-							new BinaryFileHelper.ReadObject<GHB_Node>(
-								GHB_Node.FromStream
+						val.Nodes = p_reader.ReadArrayBlock<GHB_Node>(
+							new LRBinaryReader.ReadObject<GHB_Node>(
+								GHB_Node.Read
 							)
 						);
 						break;
 					}
 					case PROPERTY_POSITION:
 					{
-						val.InitialPosition = LRVector3.FromStream(stream);
+						val.InitialPosition = LRVector3.Read(p_reader);
 						break;
 					}
 					case PROPERTY_ROTATION:
 					{
-						val.InitialRotation = LRQuaternion.FromStream(stream);
+						val.InitialRotation = LRQuaternion.Read(p_reader);
 						break;
 					}
 					case PROPERTY_UNKNOWN_2A:
@@ -96,18 +102,21 @@ namespace LibLR1
 						val.Unknown2A = new int[3];
 						for (int i = 0; i < val.Unknown2A.Length; i++)
 						{
-							val.Unknown2A[i] = BinaryFileHelper.ReadIntWithHeader(stream);
+							val.Unknown2A[i] = p_reader.ReadIntWithHeader();
 						}
 						break;
 					}
 					case PROPERTY_UNKNOWN_2B:
 					{
-						val.Unknown2B = BinaryFileHelper.ReadIntWithHeader(stream);
+						val.Unknown2B = p_reader.ReadIntWithHeader();
 						break;
 					}
 					default:
 					{
-						throw new UnexpectedPropertyException(property_id, stream.Position - 1);
+						throw new UnexpectedPropertyException(
+							propertyId,
+							p_reader.BaseStream.Position - 1
+						);
 					}
 				}
 			}
@@ -120,16 +129,16 @@ namespace LibLR1
 		public Fract16Bit px, py, pz;
 		public Fract8Bit  rx, ry, rz, rw;
 		
-		public static GHB_Node FromStream(Stream stream)
+		public static GHB_Node Read(LRBinaryReader p_reader)
 		{
 			GHB_Node val = new GHB_Node();
-			val.px = BinaryFileHelper.ReadFract16BitWithHeader(stream);
-			val.py = BinaryFileHelper.ReadFract16BitWithHeader(stream);
-			val.pz = BinaryFileHelper.ReadFract16BitWithHeader(stream);
-			val.rx = BinaryFileHelper.ReadFract8BitWithHeader(stream);
-			val.ry = BinaryFileHelper.ReadFract8BitWithHeader(stream);
-			val.rz = BinaryFileHelper.ReadFract8BitWithHeader(stream);
-			val.rw = BinaryFileHelper.ReadFract8BitWithHeader(stream);
+			val.px = p_reader.ReadFract16BitWithHeader();
+			val.py = p_reader.ReadFract16BitWithHeader();
+			val.pz = p_reader.ReadFract16BitWithHeader();
+			val.rx = p_reader.ReadFract8BitWithHeader();
+			val.ry = p_reader.ReadFract8BitWithHeader();
+			val.rz = p_reader.ReadFract8BitWithHeader();
+			val.rw = p_reader.ReadFract8BitWithHeader();
 			return val;
 		}
 	}

@@ -30,15 +30,14 @@ namespace LibLR1.Utils
 			m_value = p_value;
 		}
 
-		[Obsolete]
-		public static Fract8Bit FromStream(Stream p_stream)
-		{
-			return new Fract8Bit(BinaryFileHelper.ReadSByte(p_stream));
-		}
-
 		public static Fract8Bit Read(LRBinaryReader p_reader)
 		{
 			return new Fract8Bit(p_reader.ReadSByte());
+		}
+
+		public static void Write(LRBinaryWriter p_writer, Fract8Bit p_value)
+		{
+			p_writer.WriteSByte(p_value.Value);
 		}
 	}
 }

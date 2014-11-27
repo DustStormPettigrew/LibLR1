@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using LibLR1.Exceptions;
 using LibLR1.Utils;
+using LibLR1.IO;
 
 namespace LibLR1
 {
@@ -17,70 +18,71 @@ namespace LibLR1
 			ID_BOUNDING_BOXES = 0x2A,
 			ID_UNKNOWN_2B     = 0x2B;
 		
-		private BDB_Unknown27[]   m_Unknown27;
-		private BDB_BoundingBox[] m_BoundingBoxes;
-		private int[]             m_Unknown2B;
+		private BDB_Unknown27[]   m_unknown27;
+		private BDB_BoundingBox[] m_boundingBoxes;
+		private int[]             m_unknown2B;
 		
 		public BDB_Unknown27[] Unknown27
 		{
-			get { return m_Unknown27; }
-			set { m_Unknown27 = value; }
+			get { return m_unknown27; }
+			set { m_unknown27 = value; }
 		}
 		public BDB_BoundingBox[] BoundingBoxes
 		{
-			get { return m_BoundingBoxes; }
-			set { m_BoundingBoxes = value; }
+			get { return m_boundingBoxes; }
+			set { m_boundingBoxes = value; }
 		}
 		public int[] Unknown2B
 		{
-			get { return m_Unknown2B; }
-			set { m_Unknown2B = value; }
+			get { return m_unknown2B; }
+			set { m_unknown2B = value; }
 		}
-		
-		public BDB(Stream stream)
+
+		public BDB(string p_filepath)
+			: this(BinaryFileHelper.Decompress(p_filepath))
 		{
-			m_Unknown2B = new int[0];
-			while (stream.Position < stream.Length)
+		}
+
+		public BDB(LRBinaryReader p_reader)
+		{
+			m_unknown2B = new int[0];
+			while (p_reader.BaseStream.Position < p_reader.BaseStream.Length)
 			{
-				byte block_id = BinaryFileHelper.ReadByte(stream);
-				switch (block_id)
+				byte blockId = p_reader.ReadByte();
+				switch (blockId)
 				{
 					case ID_UNKNOWN_27:
 					{
-						m_Unknown27 = BinaryFileHelper.ReadArrayBlock<BDB_Unknown27>(
-							stream,
-							new BinaryFileHelper.ReadObject<BDB_Unknown27>(
-								BDB_Unknown27.FromStream
+						m_unknown27 = p_reader.ReadArrayBlock<BDB_Unknown27>(
+							new LRBinaryReader.ReadObject<BDB_Unknown27>(
+								BDB_Unknown27.Read
 							)
 						);
 						break;
 					}
 					case ID_BOUNDING_BOXES:
 					{
-						m_BoundingBoxes = BinaryFileHelper.ReadArrayBlock<BDB_BoundingBox>(
-							stream,
-							new BinaryFileHelper.ReadObject<BDB_BoundingBox>(
-								BDB_BoundingBox.FromStream
+						m_boundingBoxes = p_reader.ReadArrayBlock<BDB_BoundingBox>(
+							new LRBinaryReader.ReadObject<BDB_BoundingBox>(
+								BDB_BoundingBox.Read
 							)
 						);
 						break;
 					}
 					case ID_UNKNOWN_2B:
 					{
-						m_Unknown2B = BinaryFileHelper.ReadIntArrayBlock(stream);
+						m_unknown2B = p_reader.ReadIntArrayBlock();
 						break;
 					}
 					default:
 					{
-						throw new UnexpectedBlockException(block_id, stream.Position - 1);
+						throw new UnexpectedBlockException(
+							blockId,
+							p_reader.BaseStream.Position - 1
+						);
 					}
 				}
 			}
-		}
-		
-		public BDB(string path, bool decompress = true)
-			: this(decompress ? BinaryFileHelper.Decompress(path) : (Stream)(new FileStream(path, FileMode.Open, FileAccess.Read)))
-		{
 		}
 	}
 	
@@ -92,23 +94,26 @@ namespace LibLR1
 			ID_UNKNOWN_29 = 0x29;
 		
 		public virtual byte Type { get { return 0; } }
-		
-		public static BDB_Unknown27 FromStream(Stream stream)
+
+		public static BDB_Unknown27 Read(LRBinaryReader p_reader)
 		{
-			byte type = (byte)stream.ReadByte();
+			byte type = p_reader.ReadByte();
 			switch (type)
 			{
 				case ID_UNKNOWN_28:
 				{
-					return BDB_Unknown28.FromStream(stream);
+					return BDB_Unknown28.Read(p_reader);
 				}
 				case ID_UNKNOWN_29:
 				{
-					return BDB_Unknown29.FromStream(stream);
+					return BDB_Unknown29.Read(p_reader);
 				}
 				default:
 				{
-					throw new UnexpectedBlockException(type, stream.Position - 1);
+					throw new UnexpectedBlockException(
+						type,
+						p_reader.BaseStream.Position - 1
+					);
 				}
 			}
 		}
@@ -123,17 +128,17 @@ namespace LibLR1
 		
 		public int   a, b, c;
 		public float d, e, f, g;
-		
-		public static new BDB_Unknown28 FromStream(Stream stream)
+
+		public static new BDB_Unknown28 Read(LRBinaryReader p_reader)
 		{
 			BDB_Unknown28 val = new BDB_Unknown28();
-			val.a = BinaryFileHelper.ReadIntegralWithHeader(stream);
-			val.b = BinaryFileHelper.ReadIntegralWithHeader(stream);
-			val.c = BinaryFileHelper.ReadIntegralWithHeader(stream);
-			val.d = BinaryFileHelper.ReadFloatWithHeader(stream);
-			val.e = BinaryFileHelper.ReadFloatWithHeader(stream);
-			val.d = BinaryFileHelper.ReadFloatWithHeader(stream);
-			val.g = BinaryFileHelper.ReadFloatWithHeader(stream);
+			val.a = p_reader.ReadIntegralWithHeader();
+			val.b = p_reader.ReadIntegralWithHeader();
+			val.c = p_reader.ReadIntegralWithHeader();
+			val.d = p_reader.ReadFloatWithHeader();
+			val.e = p_reader.ReadFloatWithHeader();
+			val.d = p_reader.ReadFloatWithHeader();
+			val.g = p_reader.ReadFloatWithHeader();
 			return val;
 		}
 	}
@@ -147,16 +152,16 @@ namespace LibLR1
 		
 		public ushort     a, b, c;
 		public Fract16Bit d, e, f;
-		
-		public static new BDB_Unknown29 FromStream(Stream stream)
+
+		public static new BDB_Unknown29 Read(LRBinaryReader p_reader)
 		{
 			BDB_Unknown29 val = new BDB_Unknown29();
-			val.a = BinaryFileHelper.ReadUShortWithHeader(stream);
-			val.b = BinaryFileHelper.ReadUShortWithHeader(stream);
-			val.c = BinaryFileHelper.ReadUShortWithHeader(stream);
-			val.d = BinaryFileHelper.ReadFract16BitWithHeader(stream);
-			val.e = BinaryFileHelper.ReadFract16BitWithHeader(stream);
-			val.f = BinaryFileHelper.ReadFract16BitWithHeader(stream);
+			val.a = p_reader.ReadUShortWithHeader();
+			val.b = p_reader.ReadUShortWithHeader();
+			val.c = p_reader.ReadUShortWithHeader();
+			val.d = p_reader.ReadFract16BitWithHeader();
+			val.e = p_reader.ReadFract16BitWithHeader();
+			val.f = p_reader.ReadFract16BitWithHeader();
 			return val;
 		}
 	}
@@ -164,19 +169,19 @@ namespace LibLR1
 	public class BDB_BoundingBox
 	{
 		public LRVector3 MinPoint, MaxPoint;
-		
-		public static BDB_BoundingBox FromStream(Stream stream)
+
+		public static BDB_BoundingBox Read(LRBinaryReader p_reader)
 		{
 			BDB_BoundingBox val = new BDB_BoundingBox();
-			val.MinPoint = LRVector3.FromStream(stream);
-			val.MaxPoint = LRVector3.FromStream(stream);
+			val.MinPoint = LRVector3.Read(p_reader);
+			val.MaxPoint = LRVector3.Read(p_reader);
 			return val;
 		}
-		
-		public static void ToStream(Stream stream, BDB_BoundingBox value)
+
+		public static void Write(LRBinaryWriter p_writer, BDB_BoundingBox p_value)
 		{
-			LRVector3.ToStream(stream, value.MinPoint);
-			LRVector3.ToStream(stream, value.MaxPoint);
+			LRVector3.Write(p_writer, p_value.MinPoint);
+			LRVector3.Write(p_writer, p_value.MaxPoint);
 		}
 	}
 }

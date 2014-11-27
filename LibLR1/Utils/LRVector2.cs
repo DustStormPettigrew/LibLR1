@@ -22,28 +22,12 @@ namespace LibLR1.Utils
 			m_y = p_y;
 		}
 
-		[Obsolete]
-		public static LRVector2 FromStream(Stream p_stream)
-		{
-			LRVector2 val = new LRVector2();
-			val.X = BinaryFileHelper.ReadFloatWithHeader(p_stream);
-			val.Y = BinaryFileHelper.ReadFloatWithHeader(p_stream);
-			return val;
-		}
-
 		public static LRVector2 Read(LRBinaryReader p_reader)
 		{
 			LRVector2 val = new LRVector2();
 			val.X = p_reader.ReadFloatWithHeader();
 			val.Y = p_reader.ReadFloatWithHeader();
 			return val;
-		}
-
-		[Obsolete]
-		public static void ToStream(Stream p_stream, LRVector2 p_vec)
-		{
-			BinaryFileHelper.WriteFloatWithHeader(p_stream, p_vec.X);
-			BinaryFileHelper.WriteFloatWithHeader(p_stream, p_vec.Y);
 		}
 
 		public static void Write(LRBinaryWriter p_writer, LRVector2 p_vec)

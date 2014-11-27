@@ -2,145 +2,199 @@
 using System.IO;
 using LibLR1.Exceptions;
 using LibLR1.Utils;
+using LibLR1.IO;
 
-namespace LibLR1 {
-    /// <summary>
-    /// Track listing format.
-    /// </summary>
-    public class RCB {
-        private const byte
-            ID_TRACK = 0x27;
+namespace LibLR1
+{
+	/// <summary>
+	/// Track listing format.
+	/// </summary>
+	public class RCB
+	{
+		private const byte
+			ID_TRACK = 0x27;
 
-        private Dictionary<string, RCB_Track> m_Tracks;
+		private Dictionary<string, RCB_Track> m_tracks;
 
-        public Dictionary<string, RCB_Track> Tracks { get { return m_Tracks; } set { m_Tracks = value; } }
+		public Dictionary<string, RCB_Track> Tracks { get { return m_tracks; } set { m_tracks = value; } }
 
-        public RCB(Stream stream) {
-            m_Tracks = new Dictionary<string, RCB_Track>();
-            while (stream.Position < stream.Length) {
-                byte block_id = BinaryFileHelper.ReadByte(stream);
-                switch (block_id) {
-                    case ID_TRACK:
-                        m_Tracks = BinaryFileHelper.ReadDictionaryBlock<RCB_Track>(
-                            stream,
-                            new BinaryFileHelper.ReadObject<RCB_Track>(
-                                RCB_Track.FromStream
-                            ),
-                            ID_TRACK
-                        );
-                        break;
-                    default:
-                        throw new UnexpectedBlockException(block_id, stream.Position - 1);
-                }
-            }
-        }
+		public RCB(string p_filepath)
+			: this(BinaryFileHelper.Decompress(p_filepath))
+		{
+		}
 
-        public RCB(string path, bool decompress = true)
-            : this(decompress ? BinaryFileHelper.Decompress(path) : (Stream)(new FileStream(path, FileMode.Open, FileAccess.Read))) { }
+		public RCB(LRBinaryReader p_reader)
+		{
+			m_tracks = new Dictionary<string, RCB_Track>();
+			while (p_reader.BaseStream.Position < p_reader.BaseStream.Length)
+			{
+				byte blockId = p_reader.ReadByte();
+				switch (blockId)
+				{
+					case ID_TRACK:
+					{
+						m_tracks = p_reader.ReadDictionaryBlock<RCB_Track>(
+							new LRBinaryReader.ReadObject<RCB_Track>(
+								RCB_Track.Read
+							),
+							ID_TRACK
+						);
+						break;
+					}
+					default:
+					{
+						throw new UnexpectedBlockException(
+							blockId,
+							p_reader.BaseStream.Position - 1
+						);
+					}
+				}
+			}
+		}
 
-        public void Save(Stream stream) {
-            stream.WriteByte(ID_TRACK);
-            BinaryFileHelper.WriteDictionaryBlock<RCB_Track>(
-                stream,
-                new BinaryFileHelper.WriteObject<RCB_Track>(
-                    RCB_Track.ToStream
-                ),
-                m_Tracks,
-                ID_TRACK
-            );
-        }
+		public void Save(string p_filepath)
+		{
+			using (LRBinaryWriter writer = new LRBinaryWriter(File.OpenWrite(p_filepath)))
+			{
+				Save(writer);
+			}
+		}
 
-        public void Save(string path) {
-            using (FileStream fsOut = new FileStream(path, FileMode.Create, FileAccess.Write))
-                Save(fsOut);
-        }
-    }
+		public void Save(LRBinaryWriter p_writer)
+		{
+			p_writer.WriteByte(ID_TRACK);
+			p_writer.WriteDictionaryBlock<RCB_Track>(
+				new LRBinaryWriter.WriteObject<RCB_Track>(
+					RCB_Track.Write
+				),
+				m_tracks,
+				ID_TRACK
+			);
+		}
+	}
 
-    public class RCB_Track {
-        private const byte
-            PROPERTY_POSITION_IN_CIRCUIT = 0x28,
-            PROPERTY_FOLDER = 0x29,
-            PROPERTY_CIRCUIT = 0x2A,
-            PROPERTY_TRACK_ID = 0x2B,
-            PROPERTY_MIRROR_FLAG = 0x2C,
-            PROPERTY_THEME_STRING = 0x2D,
-            PROPERTY_MASCOT = 0x2E;
+	public class RCB_Track
+	{
+		private const byte
+			PROPERTY_POSITION_IN_CIRCUIT = 0x28,
+			PROPERTY_FOLDER              = 0x29,
+			PROPERTY_CIRCUIT             = 0x2A,
+			PROPERTY_TRACK_ID            = 0x2B,
+			PROPERTY_MIRROR_FLAG         = 0x2C,
+			PROPERTY_THEME_STRING        = 0x2D,
+			PROPERTY_MASCOT              = 0x2E;
 
-        public int PositionInCircuit;
-        public string Folder;
-        public string Circuit;
-        public int NameIndex;
-        public bool Mirror;
-        public string ThemeStr;
-        public string Mascot;
+		public int    PositionInCircuit;
+		public string Folder;
+		public string Circuit;
+		public int    NameIndex;
+		public bool   Mirror;
+		public string ThemeStr;
+		public string Mascot;
 
-        public RCB_Track()
-            : this(0, "", "", 0, false, "", "") { }
+		public RCB_Track()
+			: this(0, "", "", 0, false, "", "") { }
 
-        public RCB_Track(int positionincircuit, string folder, string circuit, int nameindex, bool mirror, string themestr, string mascot) {
-            PositionInCircuit = positionincircuit;
-            Folder = folder;
-            Circuit = circuit;
-            NameIndex = nameindex;
-            Mirror = mirror;
-            ThemeStr = themestr;
-            Mascot = mascot;
-        }
+		public RCB_Track(
+			int p_positionincircuit,
+			string p_folder,
+			string p_circuit,
+			int p_nameindex,
+			bool p_mirror,
+			string p_themestr,
+			string p_mascot)
+		{
+			PositionInCircuit = p_positionincircuit;
+			Folder            = p_folder;
+			Circuit           = p_circuit;
+			NameIndex         = p_nameindex;
+			Mirror            = p_mirror;
+			ThemeStr          = p_themestr;
+			Mascot            = p_mascot;
+		}
 
-        public static RCB_Track FromStream(Stream stream) {
-            RCB_Track val = new RCB_Track();
-            while (!BinaryFileHelper.Next(stream, BinaryFileHelper.TYPE_RIGHT_CURLY)) {
-                byte property_id = BinaryFileHelper.ReadByte(stream);
-                switch (property_id) {
-                    case PROPERTY_POSITION_IN_CIRCUIT:
-                        val.PositionInCircuit = BinaryFileHelper.ReadIntWithHeader(stream);
-                        break;
-                    case PROPERTY_FOLDER:
-                        val.Folder = BinaryFileHelper.ReadStringWithHeader(stream);
-                        break;
-                    case PROPERTY_CIRCUIT:
-                        val.Circuit = BinaryFileHelper.ReadStringWithHeader(stream);
-                        break;
-                    case PROPERTY_TRACK_ID:
-                        val.NameIndex = BinaryFileHelper.ReadIntWithHeader(stream);
-                        break;
-                    case PROPERTY_MIRROR_FLAG:
-                        val.Mirror = true;
-                        break;
-                    case PROPERTY_THEME_STRING:
-                        val.ThemeStr = BinaryFileHelper.ReadStringWithHeader(stream);
-                        break;
-                    case PROPERTY_MASCOT:
-                        val.Mascot = BinaryFileHelper.ReadStringWithHeader(stream);
-                        break;
-                    default:
-                        throw new UnexpectedPropertyException(property_id, stream.Position - 1);
-                }
-            }
-            return val;
-        }
+		public static RCB_Track Read(LRBinaryReader p_reader)
+		{
+			RCB_Track val = new RCB_Track();
+			while (!p_reader.Next(Token.RIGHT_CURLY))
+			{
+				byte propertyId = p_reader.ReadByte();
+				switch (propertyId)
+				{
+					case PROPERTY_POSITION_IN_CIRCUIT:
+					{
+						val.PositionInCircuit = p_reader.ReadIntWithHeader();
+						break;
+					}
+					case PROPERTY_FOLDER:
+					{
+						val.Folder = p_reader.ReadStringWithHeader();
+						break;
+					}
+					case PROPERTY_CIRCUIT:
+					{
+						val.Circuit = p_reader.ReadStringWithHeader();
+						break;
+					}
+					case PROPERTY_TRACK_ID:
+					{
+						val.NameIndex = p_reader.ReadIntWithHeader();
+						break;
+					}
+					case PROPERTY_MIRROR_FLAG:
+					{
+						val.Mirror = true;
+						break;
+					}
+					case PROPERTY_THEME_STRING:
+					{
+						val.ThemeStr = p_reader.ReadStringWithHeader();
+						break;
+					}
+					case PROPERTY_MASCOT:
+					{
+						val.Mascot = p_reader.ReadStringWithHeader();
+						break;
+					}
+					default:
+					{
+						throw new UnexpectedPropertyException(
+							propertyId,
+							p_reader.BaseStream.Position - 1
+						);
+					}
+				}
+			}
+			return val;
+		}
 
-        public static void ToStream(Stream stream, RCB_Track value) {
-            stream.WriteByte(PROPERTY_POSITION_IN_CIRCUIT);
-            BinaryFileHelper.WriteIntWithHeader(stream, value.PositionInCircuit);
-            stream.WriteByte(PROPERTY_FOLDER);
-            BinaryFileHelper.WriteStringWithHeader(stream, value.Folder);
-            if (value.Circuit != "") {
-                stream.WriteByte(PROPERTY_CIRCUIT);
-                BinaryFileHelper.WriteStringWithHeader(stream, value.Circuit);
-            }
-            stream.WriteByte(PROPERTY_TRACK_ID);
-            BinaryFileHelper.WriteIntWithHeader(stream, value.NameIndex);
-            if (value.Mirror)
-                stream.WriteByte(PROPERTY_MIRROR_FLAG);
-            if (value.ThemeStr != "") {
-                stream.WriteByte(PROPERTY_THEME_STRING);
-                BinaryFileHelper.WriteStringWithHeader(stream, value.ThemeStr);
-            }
-            if (value.Mascot != "") {
-                stream.WriteByte(PROPERTY_MASCOT);
-                BinaryFileHelper.WriteStringWithHeader(stream, value.Mascot);
-            }
-        }
-    }
+		public static void Write(LRBinaryWriter p_writer, RCB_Track p_value)
+		{
+			p_writer.WriteByte(PROPERTY_POSITION_IN_CIRCUIT);
+			p_writer.WriteIntWithHeader(p_value.PositionInCircuit);
+			p_writer.WriteByte(PROPERTY_FOLDER);
+			p_writer.WriteStringWithHeader(p_value.Folder);
+			if (p_value.Circuit != "")
+			{
+				p_writer.WriteByte(PROPERTY_CIRCUIT);
+				p_writer.WriteStringWithHeader(p_value.Circuit);
+			}
+			p_writer.WriteByte(PROPERTY_TRACK_ID);
+			p_writer.WriteIntWithHeader(p_value.NameIndex);
+			if (p_value.Mirror)
+			{
+				p_writer.WriteByte(PROPERTY_MIRROR_FLAG);
+			}
+			if (p_value.ThemeStr != "")
+			{
+				p_writer.WriteByte(PROPERTY_THEME_STRING);
+				p_writer.WriteStringWithHeader(p_value.ThemeStr);
+			}
+			if (p_value.Mascot != "")
+			{
+				p_writer.WriteByte(PROPERTY_MASCOT);
+				p_writer.WriteStringWithHeader(p_value.Mascot);
+			}
+		}
+	}
 }

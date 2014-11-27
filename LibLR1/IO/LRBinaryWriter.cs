@@ -38,6 +38,11 @@ namespace LibLR1.IO
 			m_baseWriter.Write(p_value);
 		}
 
+		public void WriteBytes(byte[] p_value)
+		{
+			m_baseWriter.Write(p_value);
+		}
+
 		public void WriteSByte(sbyte p_value)
 		{
 			m_baseWriter.Write(p_value);
@@ -52,7 +57,7 @@ namespace LibLR1.IO
 		public void WriteFract8BitWithHeader(Fract8Bit p_value)
 		{
 			WriteToken(Token.FRACT8);
-			WriteSByte( p_value.Value);
+			Fract8Bit.Write(this, p_value);
 		}
 
 		public void WriteUShort(ushort p_value)
@@ -68,7 +73,7 @@ namespace LibLR1.IO
 		public void WriteFract16BitWithHeader(Fract16Bit p_value)
 		{
 			WriteToken(Token.FRACT16);
-			WriteShort(p_value.Value);
+			Fract16Bit.Write(this, p_value);
 		}
 
 		public void WriteUShortWithHeader(ushort p_value)

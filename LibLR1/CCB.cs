@@ -2,6 +2,7 @@
 using System.IO;
 using LibLR1.Exceptions;
 using LibLR1.Utils;
+using LibLR1.IO;
 
 namespace LibLR1
 {
@@ -10,27 +11,31 @@ namespace LibLR1
 		private const byte
 			ID_CARS = 0x27;
 		
-		private Dictionary<string, CCB_Car> m_Cars;
+		private Dictionary<string, CCB_Car> m_cars;
 		
 		public Dictionary<string, CCB_Car> Cars
 		{
-			get { return m_Cars; }
-			set { m_Cars = value; }
+			get { return m_cars; }
+			set { m_cars = value; }
 		}
-		
-		public CCB(Stream stream)
+
+		public CCB(string p_filepath)
+			: this(BinaryFileHelper.Decompress(p_filepath))
 		{
-			while (stream.Position < stream.Length)
+		}
+
+		public CCB(LRBinaryReader p_reader)
+		{
+			while (p_reader.BaseStream.Position < p_reader.BaseStream.Length)
 			{
-				byte block_id = BinaryFileHelper.ReadByte(stream);
-				switch (block_id)
+				byte blockId = p_reader.ReadByte();
+				switch (blockId)
 				{
 					case ID_CARS:
 					{
-						m_Cars = BinaryFileHelper.ReadDictionaryBlock<CCB_Car>(
-							stream,
-							new BinaryFileHelper.ReadObject<CCB_Car>(
-								CCB_Car.FromStream
+						m_cars = p_reader.ReadDictionaryBlock<CCB_Car>(
+							new LRBinaryReader.ReadObject<CCB_Car>(
+								CCB_Car.Read
 							),
 							ID_CARS
 						);
@@ -38,36 +43,33 @@ namespace LibLR1
 					}
 					default:
 					{
-						throw new UnexpectedBlockException(block_id, stream.Position - 1);
+						throw new UnexpectedBlockException(
+							blockId,
+							p_reader.BaseStream.Position - 1
+						);
 					}
 				}
 			}
 		}
-		
-		public CCB(string path, bool decompress = true)
-			: this(decompress ? BinaryFileHelper.Decompress(path) : (Stream)(new FileStream(path, FileMode.Open, FileAccess.Read)))
+
+		public void Save(string p_filepath)
 		{
+			using (LRBinaryWriter writer = new LRBinaryWriter(File.OpenWrite(p_filepath)))
+			{
+				Save(writer);
+			}
 		}
-		
-		public void Save(Stream stream)
+
+		public void Save(LRBinaryWriter p_writer)
 		{
-			stream.WriteByte(ID_CARS);
-			BinaryFileHelper.WriteDictionaryBlock<CCB_Car>(
-				stream,
-				new BinaryFileHelper.WriteObject<CCB_Car>(
-					CCB_Car.ToStream
+			p_writer.WriteByte(ID_CARS);
+			p_writer.WriteDictionaryBlock<CCB_Car>(
+				new LRBinaryWriter.WriteObject<CCB_Car>(
+					CCB_Car.Write
 				),
-				m_Cars,
+				m_cars,
 				ID_CARS
 			);
-		}
-		
-		public void Save(string path)
-		{
-			using (FileStream fsOut = new FileStream(path, FileMode.Create, FileAccess.Write))
-			{
-				Save(fsOut);
-			}
 		}
 	}
 	
@@ -87,73 +89,76 @@ namespace LibLR1
 		public string    Unknown2B;
 		public float     Unknown2C;
 		public LRVector3 Unknown2D;
-		
-		public static CCB_Car FromStream(Stream stream)
+
+		public static CCB_Car Read(LRBinaryReader p_reader)
 		{
 			CCB_Car val = new CCB_Car();
-			while (BinaryFileHelper.Next(stream, BinaryFileHelper.TYPE_RIGHT_CURLY) == false)
+			while (p_reader.Next(Token.RIGHT_CURLY) == false)
 			{
-				byte property_id = BinaryFileHelper.ReadByte(stream);
-				switch (property_id)
+				byte propertyId = p_reader.ReadByte();
+				switch (propertyId)
 				{
 					case PROPERTY_UNKNOWN_28:
 					{
-						val.Unknown28 = BinaryFileHelper.ReadStringWithHeader(stream);
+						val.Unknown28 = p_reader.ReadStringWithHeader();
 						break;
 					}
 					case PROPERTY_UNKNOWN_29:
 					{
-						val.Unknown29 = BinaryFileHelper.ReadStringWithHeader(stream);
+						val.Unknown29 = p_reader.ReadStringWithHeader();
 						break;
 					}
 					case PROPERTY_UNKNOWN_2A:
 					{
-						val.Unknown2A = BinaryFileHelper.ReadStringWithHeader(stream);
+						val.Unknown2A = p_reader.ReadStringWithHeader();
 						break;
 					}
 					case PROPERTY_UNKNOWN_2B:
 					{
-						val.Unknown2B = BinaryFileHelper.ReadStringWithHeader(stream);
+						val.Unknown2B = p_reader.ReadStringWithHeader();
 						break;
 					}
 					case PROPERTY_UNKNOWN_2C:
 					{
-						val.Unknown2C = BinaryFileHelper.ReadFloatWithHeader(stream);
+						val.Unknown2C = p_reader.ReadFloatWithHeader();
 						break;
 					}
 					case PROPERTY_UNKNOWN_2D:
 					{
-						val.Unknown2D = LRVector3.FromStream(stream);
+						val.Unknown2D = LRVector3.Read(p_reader);
 						break;
 					}
 					default:
 					{
-						throw new UnexpectedPropertyException(property_id, stream.Position - 1);
+						throw new UnexpectedPropertyException(
+							propertyId,
+							p_reader.BaseStream.Position - 1
+						);
 					}
 				}
 			}
 			return val;
 		}
-		
-		public static void ToStream(Stream stream, CCB_Car value)
+
+		public static void Write(LRBinaryWriter p_writer, CCB_Car p_value)
 		{
-			stream.WriteByte(PROPERTY_UNKNOWN_28);
-			BinaryFileHelper.WriteStringWithHeader(stream, value.Unknown28);
-			
-			stream.WriteByte(PROPERTY_UNKNOWN_29);
-			BinaryFileHelper.WriteStringWithHeader(stream, value.Unknown29);
-			
-			stream.WriteByte(PROPERTY_UNKNOWN_2A);
-			BinaryFileHelper.WriteStringWithHeader(stream, value.Unknown2A);
-			
-			stream.WriteByte(PROPERTY_UNKNOWN_2B);
-			BinaryFileHelper.WriteStringWithHeader(stream, value.Unknown2B);
-			
-			stream.WriteByte(PROPERTY_UNKNOWN_2C);
-			BinaryFileHelper.WriteFloatWithHeader(stream, value.Unknown2C);
-			
-			stream.WriteByte(PROPERTY_UNKNOWN_2D);
-			LRVector3.ToStream(stream, value.Unknown2D);
+			p_writer.WriteByte(PROPERTY_UNKNOWN_28);
+			p_writer.WriteStringWithHeader(p_value.Unknown28);
+
+			p_writer.WriteByte(PROPERTY_UNKNOWN_29);
+			p_writer.WriteStringWithHeader(p_value.Unknown29);
+
+			p_writer.WriteByte(PROPERTY_UNKNOWN_2A);
+			p_writer.WriteStringWithHeader(p_value.Unknown2A);
+
+			p_writer.WriteByte(PROPERTY_UNKNOWN_2B);
+			p_writer.WriteStringWithHeader(p_value.Unknown2B);
+
+			p_writer.WriteByte(PROPERTY_UNKNOWN_2C);
+			p_writer.WriteFloatWithHeader(p_value.Unknown2C);
+
+			p_writer.WriteByte(PROPERTY_UNKNOWN_2D);
+			LRVector3.Write(p_writer, p_value.Unknown2D);
 		}
 	}
 }

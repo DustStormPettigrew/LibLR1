@@ -2,112 +2,151 @@
 using System.IO;
 using LibLR1.Exceptions;
 using LibLR1.Utils;
+using LibLR1.IO;
 
-namespace LibLR1 {
-    /// <summary>
-    /// Skeleton format.
-    /// </summary>
-    public class SDB {
-        private const byte
-            ID_BONE = 0x27;
+namespace LibLR1
+{
+	/// <summary>
+	/// Skeleton format.
+	/// </summary>
+	public class SDB
+	{
+		private const byte
+			ID_BONE = 0x27;
 
-        private Dictionary<string, SDB_Bone> m_Bones;
+		private Dictionary<string, SDB_Bone> m_bones;
 
-        public Dictionary<string, SDB_Bone> Bones { get { return m_Bones; } set { m_Bones = value; } }
+		public Dictionary<string, SDB_Bone> Bones
+		{
+			get { return m_bones; }
+			set { m_bones = value; }
+		}
 
-        public SDB(Stream stream) {
-            m_Bones = new Dictionary<string, SDB_Bone>();
-            while (stream.Position < stream.Length) {
-                byte block_id = BinaryFileHelper.ReadByte(stream);
-                switch (block_id) {
-                    case ID_BONE:
-                        m_Bones = BinaryFileHelper.ReadDictionaryBlock<SDB_Bone>(
-                            stream,
-                            new BinaryFileHelper.ReadObject<SDB_Bone>(
-                                SDB_Bone.FromStream
-                            ),
-                            ID_BONE
-                        );
-                        break;
-                    default:
-                        throw new UnexpectedBlockException(block_id, stream.Position - 1);
-                }
-            }
-        }
+		public SDB(string p_filepath)
+			: this(BinaryFileHelper.Decompress(p_filepath))
+		{
+		}
 
-        public SDB(string path, bool decompress = true)
-            : this(decompress ? BinaryFileHelper.Decompress(path) : (Stream)(new FileStream(path, FileMode.Open, FileAccess.Read))) { }
+		public SDB(LRBinaryReader p_reader)
+		{
+			m_bones = new Dictionary<string, SDB_Bone>();
+			while (p_reader.BaseStream.Position < p_reader.BaseStream.Length)
+			{
+				byte blockId = p_reader.ReadByte();
+				switch (blockId)
+				{
+					case ID_BONE:
+					{
+						m_bones = p_reader.ReadDictionaryBlock<SDB_Bone>(
+							new LRBinaryReader.ReadObject<SDB_Bone>(
+								SDB_Bone.Read
+							),
+							ID_BONE
+						);
+						break;
+					}
+					default:
+					{
+						throw new UnexpectedBlockException(
+							blockId,
+							p_reader.BaseStream.Position - 1
+						);
+					}
+				}
+			}
+		}
+		
+		public void Save(string p_filepath)
+		{
+			using (LRBinaryWriter writer = new LRBinaryWriter(File.OpenWrite(p_filepath)))
+			{
+				Save(writer);
+			}
+		}
 
-        public void Save(Stream stream) {
-            stream.WriteByte(ID_BONE);
-            BinaryFileHelper.WriteDictionaryBlock<SDB_Bone>(
-                stream,
-                new BinaryFileHelper.WriteObject<SDB_Bone>(
-                    SDB_Bone.ToStream
-                ),
-                m_Bones,
-                ID_BONE
-            );
-        }
+		public void Save(LRBinaryWriter p_writer)
+		{
+			p_writer.WriteByte(ID_BONE);
+			p_writer.WriteDictionaryBlock<SDB_Bone>(
+				new LRBinaryWriter.WriteObject<SDB_Bone>(
+					SDB_Bone.Write
+				),
+				m_bones,
+				ID_BONE
+			);
+		}
+	}
 
-        public void Save(string path) {
-            using (FileStream fsOut = new FileStream(path, FileMode.Create, FileAccess.Write))
-                Save(fsOut);
-        }
-    }
+	public class SDB_Bone
+	{
+		private const byte
+			PROPERTY_POSITION = 0x28,
+			PROPERTY_MATRIX   = 0x29,
+			PROPERTY_PARENT   = 0x2A;
 
-    public class SDB_Bone {
-        private const byte
-            PROPERTY_POSITION = 0x28,
-            PROPERTY_MATRIX = 0x29,
-            PROPERTY_PARENT = 0x2A;
+		public LRVector3    Position;
+		public LRQuaternion Transform;
+		public bool         HasParent;
+		public string       ParentBone;
 
-        public LRVector3 Position;
-        public LRQuaternion Transform;
-        public bool HasParent;
-        public string ParentBone;
+		public SDB_Bone()
+			: this(new LRVector3(), new LRQuaternion(), false, "") { }
 
-        public SDB_Bone()
-            : this(new LRVector3(), new LRQuaternion(), false, "") { }
+		public SDB_Bone(LRVector3 p_position, LRQuaternion p_transform, bool p_hasparent, string p_parentbone)
+		{
+			Position   = p_position;
+			Transform  = p_transform;
+			HasParent  = p_hasparent;
+			ParentBone = p_parentbone;
+		}
 
-        public SDB_Bone(LRVector3 position, LRQuaternion transform, bool hasparent, string parentbone) {
-            Position = position;
-            Transform = transform;
-            HasParent = hasparent;
-            ParentBone = parentbone;
-        }
+		public static SDB_Bone Read(LRBinaryReader p_reader)
+		{
+			SDB_Bone val = new SDB_Bone();
+			while (!p_reader.Next(Token.RIGHT_CURLY))
+			{
+				byte propertyId = p_reader.ReadByte();
+				switch (propertyId)
+				{
+					case PROPERTY_POSITION:
+					{
+						val.Position = LRVector3.Read(p_reader);
+						break;
+					}
+					case PROPERTY_MATRIX:
+					{
+						val.Transform = LRQuaternion.Read(p_reader);
+						break;
+					}
+					case PROPERTY_PARENT:
+					{
+						val.ParentBone = p_reader.ReadStringWithHeader();
+						val.HasParent = true;
+						break;
+					}
+					default:
+					{
+						throw new UnexpectedPropertyException(
+							propertyId,
+							p_reader.BaseStream.Position - 1
+						);
+					}
+				}
+			}
+			return val;
+		}
 
-        public static SDB_Bone FromStream(Stream stream) {
-            SDB_Bone val = new SDB_Bone();
-            while (!BinaryFileHelper.Next(stream, BinaryFileHelper.TYPE_RIGHT_CURLY)) {
-                byte property_id = BinaryFileHelper.ReadByte(stream);
-                switch (property_id) {
-                    case PROPERTY_POSITION:
-                        val.Position = LRVector3.FromStream(stream);
-                        break;
-                    case PROPERTY_MATRIX:
-                        val.Transform = LRQuaternion.FromStream(stream);
-                        break;
-                    case PROPERTY_PARENT:
-                        val.ParentBone = BinaryFileHelper.ReadStringWithHeader(stream);
-                        val.HasParent = true;
-                        break;
-                    default:
-                        throw new UnexpectedPropertyException(property_id, stream.Position - 1);
-                }
-            }
-            return val;
-        }
-
-        public static void ToStream(Stream stream, SDB_Bone value) {
-            stream.WriteByte(PROPERTY_POSITION);
-            LRVector3.ToStream(stream, value.Position);
-            stream.WriteByte(PROPERTY_MATRIX);
-            LRQuaternion.ToStream(stream, value.Transform);
-            if (value.HasParent) {
-                stream.WriteByte(PROPERTY_PARENT);
-                BinaryFileHelper.WriteStringWithHeader(stream, value.ParentBone);
-            }
-        }
-    }
+		public static void Write(LRBinaryWriter p_writer, SDB_Bone p_value)
+		{
+			p_writer.WriteByte(PROPERTY_POSITION);
+			LRVector3.Write(p_writer, p_value.Position);
+			p_writer.WriteByte(PROPERTY_MATRIX);
+			LRQuaternion.Write(p_writer, p_value.Transform);
+			if (p_value.HasParent)
+			{
+				p_writer.WriteByte(PROPERTY_PARENT);
+				p_writer.WriteStringWithHeader(p_value.ParentBone);
+			}
+		}
+	}
 }

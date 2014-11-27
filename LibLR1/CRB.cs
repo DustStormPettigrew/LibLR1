@@ -2,135 +2,161 @@
 using System.IO;
 using LibLR1.Exceptions;
 using LibLR1.Utils;
+using LibLR1.IO;
 
-namespace LibLR1 {
-    /// <summary>
-    /// Circuit list format.
-    /// </summary>
-    public class CRB {
-        private const byte
-            ID_CIRCUIT = 0x27;
+namespace LibLR1
+{
+	/// <summary>
+	/// Circuit list format.
+	/// </summary>
+	public class CRB
+	{
+		private const byte
+			ID_CIRCUIT = 0x27;
 
-        private Dictionary<string, CRB_Circuit> m_Circuits;
+		private Dictionary<string, CRB_Circuit> m_circuits;
 
-        public Dictionary<string, CRB_Circuit> Circuits {
-            get { return m_Circuits; }
-            set { m_Circuits = value; }
-        }
+		public Dictionary<string, CRB_Circuit> Circuits
+		{
+			get { return m_circuits; }
+			set { m_circuits = value; }
+		}
 
-        public CRB(Stream stream) {
-            m_Circuits = new Dictionary<string, CRB_Circuit>();
-            while (stream.Position < stream.Length) {
-                byte block_id = BinaryFileHelper.ReadByte(stream);
-                switch (block_id) {
-                    case ID_CIRCUIT:
-                        m_Circuits = BinaryFileHelper.ReadDictionaryBlock<CRB_Circuit>(
-                            stream,
-                            new BinaryFileHelper.ReadObject<CRB_Circuit>(
-                                CRB_Circuit.FromStream
-                            ),
-                            ID_CIRCUIT
-                        );
-                        break;
-                    default:
-                        throw new UnexpectedBlockException(block_id, stream.Position - 1);
-                }
-            }
-        }
+		public CRB(string p_filepath)
+			: this(BinaryFileHelper.Decompress(p_filepath))
+		{
+		}
 
-        public CRB(string path, bool decompress = true)
-            : this(decompress ? BinaryFileHelper.Decompress(path) : (Stream)(new FileStream(path, FileMode.Open, FileAccess.Read))) { }
+		public CRB(LRBinaryReader p_reader)
+		{
+			m_circuits = new Dictionary<string, CRB_Circuit>();
+			while (p_reader.BaseStream.Position < p_reader.BaseStream.Length)
+			{
+				byte blockId = p_reader.ReadByte();
+				switch (blockId)
+				{
+					case ID_CIRCUIT:
+					{
+						m_circuits = p_reader.ReadDictionaryBlock<CRB_Circuit>(
+							new LRBinaryReader.ReadObject<CRB_Circuit>(
+								CRB_Circuit.Read
+							),
+							ID_CIRCUIT
+						);
+						break;
+					}
+					default:
+					{
+						throw new UnexpectedBlockException(
+							blockId,
+							p_reader.BaseStream.Position - 1
+						);
+					}
+				}
+			}
+		}
 
-        public void Save(Stream stream) {
-            stream.WriteByte(ID_CIRCUIT);
-            BinaryFileHelper.WriteDictionaryBlock<CRB_Circuit>(
-                stream,
-                new BinaryFileHelper.WriteObject<CRB_Circuit>(
-                    CRB_Circuit.ToStream
-                ),
-                m_Circuits,
-                ID_CIRCUIT
-            );
-        }
+		public void Save(string p_filepath)
+		{
+			using (LRBinaryWriter writer = new LRBinaryWriter(File.OpenWrite(p_filepath)))
+			{
+				Save(writer);
+			}
+		}
 
-        public void Save(string path) {
-            using (FileStream fsOut = new FileStream(path, FileMode.Create, FileAccess.Write))
-                Save(fsOut);
-        }
-    }
+		public void Save(LRBinaryWriter p_writer)
+		{
+			p_writer.WriteByte(ID_CIRCUIT);
+			p_writer.WriteDictionaryBlock<CRB_Circuit>(
+				new LRBinaryWriter.WriteObject<CRB_Circuit>(
+					CRB_Circuit.Write
+				),
+				m_circuits,
+				ID_CIRCUIT
+			);
+		}
+	}
 
-    public class CRB_Circuit {
-        private const byte
-            PROPERTY_PLAYERS = 0x28,
-            PROPERTY_CIRCUIT_NUMBER = 0x29,
-            PROPERTY_CIRCUIT_NUMBER_AGAIN = 0x2A,
-            PROPERTY_CIRCUIT_UNLOCK = 0x2B;
+	public class CRB_Circuit
+	{
+		private const byte
+			PROPERTY_PLAYERS = 0x28,
+			PROPERTY_CIRCUIT_NUMBER = 0x29,
+			PROPERTY_CIRCUIT_NUMBER_AGAIN = 0x2A,
+			PROPERTY_CIRCUIT_UNLOCK = 0x2B;
 
-        public string[] Players;
-        public int CircuitNumber;
-        public int CircuitNumberAgain;
-        public bool HasUnlock;
-        public string Unlock;
+		public string[] Players;
+		public int CircuitNumber;
+		public int CircuitNumberAgain;
+		public bool HasUnlock;
+		public string Unlock;
 
-        public CRB_Circuit()
-            : this(new string[0], 0, 0, false, "") { }
+		public CRB_Circuit()
+			: this(new string[0], 0, 0, false, "") { }
 
-        public CRB_Circuit(string[] players, int circuitnumber, int circuitnumberagain, bool hasunlock, string unlock) {
-            Players = players;
-            CircuitNumber = circuitnumber;
-            CircuitNumberAgain = circuitnumberagain;
-            HasUnlock = hasunlock;
-            Unlock = unlock;
-        }
+		public CRB_Circuit(string[] p_players, int p_circuitnumber, int p_circuitnumberagain, bool p_hasunlock, string p_unlock)
+		{
+			Players            = p_players;
+			CircuitNumber      = p_circuitnumber;
+			CircuitNumberAgain = p_circuitnumberagain;
+			HasUnlock          = p_hasunlock;
+			Unlock             = p_unlock;
+		}
 
-        public static CRB_Circuit FromStream(Stream stream) {
-            CRB_Circuit val = new CRB_Circuit();
-            while (!BinaryFileHelper.Next(stream, BinaryFileHelper.TYPE_RIGHT_CURLY)) {
-                byte property_id = BinaryFileHelper.ReadByte(stream);
-                switch (property_id) {
-                    case PROPERTY_PLAYERS: {
-                            val.Players = BinaryFileHelper.ReadStringArrayBlock(stream);
-                        } break;
-                    case PROPERTY_CIRCUIT_NUMBER: {
-                            val.CircuitNumber = BinaryFileHelper.ReadIntWithHeader(stream);
-                        } break;
-                    case PROPERTY_CIRCUIT_NUMBER_AGAIN: {
-                            val.CircuitNumberAgain = BinaryFileHelper.ReadIntWithHeader(stream);
-                        } break;
-                    case PROPERTY_CIRCUIT_UNLOCK: {
-                            val.HasUnlock = true;
-                            val.Unlock = BinaryFileHelper.ReadStringWithHeader(stream);
-                        } break;
-                    default:
-                        throw new UnexpectedPropertyException(property_id, stream.Position - 1);
-                }
-            }
-            return val;
-        }
+		public static CRB_Circuit Read(LRBinaryReader p_reader)
+		{
+			CRB_Circuit val = new CRB_Circuit();
+			while (!p_reader.Next(Token.RIGHT_CURLY))
+			{
+				byte propertyId = p_reader.ReadByte();
+				switch (propertyId)
+				{
+					case PROPERTY_PLAYERS:
+					{
+						val.Players = p_reader.ReadStringArrayBlock();
+						break;
+					}
+					case PROPERTY_CIRCUIT_NUMBER:
+					{
+						val.CircuitNumber = p_reader.ReadIntWithHeader();
+						break;
+					}
+					case PROPERTY_CIRCUIT_NUMBER_AGAIN:
+					{
+						val.CircuitNumberAgain = p_reader.ReadIntWithHeader();
+						break;
+					}
+					case PROPERTY_CIRCUIT_UNLOCK:
+					{
+						val.HasUnlock = true;
+						val.Unlock = p_reader.ReadStringWithHeader(); 
+						break;
+					}
+					default:
+					{
+						throw new UnexpectedPropertyException(
+							propertyId,
+							p_reader.BaseStream.Position - 1
+						);
+					}
+				}
+			}
+			return val;
+		}
 
-        public static void ToStream(Stream stream, CRB_Circuit value) {
-            stream.WriteByte(PROPERTY_PLAYERS);
-            BinaryFileHelper.WriteStringArrayBlock(
-                stream,
-                value.Players
-            );
-            stream.WriteByte(PROPERTY_CIRCUIT_NUMBER);
-            BinaryFileHelper.WriteIntWithHeader(
-                stream,
-                value.CircuitNumber
-            );
-            stream.WriteByte(PROPERTY_CIRCUIT_NUMBER_AGAIN);
-            BinaryFileHelper.WriteIntWithHeader(
-                stream,
-                value.CircuitNumberAgain
-            );
-            if (value.HasUnlock) {
-                stream.WriteByte(PROPERTY_CIRCUIT_UNLOCK);
-                BinaryFileHelper.WriteStringWithHeader(
-                    stream,
-                    value.Unlock
-                );
-            }
-        }
-    }
+		public static void Write(LRBinaryWriter p_writer, CRB_Circuit p_value)
+		{
+			p_writer.WriteByte(PROPERTY_PLAYERS);
+			p_writer.WriteStringArrayBlock(p_value.Players);
+			p_writer.WriteByte(PROPERTY_CIRCUIT_NUMBER);
+			p_writer.WriteIntWithHeader(p_value.CircuitNumber);
+			p_writer.WriteByte(PROPERTY_CIRCUIT_NUMBER_AGAIN);
+			p_writer.WriteIntWithHeader(p_value.CircuitNumberAgain);
+			if (p_value.HasUnlock)
+			{
+				p_writer.WriteByte(PROPERTY_CIRCUIT_UNLOCK);
+				p_writer.WriteStringWithHeader(p_value.Unlock);
+			}
+		}
+	}
 }

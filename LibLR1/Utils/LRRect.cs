@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using LibLR1.IO;
+using System.IO;
 
 namespace LibLR1.Utils
 {
@@ -24,22 +25,22 @@ namespace LibLR1.Utils
 			m_height = p_height;
 		}
 
-		public static LRRect FromStream(Stream p_stream)
+		public static LRRect Read(LRBinaryReader p_reader)
 		{
 			LRRect output = new LRRect();
-			output.X      = BinaryFileHelper.ReadIntWithHeader(p_stream);
-			output.Y      = BinaryFileHelper.ReadIntWithHeader(p_stream);
-			output.Width  = BinaryFileHelper.ReadIntWithHeader(p_stream);
-			output.Height = BinaryFileHelper.ReadIntWithHeader(p_stream);
+			output.X      = p_reader.ReadIntWithHeader();
+			output.Y      = p_reader.ReadIntWithHeader();
+			output.Width  = p_reader.ReadIntWithHeader();
+			output.Height = p_reader.ReadIntWithHeader();
 			return output;
 		}
 
-		public static void ToStream(Stream p_stream, LRRect p_rect)
+		public static void Write(LRBinaryWriter p_writer, LRRect p_rect)
 		{
-			BinaryFileHelper.WriteIntWithHeader(p_stream, p_rect.X);
-			BinaryFileHelper.WriteIntWithHeader(p_stream, p_rect.Y);
-			BinaryFileHelper.WriteIntWithHeader(p_stream, p_rect.Width);
-			BinaryFileHelper.WriteIntWithHeader(p_stream, p_rect.Height);
+			p_writer.WriteIntWithHeader(p_rect.X);
+			p_writer.WriteIntWithHeader(p_rect.Y);
+			p_writer.WriteIntWithHeader(p_rect.Width);
+			p_writer.WriteIntWithHeader(p_rect.Height);
 		}
 	}
 }

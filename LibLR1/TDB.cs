@@ -2,129 +2,176 @@
 using System.IO;
 using LibLR1.Exceptions;
 using LibLR1.Utils;
+using LibLR1.IO;
 
-namespace LibLR1 {
-    public class TDB {
-        private const byte
-            ID_TEXTURES = 0x27,
-            PROPERTY_28 = 0x28,
-            PROPERTY_BMP_TGA = 0x2A,
-            PROPERTY_COLOR_2C = 0x2C,
-            PROPERTY_2D = 0x2D;
+namespace LibLR1
+{
+	public class TDB
+	{
+		private const byte
+			ID_TEXTURES       = 0x27,
+			PROPERTY_28       = 0x28,
+			PROPERTY_BMP_TGA  = 0x2A,
+			PROPERTY_COLOR_2C = 0x2C,
+			PROPERTY_2D       = 0x2D;
 
-        private Dictionary<string, TDB_Texture> m_Textures;
+		private Dictionary<string, TDB_Texture> m_textures;
 
-        public Dictionary<string, TDB_Texture> Textures { get { return m_Textures; } set { m_Textures = value; } }
+		public Dictionary<string, TDB_Texture> Textures { get { return m_textures; } set { m_textures = value; } }
+		
+		public TDB(string p_filepath)
+			: this(BinaryFileHelper.Decompress(p_filepath))
+		{
+		}
 
-        public TDB(Stream stream) {
-            m_Textures = new Dictionary<string, TDB_Texture>();
-            while (stream.Position < stream.Length) {
-                byte block_id = BinaryFileHelper.ReadByte(stream);
-                switch (block_id) {
-                    case ID_TEXTURES:
-                        m_Textures = BinaryFileHelper.ReadDictionaryBlock<TDB_Texture>(
-                            stream,
-                            new BinaryFileHelper.ReadObject<TDB_Texture>(
-                                TDB_Texture.FromStream
-                            ),
-                            ID_TEXTURES
-                        );
-                        break;
-                    default:
-                        throw new UnexpectedBlockException(block_id, stream.Position - 1);
-                }
-            }
-        }
+		public TDB(LRBinaryReader p_reader)
+		{
+			m_textures = new Dictionary<string, TDB_Texture>();
+			while (p_reader.BaseStream.Position < p_reader.BaseStream.Length)
+			{
+				byte blockId = p_reader.ReadByte();
+				switch (blockId)
+				{
+					case ID_TEXTURES:
+					{
+						m_textures = p_reader.ReadDictionaryBlock<TDB_Texture>(
+							new LRBinaryReader.ReadObject<TDB_Texture>(
+								TDB_Texture.Read
+							),
+							ID_TEXTURES
+						);
+						break;
+					}
+					default:
+					{
+						throw new UnexpectedBlockException(
+							blockId,
+							p_reader.BaseStream.Position - 1
+						);
+					}
+				}
+			}
+		}
 
-        public TDB(string path, bool decompress = true)
-            : this(decompress ? BinaryFileHelper.Decompress(path) : (Stream)(new FileStream(path, FileMode.Open, FileAccess.Read))) { }
+		public void Save(string p_filepath)
+		{
+			using (LRBinaryWriter writer = new LRBinaryWriter(File.OpenWrite(p_filepath)))
+			{
+				Save(writer);
+			}
+		}
 
-        public void Save(Stream stream) {
-            stream.WriteByte(ID_TEXTURES);
-            BinaryFileHelper.WriteDictionaryBlock<TDB_Texture>(
-                stream,
-                new BinaryFileHelper.WriteObject<TDB_Texture>(
-                    TDB_Texture.ToStream
-                ),
-                m_Textures,
-                ID_TEXTURES
-            );
-        }
+		public void Save(LRBinaryWriter p_writer)
+		{
+			p_writer.WriteByte(ID_TEXTURES);
+			p_writer.WriteDictionaryBlock<TDB_Texture>(
+				new LRBinaryWriter.WriteObject<TDB_Texture>(
+					TDB_Texture.Write
+				),
+				m_textures,
+				ID_TEXTURES
+			);
+		}
+	}
 
-        public void Save(string path) {
-            using (FileStream fsOut = new FileStream(path, FileMode.Create, FileAccess.Write))
-                Save(fsOut);
-        }
-    }
+	public class TDB_Texture
+	{
+		private const byte
+			PROPERTY_28       = 0x28,
+			PROPERTY_BMP_TGA  = 0x2A,
+			PROPERTY_2B       = 0x2B,
+			PROPERTY_COLOR_2C = 0x2C,
+			PROPERTY_2D       = 0x2D;
 
-    public class TDB_Texture {
-        private const byte
-            PROPERTY_28 = 0x28,
-            PROPERTY_BMP_TGA = 0x2A,
-            PROPERTY_2B = 0x2B,
-            PROPERTY_COLOR_2C = 0x2C,
-            PROPERTY_2D = 0x2D;
+		public bool    Bool28;
+		public bool    IsBitmap;
+		public bool    Bool2B;
+		public bool    HasColor2C;
+		public LRColor Color2C;
+		public bool    Bool2D;
 
-        public bool Bool28;
-        public bool IsBitmap;
-        public bool Bool2B;
-        public bool HasColor2C;
-        public LRColor Color2C;
-        public bool Bool2D;
+		public TDB_Texture()
+			: this(false, false, false, false, new LRColor(), false) { }
 
-        public TDB_Texture()
-            : this(false, false, false, false, new LRColor(), false) { }
+		public TDB_Texture(bool p_bool28, bool p_isbitmap, bool p_bool2b, bool p_hascolor2c, LRColor p_color2c, bool p_bool2d)
+		{
+			Bool28     = p_bool28;
+			IsBitmap   = p_isbitmap;
+			Bool2B     = p_bool2b;
+			HasColor2C = p_hascolor2c;
+			Color2C    = p_color2c;
+			Bool2D     = p_bool2d;
+		}
 
-        public TDB_Texture(bool bool28, bool isbitmap, bool bool2b, bool hascolor2c, LRColor color2c, bool bool2d) {
-            Bool28 = bool28;
-            IsBitmap = isbitmap;
-            Bool2B = bool2b;
-            HasColor2C = hascolor2c;
-            Color2C = color2c;
-            Bool2D = bool2d;
-        }
+		public static TDB_Texture Read(LRBinaryReader p_reader)
+		{
+			TDB_Texture val = new TDB_Texture();
+			while (!p_reader.Next(Token.RIGHT_CURLY))
+			{
+				byte propertyId = p_reader.ReadByte();
+				switch (propertyId)
+				{
+					case PROPERTY_28:
+					{
+						val.Bool28 = true;
+						break;
+					}
+					case PROPERTY_BMP_TGA:
+					{
+						val.IsBitmap = true;
+						break;
+					}
+					case PROPERTY_2B:
+					{
+						val.Bool2B = true;
+						break;
+					}
+					case PROPERTY_COLOR_2C:
+					{
+						val.HasColor2C = true;
+						val.Color2C = LRColor.ReadNoAlpha(p_reader);
+						break;
+					}
+					case PROPERTY_2D:
+					{
+						val.Bool2D = true;
+						break;
+					}
+					default:
+					{
+						throw new UnexpectedPropertyException(
+							propertyId,
+							p_reader.BaseStream.Position - 1
+						);
+					}
+				}
+			}
+			return val;
+		}
 
-        public static TDB_Texture FromStream(Stream stream) {
-            TDB_Texture val = new TDB_Texture();
-            while (!BinaryFileHelper.Next(stream, BinaryFileHelper.TYPE_RIGHT_CURLY)) {
-                byte property_id = BinaryFileHelper.ReadByte(stream);
-                switch (property_id) {
-                    case PROPERTY_28:
-                        val.Bool28 = true;
-                        break;
-                    case PROPERTY_BMP_TGA:
-                        val.IsBitmap = true;
-                        break;
-                    case PROPERTY_2B:
-                        val.Bool2B = true;
-                        break;
-                    case PROPERTY_COLOR_2C:
-                        val.HasColor2C = true;
-                        val.Color2C = LRColor.FromStreamNoAlpha(stream);
-                        break;
-                    case PROPERTY_2D:
-                        val.Bool2D = true;
-                        break;
-                    default:
-                        throw new UnexpectedPropertyException(property_id, stream.Position - 1);
-                }
-            }
-            return val;
-        }
-
-        public static void ToStream(Stream stream, TDB_Texture value) {
-            if (value.Bool28)
-                stream.WriteByte(PROPERTY_28);
-            if (value.IsBitmap)
-                stream.WriteByte(PROPERTY_BMP_TGA);
-            if (value.Bool2B)
-                stream.WriteByte(PROPERTY_2B);
-            if (value.HasColor2C) {
-                stream.WriteByte(PROPERTY_COLOR_2C);
-                LRColor.ToStream(stream, value.Color2C);
-            }
-            if (value.Bool2D)
-                stream.WriteByte(PROPERTY_2D);
-        }
-    }
+		public static void Write(LRBinaryWriter p_writer, TDB_Texture p_value)
+		{
+			if (p_value.Bool28)
+			{
+				p_writer.WriteByte(PROPERTY_28);
+			}
+			if (p_value.IsBitmap)
+			{
+				p_writer.WriteByte(PROPERTY_BMP_TGA);
+			}
+			if (p_value.Bool2B)
+			{
+				p_writer.WriteByte(PROPERTY_2B);
+			}
+			if (p_value.HasColor2C)
+			{
+				p_writer.WriteByte(PROPERTY_COLOR_2C);
+				LRColor.WriteNoAlpha(p_writer, p_value.Color2C);
+			}
+			if (p_value.Bool2D)
+			{
+				p_writer.WriteByte(PROPERTY_2D);
+			}
+		}
+	}
 }

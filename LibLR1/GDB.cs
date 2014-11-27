@@ -2,6 +2,7 @@
 using System.IO;
 using LibLR1.Exceptions;
 using LibLR1.Utils;
+using LibLR1.IO;
 
 namespace LibLR1
 {
@@ -22,160 +23,157 @@ namespace LibLR1
 			PROPERTY_VERTEX_META  = 0x31,
 			PROPERTY_BONE_ID      = 0x32;
 
-		private string[]            m_Materials;
-		private GDB_Vertex_Normal[] m_VertexNormals;
-		private GDB_Vertex_Color[]  m_VertexColors;
-		private GDB_Polygon[]       m_Polygons;
-		private float               m_Scale;
-		private GDB_Meta[]          m_Meta;
+		private string[]            m_materials;
+		private GDB_Vertex_Normal[] m_vertexNormals;
+		private GDB_Vertex_Color[]  m_vertexColors;
+		private GDB_Polygon[]       m_polygons;
+		private float               m_scale;
+		private GDB_Meta[]          m_meta;
 
-		public string[]            Materials     { get { return m_Materials;     } set { m_Materials     = value; } }
-		public GDB_Vertex_Normal[] VertexNormals { get { return m_VertexNormals; } set { m_VertexNormals = value; } }
-		public GDB_Vertex_Color[]  VertexColors  { get { return m_VertexColors;  } set { m_VertexColors  = value; } }
-		public GDB_Polygon[]       Polygons      { get { return m_Polygons;      } set { m_Polygons      = value; } }
-		public float               Scale         { get { return m_Scale;         } set { m_Scale         = value; } }
-		public GDB_Meta[]          Meta          { get { return m_Meta;          } set { m_Meta          = value; } }
+		public string[]            Materials     { get { return m_materials;     } set { m_materials     = value; } }
+		public GDB_Vertex_Normal[] VertexNormals { get { return m_vertexNormals; } set { m_vertexNormals = value; } }
+		public GDB_Vertex_Color[]  VertexColors  { get { return m_vertexColors;  } set { m_vertexColors  = value; } }
+		public GDB_Polygon[]       Polygons      { get { return m_polygons;      } set { m_polygons      = value; } }
+		public float               Scale         { get { return m_scale;         } set { m_scale         = value; } }
+		public GDB_Meta[]          Meta          { get { return m_meta;          } set { m_meta          = value; } }
 
 		public GDB()
 		{
-			m_Materials     = new string[0];
-			m_VertexNormals = new GDB_Vertex_Normal[0];
-			m_VertexColors  = new GDB_Vertex_Color[0];
-			m_Polygons      = new GDB_Polygon[0];
-			m_Scale         = 1;
-			m_Meta          = new GDB_Meta[0];
+			m_materials     = new string[0];
+			m_vertexNormals = new GDB_Vertex_Normal[0];
+			m_vertexColors  = new GDB_Vertex_Color[0];
+			m_polygons      = new GDB_Polygon[0];
+			m_scale         = 1;
+			m_meta          = new GDB_Meta[0];
 		}
 
-		public GDB(Stream stream)
+		public GDB(string p_filepath)
+			: this(BinaryFileHelper.Decompress(p_filepath))
 		{
-			m_Materials     = new string[0];
-			m_VertexNormals = new GDB_Vertex_Normal[0];
-			m_VertexColors  = new GDB_Vertex_Color[0];
-			m_Polygons      = new GDB_Polygon[0];
-			m_Scale         = 1;
-			while (stream.Position < stream.Length)
+		}
+
+		public GDB(LRBinaryReader p_reader)
+		{
+			m_materials     = new string[0];
+			m_vertexNormals = new GDB_Vertex_Normal[0];
+			m_vertexColors  = new GDB_Vertex_Color[0];
+			m_polygons      = new GDB_Polygon[0];
+			m_scale         = 1;
+			while (p_reader.BaseStream.Position < p_reader.BaseStream.Length)
 			{
-				byte block_id = BinaryFileHelper.ReadByte(stream);
-				switch (block_id)
+				byte blockId = p_reader.ReadByte();
+				switch (blockId)
 				{
 					case ID_MATERIALS:
 					{
-						m_Materials = BinaryFileHelper.ReadStringArrayBlock(stream);
+						m_materials = p_reader.ReadStringArrayBlock();
 						break;
 					}
 					case ID_SCALE:
 					{
-						m_Scale = BinaryFileHelper.ReadFloatWithHeader(stream);
+						m_scale = p_reader.ReadFloatWithHeader();
 						break;
 					}
 					case ID_VERTEX_NORMALED:
 					{
-						m_VertexNormals = BinaryFileHelper.ReadArrayBlock<GDB_Vertex_Normal>(
-							stream,
-							new BinaryFileHelper.ReadObject<GDB_Vertex_Normal>(
-								GDB_Vertex_Normal.FromStream
+						m_vertexNormals = p_reader.ReadArrayBlock<GDB_Vertex_Normal>(
+							new LRBinaryReader.ReadObject<GDB_Vertex_Normal>(
+								GDB_Vertex_Normal.Read
 							)
 						);
 						break;
 					}
 					case ID_VERTEX_COLORED:
 					{
-						m_VertexColors = BinaryFileHelper.ReadArrayBlock<GDB_Vertex_Color>(
-							stream,
-							new BinaryFileHelper.ReadObject<GDB_Vertex_Color>(
-								GDB_Vertex_Color.FromStream
+						m_vertexColors = p_reader.ReadArrayBlock<GDB_Vertex_Color>(
+							new LRBinaryReader.ReadObject<GDB_Vertex_Color>(
+								GDB_Vertex_Color.Read
 							)
 						);
 						break;
 					}
 					case ID_INDICES:
 					{
-						m_Polygons = BinaryFileHelper.ReadArrayBlock<GDB_Polygon>(
-							stream,
-							new BinaryFileHelper.ReadObject<GDB_Polygon>(
-								GDB_Polygon.FromStream
+						m_polygons = p_reader.ReadArrayBlock<GDB_Polygon>(
+							new LRBinaryReader.ReadObject<GDB_Polygon>(
+								GDB_Polygon.Read
 							)
 						);
 						break;
 					}
 					case ID_INDICES_META:
 					{
-						m_Meta = BinaryFileHelper.ReadArrayBlock<GDB_Meta>(
-							stream,
-							new BinaryFileHelper.ReadObject<GDB_Meta>(
-								GDB_Meta.FromStream
+						m_meta = p_reader.ReadArrayBlock<GDB_Meta>(
+							new LRBinaryReader.ReadObject<GDB_Meta>(
+								GDB_Meta.Read
 							)
 						);
 						break;
 					}
 					default:
 					{
-						throw new UnexpectedBlockException(block_id, stream.Position - 1);
+						throw new UnexpectedBlockException(
+							blockId,
+							p_reader.BaseStream.Position - 1
+						);
 					}
 				}
 			}
 		}
 
-		public GDB(string path, bool decompress = true)
-			: this(decompress ? BinaryFileHelper.Decompress(path) : (Stream)(new FileStream(path, FileMode.Open, FileAccess.Read))) { }
-
-		public void Save(Stream stream)
+		public void Save(string p_filepath)
 		{
-			stream.WriteByte(ID_MATERIALS);
-			BinaryFileHelper.WriteStringArrayBlock(stream, m_Materials);
-			if (m_Scale != 1f)
+			using (LRBinaryWriter writer = new LRBinaryWriter(File.OpenWrite(p_filepath)))
 			{
-				stream.WriteByte(ID_SCALE);
-				BinaryFileHelper.WriteFloatWithHeader(stream, m_Scale);
-			}
-			if (m_VertexNormals.Length > 0)
-			{
-				stream.WriteByte(ID_VERTEX_NORMALED);
-				BinaryFileHelper.WriteArrayBlock<GDB_Vertex_Normal>(
-					stream,
-					new BinaryFileHelper.WriteObject<GDB_Vertex_Normal>(
-						GDB_Vertex_Normal.ToStream
-					),
-					m_VertexNormals
-				);
-			}
-			if (m_VertexColors.Length > 0)
-			{
-				stream.WriteByte(ID_VERTEX_COLORED);
-				BinaryFileHelper.WriteArrayBlock<GDB_Vertex_Color>(
-					stream,
-					new BinaryFileHelper.WriteObject<GDB_Vertex_Color>(
-						GDB_Vertex_Color.ToStream
-					),
-					m_VertexColors
-				);
-			}
-			stream.WriteByte(ID_INDICES);
-			BinaryFileHelper.WriteArrayBlock<GDB_Polygon>(
-				stream,
-				new BinaryFileHelper.WriteObject<GDB_Polygon>(
-					GDB_Polygon.ToStream
-				),
-				m_Polygons
-			);
-			if (m_Meta != null)
-			{
-				stream.WriteByte(ID_INDICES_META);
-				BinaryFileHelper.WriteArrayBlock<GDB_Meta>(
-					stream,
-					new BinaryFileHelper.WriteObject<GDB_Meta>(
-						GDB_Meta.ToStream
-					),
-					m_Meta
-				);
+				Save(writer);
 			}
 		}
 
-		public void Save(string path)
+		public void Save(LRBinaryWriter p_writer)
 		{
-			using (FileStream fsOut = new FileStream(path, FileMode.Create, FileAccess.Write))
+			p_writer.WriteByte(ID_MATERIALS);
+			p_writer.WriteStringArrayBlock(m_materials);
+			if (m_scale != 1f)
 			{
-				Save(fsOut);
+				p_writer.WriteByte(ID_SCALE);
+				p_writer.WriteFloatWithHeader(m_scale);
+			}
+			if (m_vertexNormals.Length > 0)
+			{
+				p_writer.WriteByte(ID_VERTEX_NORMALED);
+				p_writer.WriteArrayBlock<GDB_Vertex_Normal>(
+					new LRBinaryWriter.WriteObject<GDB_Vertex_Normal>(
+						GDB_Vertex_Normal.Write
+					),
+					m_vertexNormals
+				);
+			}
+			if (m_vertexColors.Length > 0)
+			{
+				p_writer.WriteByte(ID_VERTEX_COLORED);
+				p_writer.WriteArrayBlock<GDB_Vertex_Color>(
+					new LRBinaryWriter.WriteObject<GDB_Vertex_Color>(
+						GDB_Vertex_Color.Write
+					),
+					m_vertexColors
+				);
+			}
+			p_writer.WriteByte(ID_INDICES);
+			p_writer.WriteArrayBlock<GDB_Polygon>(
+				new LRBinaryWriter.WriteObject<GDB_Polygon>(
+					GDB_Polygon.Write
+				),
+				m_polygons
+			);
+			if (m_meta != null)
+			{
+				p_writer.WriteByte(ID_INDICES_META);
+				p_writer.WriteArrayBlock<GDB_Meta>(
+					new LRBinaryWriter.WriteObject<GDB_Meta>(
+						GDB_Meta.Write
+					),
+					m_meta
+				);
 			}
 		}
 	}
@@ -196,20 +194,20 @@ namespace LibLR1
 			Normal = normal;
 		}
 
-		public static GDB_Vertex_Normal FromStream(Stream stream)
+		public static GDB_Vertex_Normal Read(LRBinaryReader p_reader)
 		{
 			GDB_Vertex_Normal val = new GDB_Vertex_Normal();
-			val.Position  = LRVector3.FromStream(stream);
-			val.TexCoords = LRVector2.FromStream(stream);
-			val.Normal    = LRVector3.FromStream(stream);
+			val.Position  = LRVector3.Read(p_reader);
+			val.TexCoords = LRVector2.Read(p_reader);
+			val.Normal    = LRVector3.Read(p_reader);
 			return val;
 		}
 
-		public static void ToStream(Stream stream, GDB_Vertex_Normal value)
+		public static void Write(LRBinaryWriter p_writer, GDB_Vertex_Normal p_value)
 		{
-			LRVector3.ToStream(stream, value.Position);
-			LRVector2.ToStream(stream, value.TexCoords);
-			LRVector3.ToStream(stream, value.Normal);
+			LRVector3.Write(p_writer, p_value.Position);
+			LRVector2.Write(p_writer, p_value.TexCoords);
+			LRVector3.Write(p_writer, p_value.Normal);
 		}
 	}
 
@@ -229,20 +227,20 @@ namespace LibLR1
 			Color     = color;
 		}
 
-		public static GDB_Vertex_Color FromStream(Stream stream)
+		public static GDB_Vertex_Color Read(LRBinaryReader p_reader)
 		{
 			GDB_Vertex_Color val = new GDB_Vertex_Color();
-			val.Position  = LRVector3.FromStream(stream);
-			val.TexCoords = LRVector2.FromStream(stream);
-			val.Color     = LRColor.FromStream(stream);
+			val.Position  = LRVector3.Read(p_reader);
+			val.TexCoords = LRVector2.Read(p_reader);
+			val.Color     = LRColor.Read(p_reader);
 			return val;
 		}
 
-		public static void ToStream(Stream stream, GDB_Vertex_Color value)
+		public static void Write(LRBinaryWriter p_writer, GDB_Vertex_Color p_value)
 		{
-			LRVector3.ToStream(stream, value.Position);
-			LRVector2.ToStream(stream, value.TexCoords);
-			LRColor.ToStream(stream, value.Color);
+			LRVector3.Write(p_writer, p_value.Position);
+			LRVector2.Write(p_writer, p_value.TexCoords);
+			LRColor.Write(p_writer, p_value.Color);
 		}
 	}
 
@@ -260,20 +258,20 @@ namespace LibLR1
 			V2 = v2;
 		}
 
-		public static GDB_Polygon FromStream(Stream stream)
+		public static GDB_Polygon Read(LRBinaryReader p_reader)
 		{
 			GDB_Polygon val = new GDB_Polygon();
-			val.V0 = BinaryFileHelper.ReadByteWithHeader(stream);
-			val.V1 = BinaryFileHelper.ReadByteWithHeader(stream);
-			val.V2 = BinaryFileHelper.ReadByteWithHeader(stream);
+			val.V0 = p_reader.ReadByteWithHeader();
+			val.V1 = p_reader.ReadByteWithHeader();
+			val.V2 = p_reader.ReadByteWithHeader();
 			return val;
 		}
 
-		public static void ToStream(Stream stream, GDB_Polygon value)
+		public static void Write(LRBinaryWriter p_writer, GDB_Polygon p_value)
 		{
-			BinaryFileHelper.WriteByteWithHeader(stream, value.V0);
-			BinaryFileHelper.WriteByteWithHeader(stream, value.V1);
-			BinaryFileHelper.WriteByteWithHeader(stream, value.V2);
+			p_writer.WriteByteWithHeader(p_value.V0);
+			p_writer.WriteByteWithHeader(p_value.V1);
+			p_writer.WriteByteWithHeader(p_value.V2);
 		}
 	}
 
@@ -287,56 +285,59 @@ namespace LibLR1
 
 		public virtual byte Type { get { return 0; } }
 
-		public static GDB_Meta FromStream(Stream stream)
+		public static GDB_Meta Read(LRBinaryReader p_reader)
 		{
-			byte type = (byte)stream.ReadByte();
+			byte type = p_reader.ReadByte();
 			switch (type)
 			{
 				case PROPERTY_MATERIAL_ID:
 				{
-					return GDB_Meta_Material.FromStream(stream);
+					return GDB_Meta_Material.Read(p_reader);
 				}
 				case PROPERTY_INDICES_META:
 				{
-					return GDB_Meta_Indices.FromStream(stream);
+					return GDB_Meta_Indices.Read(p_reader);
 				}
 				case PROPERTY_VERTEX_META:
 				{
-					return GDB_Meta_Vertices.FromStream(stream);
+					return GDB_Meta_Vertices.Read(p_reader);
 				}
 				case PROPERTY_BONE_ID:
 				{
-					return GDB_Meta_Bone.FromStream(stream);
+					return GDB_Meta_Bone.Read(p_reader);
 				}
 				default:
 				{
-					throw new UnexpectedBlockException(type, stream.Position - 1);
+					throw new UnexpectedBlockException(
+						type,
+						p_reader.BaseStream.Position - 1
+					);
 				}
 			}
 		}
 
-		public static void ToStream(Stream stream, GDB_Meta value)
+		public static void Write(LRBinaryWriter p_writer, GDB_Meta p_value)
 		{
-			switch (value.Type)
+			switch (p_value.Type)
 			{
 				case PROPERTY_MATERIAL_ID:
 				{
-					GDB_Meta_Material.ToStream(stream, (GDB_Meta_Material)value);
+					GDB_Meta_Material.Write(p_writer, (GDB_Meta_Material)p_value);
 					break;
 				}
 				case PROPERTY_INDICES_META:
 				{
-					GDB_Meta_Indices.ToStream(stream, (GDB_Meta_Indices)value);
+					GDB_Meta_Indices.Write(p_writer, (GDB_Meta_Indices)p_value);
 					break;
 				}
 				case PROPERTY_VERTEX_META:
 				{
-					GDB_Meta_Vertices.ToStream(stream, (GDB_Meta_Vertices)value);
+					GDB_Meta_Vertices.Write(p_writer, (GDB_Meta_Vertices)p_value);
 					break;
 				}
 				case PROPERTY_BONE_ID:
 				{
-					GDB_Meta_Bone.ToStream(stream, (GDB_Meta_Bone)value);
+					GDB_Meta_Bone.Write(p_writer, (GDB_Meta_Bone)p_value);
 					break;
 				}
 				default:
@@ -356,17 +357,17 @@ namespace LibLR1
 
 		public ushort MaterialId;
 
-		public static new GDB_Meta_Material FromStream(Stream stream)
+		public static new GDB_Meta_Material Read(LRBinaryReader p_reader)
 		{
 			GDB_Meta_Material val = new GDB_Meta_Material();
-			val.MaterialId = BinaryFileHelper.ReadUShortWithHeader(stream);
+			val.MaterialId = p_reader.ReadUShortWithHeader();
 			return val;
 		}
 
-		public static void ToStream(Stream stream, GDB_Meta_Material value)
+		public static void Write(LRBinaryWriter p_writer, GDB_Meta_Material p_value)
 		{
-			stream.WriteByte(value.Type);
-			BinaryFileHelper.WriteUShortWithHeader(stream, value.MaterialId);
+			p_writer.WriteByte(p_value.Type);
+			p_writer.WriteUShortWithHeader(p_value.MaterialId);
 		}
 	}
 
@@ -380,19 +381,19 @@ namespace LibLR1
 		public ushort Offset;
 		public ushort Length;
 
-		public static new GDB_Meta_Indices FromStream(Stream stream)
+		public static new GDB_Meta_Indices Read(LRBinaryReader p_reader)
 		{
 			GDB_Meta_Indices val = new GDB_Meta_Indices();
-			val.Offset = BinaryFileHelper.ReadUShortWithHeader(stream);
-			val.Length = BinaryFileHelper.ReadUShortWithHeader(stream);
+			val.Offset = p_reader.ReadUShortWithHeader();
+			val.Length = p_reader.ReadUShortWithHeader();
 			return val;
 		}
 
-		public static void ToStream(Stream stream, GDB_Meta_Indices value)
+		public static void Write(LRBinaryWriter p_writer, GDB_Meta_Indices p_value)
 		{
-			stream.WriteByte(value.Type);
-			BinaryFileHelper.WriteUShortWithHeader(stream, value.Offset);
-			BinaryFileHelper.WriteUShortWithHeader(stream, value.Length);
+			p_writer.WriteByte(p_value.Type);
+			p_writer.WriteUShortWithHeader(p_value.Offset);
+			p_writer.WriteUShortWithHeader(p_value.Length);
 		}
 	}
 
@@ -407,21 +408,21 @@ namespace LibLR1
 		public ushort Offset;
 		public ushort Length;
 
-		public static new GDB_Meta_Vertices FromStream(Stream stream)
+		public static new GDB_Meta_Vertices Read(LRBinaryReader p_reader)
 		{
 			GDB_Meta_Vertices val = new GDB_Meta_Vertices();
-			val.UnknownByte = BinaryFileHelper.ReadByteWithHeader(stream);
-			val.Offset      = BinaryFileHelper.ReadUShortWithHeader(stream);
-			val.Length      = BinaryFileHelper.ReadUShortWithHeader(stream);
+			val.UnknownByte = p_reader.ReadByteWithHeader();
+			val.Offset      = p_reader.ReadUShortWithHeader();
+			val.Length      = p_reader.ReadUShortWithHeader();
 			return val;
 		}
 
-		public static void ToStream(Stream stream, GDB_Meta_Vertices value)
+		public static void Write(LRBinaryWriter p_writer, GDB_Meta_Vertices p_value)
 		{
-			stream.WriteByte(value.Type);
-			BinaryFileHelper.WriteByteWithHeader(stream, value.UnknownByte);
-			BinaryFileHelper.WriteUShortWithHeader(stream, value.Offset);
-			BinaryFileHelper.WriteUShortWithHeader(stream, value.Length);
+			p_writer.WriteByte(p_value.Type);
+			p_writer.WriteByteWithHeader(p_value.UnknownByte);
+			p_writer.WriteUShortWithHeader(p_value.Offset);
+			p_writer.WriteUShortWithHeader(p_value.Length);
 		}
 	}
 
@@ -434,17 +435,17 @@ namespace LibLR1
 
 		public ushort BoneId;
 
-		public static new GDB_Meta_Bone FromStream(Stream stream)
+		public static new GDB_Meta_Bone Read(LRBinaryReader p_reader)
 		{
 			GDB_Meta_Bone val = new GDB_Meta_Bone();
-			val.BoneId = BinaryFileHelper.ReadUShortWithHeader(stream);
+			val.BoneId = p_reader.ReadUShortWithHeader();
 			return val;
 		}
 
-		public static void ToStream(Stream stream, GDB_Meta_Bone value)
+		public static void Write(LRBinaryWriter p_writer, GDB_Meta_Bone p_value)
 		{
-			stream.WriteByte(value.Type);
-			BinaryFileHelper.WriteUShortWithHeader(stream, value.BoneId);
+			p_writer.WriteByte(p_value.Type);
+			p_writer.WriteUShortWithHeader(p_value.BoneId);
 		}
 	}
 }

@@ -26,17 +26,6 @@ namespace LibLR1.Utils
 			m_w = p_w;
 		}
 
-		[Obsolete]
-		public static LRQuaternion FromStream(Stream p_stream)
-		{
-			LRQuaternion val = new LRQuaternion();
-			val.X = BinaryFileHelper.ReadFloatWithHeader(p_stream);
-			val.Y = BinaryFileHelper.ReadFloatWithHeader(p_stream);
-			val.Z = BinaryFileHelper.ReadFloatWithHeader(p_stream);
-			val.W = BinaryFileHelper.ReadFloatWithHeader(p_stream);
-			return val;
-		}
-
 		public static LRQuaternion Read(LRBinaryReader p_reader)
 		{
 			LRQuaternion val = new LRQuaternion();
@@ -45,15 +34,6 @@ namespace LibLR1.Utils
 			val.Z = p_reader.ReadFloatWithHeader();
 			val.W = p_reader.ReadFloatWithHeader();
 			return val;
-		}
-
-		[Obsolete]
-		public static void ToStream(Stream p_stream, LRQuaternion p_quaternion)
-		{
-			BinaryFileHelper.WriteFloatWithHeader(p_stream, p_quaternion.X);
-			BinaryFileHelper.WriteFloatWithHeader(p_stream, p_quaternion.Y);
-			BinaryFileHelper.WriteFloatWithHeader(p_stream, p_quaternion.Z);
-			BinaryFileHelper.WriteFloatWithHeader(p_stream, p_quaternion.W);
 		}
 
 		public static void Write(LRBinaryWriter p_writer, LRQuaternion p_quaternion)

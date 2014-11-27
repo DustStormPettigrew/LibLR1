@@ -31,9 +31,14 @@ namespace LibLR1.IO
 
 		public void Expect(Token p_expected)
 		{
-			Expect((byte)p_expected);
+			Token actual = ReadToken();
+			if (actual != p_expected)
+			{
+				throw new Exception(string.Format("Invalid data. Expected {0}, got {1}.", p_expected, actual));
+			}
 		}
 
+		[Obsolete] // should I remove this?
 		public void Expect(byte p_expected)
 		{
 			byte actual = m_baseReader.ReadByte();
@@ -45,52 +50,34 @@ namespace LibLR1.IO
 
 		public Token Expect(Token[] p_expected)
 		{
-			byte[] buffer = new byte[p_expected.Length];
-			for (int i = 0; i < buffer.Length; i++)
-			{
-				buffer[i] = (byte)p_expected[i];
-			}
-			return (Token)Expect(buffer);
-		}
-
-		public byte Expect(byte[] p_expected)
-		{
-			byte actual = m_baseReader.ReadByte();
+			Token actual = ReadToken();
 			if (p_expected.Contains(actual) == false)
 			{
-				string s_expected = "{ ";
-				for (int i = 0; i < p_expected.Length; i++)
-				{
-					s_expected += (i == 0 ? "" : ", ") + "0x" + p_expected[i].ToString("X2");
-				}
-				s_expected += " }";
-				throw new Exception(string.Format("Invalid data. Expected {0}, got 0x{1:X2}.", s_expected, actual));
+				throw new Exception(string.Format("Invalid data. Expected [{0}], got {1}.", string.Join(", ", p_expected), actual));
 			}
 			return actual;
 		}
 
 		public bool Next(Token p_expected)
 		{
-			return Next((byte)p_expected);
-		}
-
-		public bool Next(byte p_expected)
-		{
-			byte actual = m_baseReader.ReadByte();
+			Token actual = ReadToken();
 			m_baseReader.BaseStream.Position--;
 			return actual == p_expected;
 		}
 
-		public bool Next(byte[] p_expected)
+		public Token ReadToken()
 		{
-			byte actual = m_baseReader.ReadByte();
-			m_baseReader.BaseStream.Position--;
-			return p_expected.Contains(actual);
+			return (Token)ReadByte();
 		}
 
 		public byte ReadByte()
 		{
 			return m_baseReader.ReadByte();
+		}
+
+		public byte[] ReadBytes(int p_count)
+		{
+			return m_baseReader.ReadBytes(p_count);
 		}
 
 		public sbyte ReadSByte()
@@ -165,11 +152,11 @@ namespace LibLR1.IO
 			Token type = Expect(new Token[] { Token.SBYTE, Token.BYTE, Token.INT32, Token.USHORT, Token.SHORT });
 			switch (type)
 			{
-				case Token.SBYTE: return ReadSByte();
-				case Token.BYTE: return ReadByte();
-				case Token.INT32: return ReadInt();
+				case Token.SBYTE:  return ReadSByte();
+				case Token.BYTE:   return ReadByte();
+				case Token.INT32:  return ReadInt();
 				case Token.USHORT: return ReadUShort();
-				case Token.SHORT: return ReadShort();
+				case Token.SHORT:  return ReadShort();
 			}
 			throw new UnexpectedTypeException(type, m_baseReader.BaseStream.Position - 1);
 		}

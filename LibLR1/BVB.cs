@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using LibLR1.Exceptions;
 using LibLR1.Utils;
+using LibLR1.IO;
 
 namespace LibLR1
 {
@@ -16,80 +17,85 @@ namespace LibLR1
 			ID_VERTICES       = 0x34,
 			ID_POLYGON_RANGES = 0x8E;
 		
-		private string[]           m_Materials;
-		private LRVector3[]        m_Vertices;
-		private BVB_Polygon[]      m_Polygons;
-		private BVB_PolygonRange[] m_PolygonRanges;
+		private string[]           m_materials;
+		private LRVector3[]        m_vertices;
+		private BVB_Polygon[]      m_polygons;
+		private BVB_PolygonRange[] m_polygonRanges;
 		
 		public string[] Materials
 		{
-			get { return m_Materials; }
-			set { m_Materials = value; }
+			get { return m_materials; }
+			set { m_materials = value; }
 		}
 		public LRVector3[] Vertices
 		{
-			get { return m_Vertices; }
-			set { m_Vertices = value; }
+			get { return m_vertices; }
+			set { m_vertices = value; }
 		}
 		public BVB_Polygon[] Polygons
 		{
-			get { return m_Polygons; }
-			set { m_Polygons = value; }
+			get { return m_polygons; }
+			set { m_polygons = value; }
 		}
 		public BVB_PolygonRange[] PolygonRanges
 		{
-			get { return m_PolygonRanges; }
-			set { m_PolygonRanges = value; }
+			get { return m_polygonRanges; }
+			set { m_polygonRanges = value; }
 		}
-		
-		public BVB(Stream stream)
+
+		public BVB(string p_filepath)
+			: this(BinaryFileHelper.Decompress(p_filepath))
 		{
-			while (stream.Position < stream.Length)
+		}
+
+		public BVB(LRBinaryReader p_reader)
+		{
+			m_materials = new string[0];
+			m_vertices = new LRVector3[0];
+			m_polygons = new BVB_Polygon[0];
+			m_polygonRanges = new BVB_PolygonRange[0];
+			while (p_reader.BaseStream.Position < p_reader.BaseStream.Length)
 			{
-				byte block_id = BinaryFileHelper.ReadByte(stream);
-				switch (block_id)
+				byte blockId = p_reader.ReadByte();
+				switch (blockId)
 				{
 					case ID_MATERIALS:
 					{
-						m_Materials = BinaryFileHelper.ReadStringArrayBlock(stream);
+						m_materials = p_reader.ReadStringArrayBlock();
 						break;
 					}
 					case ID_POLYGONS:
 					{
-						m_Polygons = BinaryFileHelper.ReadArrayBlock<BVB_Polygon>(
-							stream,
-							new BinaryFileHelper.ReadObject<BVB_Polygon>(
-								BVB_Polygon.FromStream
+						m_polygons = p_reader.ReadArrayBlock<BVB_Polygon>(
+							new LRBinaryReader.ReadObject<BVB_Polygon>(
+								BVB_Polygon.Read
 							)
 						);
 						break;
 					}
 					case ID_VERTICES:
 					{
-						m_Vertices = BinaryFileHelper.ReadVector3fArrayBlock(stream);
+						m_vertices = p_reader.ReadVector3fArrayBlock();
 						break;
 					}
 					case ID_POLYGON_RANGES:
 					{
-						m_PolygonRanges = BinaryFileHelper.ReadArrayBlock<BVB_PolygonRange>(
-							stream,
-							new BinaryFileHelper.ReadObject<BVB_PolygonRange>(
-								BVB_PolygonRange.FromStream
+						m_polygonRanges = p_reader.ReadArrayBlock<BVB_PolygonRange>(
+							new LRBinaryReader.ReadObject<BVB_PolygonRange>(
+								BVB_PolygonRange.Read
 							)
 						);
 						break;
 					}
 					default:
 					{
-						throw new UnexpectedBlockException(block_id, stream.Position - 1);
+						throw new UnexpectedBlockException(
+							blockId,
+							p_reader.BaseStream.Position - 1
+						);
 					}
 				}
 			}
-		}
-		
-		public BVB(string path, bool decompress = true)
-			: this(decompress ? BinaryFileHelper.Decompress(path) : (Stream)(new FileStream(path, FileMode.Open, FileAccess.Read)))
-		{
 		}
 	}
 	
@@ -100,23 +106,23 @@ namespace LibLR1
 			V1,
 			V2,
 			Material;
-		
-		public static BVB_Polygon FromStream(Stream stream)
+
+		public static BVB_Polygon Read(LRBinaryReader p_reader)
 		{
 			BVB_Polygon val = new BVB_Polygon();
-			val.V0       = BinaryFileHelper.ReadIntegralWithHeader(stream);
-			val.V1       = BinaryFileHelper.ReadIntegralWithHeader(stream);
-			val.V2       = BinaryFileHelper.ReadIntegralWithHeader(stream);
-			val.Material = BinaryFileHelper.ReadIntegralWithHeader(stream);
+			val.V0       = p_reader.ReadIntegralWithHeader();
+			val.V1       = p_reader.ReadIntegralWithHeader();
+			val.V2       = p_reader.ReadIntegralWithHeader();
+			val.Material = p_reader.ReadIntegralWithHeader();
 			return val;
 		}
-		
-		public static void ToStream(Stream stream, BVB_Polygon value)
+
+		public static void Write(LRBinaryWriter p_writer, BVB_Polygon p_value)
 		{
-			BinaryFileHelper.WriteIntegralWithHeader(stream, value.V0);
-			BinaryFileHelper.WriteIntegralWithHeader(stream, value.V1);
-			BinaryFileHelper.WriteIntegralWithHeader(stream, value.V2);
-			BinaryFileHelper.WriteIntegralWithHeader(stream, value.Material);
+			p_writer.WriteIntegralWithHeader(p_value.V0);
+			p_writer.WriteIntegralWithHeader(p_value.V1);
+			p_writer.WriteIntegralWithHeader(p_value.V2);
+			p_writer.WriteIntegralWithHeader(p_value.Material);
 		}
 	}
 	
@@ -130,17 +136,17 @@ namespace LibLR1
 			i4, // color?
 			FirstPoly, // first poly?
 			NumPolys; // num polys?
-		
-		public static BVB_PolygonRange FromStream(Stream stream)
+
+		public static BVB_PolygonRange Read(LRBinaryReader p_reader)
 		{
 			BVB_PolygonRange val = new BVB_PolygonRange();
-			val.i0        = BinaryFileHelper.ReadIntegralWithHeader(stream);
-			val.i1        = BinaryFileHelper.ReadIntegralWithHeader(stream);
-			val.i2        = BinaryFileHelper.ReadIntegralWithHeader(stream);
-			val.i3        = BinaryFileHelper.ReadIntegralWithHeader(stream);
-			val.i4        = BinaryFileHelper.ReadIntegralWithHeader(stream);
-			val.FirstPoly = BinaryFileHelper.ReadIntegralWithHeader(stream);
-			val.NumPolys  = BinaryFileHelper.ReadIntegralWithHeader(stream);
+			val.i0        = p_reader.ReadIntegralWithHeader();
+			val.i1        = p_reader.ReadIntegralWithHeader();
+			val.i2        = p_reader.ReadIntegralWithHeader();
+			val.i3        = p_reader.ReadIntegralWithHeader();
+			val.i4        = p_reader.ReadIntegralWithHeader();
+			val.FirstPoly = p_reader.ReadIntegralWithHeader();
+			val.NumPolys  = p_reader.ReadIntegralWithHeader();
 			return val;
 		}
 	}

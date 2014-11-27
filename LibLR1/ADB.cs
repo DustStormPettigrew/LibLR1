@@ -17,44 +17,44 @@ namespace LibLR1
 			ID_ANIM_POINTERS = 0x2B,
 			ID_ANIM_META     = 0x2C;
 		
-		private ADB_Data                     m_Data;
-		private ADB_Pointer[]                m_Pointers;
-		private Dictionary<string, ADB_Meta> m_Animations;
+		private ADB_Data                     m_data;
+		private ADB_Pointer[]                m_pointers;
+		private Dictionary<string, ADB_Meta> m_animations;
 
 		public ADB_Data Data
 		{
-			get { return m_Data; }
-			set { m_Data = value; }
+			get { return m_data; }
+			set { m_data = value; }
 		}
 		public ADB_Pointer[] Pointers
 		{
-			get { return m_Pointers; }
-			set { m_Pointers = value; }
+			get { return m_pointers; }
+			set { m_pointers = value; }
 		}
 		public Dictionary<string, ADB_Meta> Animations
 		{
-			get { return m_Animations; }
-			set { m_Animations = value; }
+			get { return m_animations; }
+			set { m_animations = value; }
 		}
 
-		public ADB(string p_path, bool p_decompress = true)
-			: this(new LRBinaryReader(p_decompress ? BinaryFileHelper.Decompress(p_path) : (Stream)File.OpenRead(p_path)))
+		public ADB(string p_filepath)
+			: this(BinaryFileHelper.Decompress(p_filepath))
 		{
 		}
 
 		public ADB(LRBinaryReader p_reader)
 		{
-			m_Data       = new ADB_Data();
-			m_Pointers   = new ADB_Pointer[0];
-			m_Animations = new Dictionary<string, ADB_Meta>();
+			m_data       = new ADB_Data();
+			m_pointers   = new ADB_Pointer[0];
+			m_animations = new Dictionary<string, ADB_Meta>();
 			while (p_reader.BaseStream.Position < p_reader.BaseStream.Length)
 			{
-				byte block_id = p_reader.ReadByte();//BinaryFileHelper.ReadByte(p_reader);
-				switch (block_id)
+				byte blockId = p_reader.ReadByte();
+				switch (blockId)
 				{
 					case ID_ANIM_DATA:
 					{
-						m_Data = p_reader.ReadStruct<ADB_Data>(
+						m_data = p_reader.ReadStruct<ADB_Data>(
 							new LRBinaryReader.ReadObject<ADB_Data>(
 								ADB_Data.Read
 							)
@@ -63,7 +63,7 @@ namespace LibLR1
 					}
 					case ID_ANIM_POINTERS:
 					{
-						m_Pointers = p_reader.ReadArrayBlock<ADB_Pointer>(
+						m_pointers = p_reader.ReadArrayBlock<ADB_Pointer>(
 							new LRBinaryReader.ReadObject<ADB_Pointer>(
 								ADB_Pointer.Read
 							)
@@ -72,7 +72,7 @@ namespace LibLR1
 					}
 					case ID_ANIM_META:
 					{
-						m_Animations = p_reader.ReadDictionaryBlock<ADB_Meta>(
+						m_animations = p_reader.ReadDictionaryBlock<ADB_Meta>(
 							new LRBinaryReader.ReadObject<ADB_Meta>(
 								ADB_Meta.Read
 							),
@@ -82,9 +82,20 @@ namespace LibLR1
 					}
 					default:
 					{
-						throw new UnexpectedBlockException(block_id, p_reader.BaseStream.Position - 1);
+						throw new UnexpectedBlockException(
+							blockId,
+							p_reader.BaseStream.Position - 1
+						);
 					}
 				}
+			}
+		}
+
+		public void Save(string p_filepath)
+		{
+			using (LRBinaryWriter writer = new LRBinaryWriter(File.OpenWrite(p_filepath)))
+			{
+				Save(writer);
 			}
 		}
 
@@ -95,7 +106,7 @@ namespace LibLR1
 				new LRBinaryWriter.WriteObject<ADB_Data>(
 					ADB_Data.Write
 				),
-				m_Data
+				m_data
 			);
 
 			p_writer.WriteByte(ID_ANIM_POINTERS);
@@ -103,7 +114,7 @@ namespace LibLR1
 				new LRBinaryWriter.WriteObject<ADB_Pointer>(
 					ADB_Pointer.Write
 				),
-				m_Pointers
+				m_pointers
 			);
 
 			p_writer.WriteByte(ID_ANIM_META);
@@ -111,17 +122,9 @@ namespace LibLR1
 				new LRBinaryWriter.WriteObject<ADB_Meta>(
 					ADB_Meta.Write
 				),
-				m_Animations,
+				m_animations,
 				ID_ANIM_META
 			);
-		}
-		
-		public void Save(string p_filepath)
-		{
-			using (LRBinaryWriter writer = new LRBinaryWriter(File.OpenWrite(p_filepath)))
-			{
-				Save(writer);
-			}
 		}
 	}
 	
@@ -141,20 +144,20 @@ namespace LibLR1
 		{
 		}
 		
-		public ADB_Data(LRVector3[] positionoffsets, LRQuaternion[] transforms, int[] timeoffsets)
+		public ADB_Data(LRVector3[] p_positionoffsets, LRQuaternion[] p_transforms, int[] p_timeoffsets)
 		{
-			PositionOffsets = positionoffsets;
-			Transforms      = transforms;
-			TimeOffsets     = timeoffsets;
+			PositionOffsets = p_positionoffsets;
+			Transforms      = p_transforms;
+			TimeOffsets     = p_timeoffsets;
 		}
 		
 		public static ADB_Data Read(LRBinaryReader p_reader)
 		{
 			ADB_Data val = new ADB_Data();
-			while (p_reader.Next(BinaryFileHelper.TYPE_RIGHT_CURLY) == false)
+			while (p_reader.Next(Token.RIGHT_CURLY) == false)
 			{
-				byte property_id = p_reader.ReadByte();
-				switch (property_id)
+				byte propertyId = p_reader.ReadByte();
+				switch (propertyId)
 				{
 					case PROPERTY_DATA_XYZ_OFFSETS:
 					{
@@ -173,7 +176,7 @@ namespace LibLR1
 					}
 					default:
 					{
-						throw new UnexpectedPropertyException(property_id, p_reader.BaseStream.Position - 1);
+						throw new UnexpectedPropertyException(propertyId, p_reader.BaseStream.Position - 1);
 					}
 				}
 			}
@@ -206,15 +209,15 @@ namespace LibLR1
 			: this(0, 0, 0, 0, 0, 0)
 		{
 		}
-		
-		public ADB_Pointer(int transformoffset, int transformtimeoffset, int transformlength, int positionoffset, int positiontimeoffset, int positionlength)
+
+		public ADB_Pointer(int p_transformoffset, int p_transformtimeoffset, int p_transformlength, int p_positionoffset, int p_positiontimeoffset, int p_positionlength)
 		{
-			TransformOffset     = transformoffset;
-			TransformTimeOffset = transformtimeoffset;
-			TransformLength     = transformlength;
-			PositionOffset      = positionoffset;
-			PositionTimeOffset  = positiontimeoffset;
-			PositionLength      = positionlength;
+			TransformOffset     = p_transformoffset;
+			TransformTimeOffset = p_transformtimeoffset;
+			TransformLength     = p_transformlength;
+			PositionOffset      = p_positionoffset;
+			PositionTimeOffset  = p_positiontimeoffset;
+			PositionLength      = p_positionlength;
 		}
 		
 		public static ADB_Pointer Read(LRBinaryReader p_reader)
@@ -261,15 +264,15 @@ namespace LibLR1
 			: this(0, 0, 0, 0, new LRVector3(), new LRQuaternion())
 		{
 		}
-		
-		public ADB_Meta(int pointertableoffset, int length, int length1, int speed, LRVector3 initialposition, LRQuaternion initialtransform)
+
+		public ADB_Meta(int p_pointertableoffset, int p_length, int p_length1, int p_speed, LRVector3 p_initialposition, LRQuaternion p_initialtransform)
 		{
-			PointerTableOffset = pointertableoffset;
-			Length             = length;
-			Length1            = length1;
-			Speed              = speed;
-			InitialPosition    = initialposition;
-			InitialQuaternion  = initialtransform;
+			PointerTableOffset = p_pointertableoffset;
+			Length             = p_length;
+			Length1            = p_length1;
+			Speed              = p_speed;
+			InitialPosition    = p_initialposition;
+			InitialQuaternion  = p_initialtransform;
 		}
 		
 		public static ADB_Meta Read(LRBinaryReader p_reader)
@@ -277,8 +280,8 @@ namespace LibLR1
 			ADB_Meta val = new ADB_Meta();
 			while (p_reader.Next(Token.RIGHT_CURLY) == false)
 			{
-				byte property_id = p_reader.ReadByte();
-				switch (property_id)
+				byte propertyId = p_reader.ReadByte();
+				switch (propertyId)
 				{
 					case PROPERTY_META_LENGTH:
 					{

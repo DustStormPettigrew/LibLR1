@@ -24,16 +24,6 @@ namespace LibLR1.Utils
 			m_z = p_z;
 		}
 
-		[Obsolete]
-		public static LRVector3 FromStream(Stream p_stream)
-		{
-			LRVector3 val = new LRVector3();
-			val.X = BinaryFileHelper.ReadFloatWithHeader(p_stream);
-			val.Y = BinaryFileHelper.ReadFloatWithHeader(p_stream);
-			val.Z = BinaryFileHelper.ReadFloatWithHeader(p_stream);
-			return val;
-		}
-
 		public static LRVector3 Read(LRBinaryReader p_reader)
 		{
 			LRVector3 val = new LRVector3();
@@ -41,14 +31,6 @@ namespace LibLR1.Utils
 			val.Y = p_reader.ReadFloatWithHeader();
 			val.Z = p_reader.ReadFloatWithHeader();
 			return val;
-		}
-
-		[Obsolete]
-		public static void ToStream(Stream p_stream, LRVector3 p_vec)
-		{
-			BinaryFileHelper.WriteFloatWithHeader(p_stream, p_vec.X);
-			BinaryFileHelper.WriteFloatWithHeader(p_stream, p_vec.Y);
-			BinaryFileHelper.WriteFloatWithHeader(p_stream, p_vec.Z);
 		}
 
 		public static void Write(LRBinaryWriter p_writer, LRVector3 p_vec)

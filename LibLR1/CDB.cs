@@ -2,6 +2,7 @@
 using System.IO;
 using LibLR1.Exceptions;
 using LibLR1.Utils;
+using LibLR1.IO;
 
 namespace LibLR1
 {
@@ -32,7 +33,7 @@ namespace LibLR1
 			PROPERTY_SPEED                 = 0x3B;
 		
 		private string[]                         m_WDBs;
-		private Dictionary<string, CDB_Cutscene> m_Cutscenes;
+		private Dictionary<string, CDB_Cutscene> m_cutscenes;
 		
 		public string[] WDBs
 		{
@@ -41,28 +42,32 @@ namespace LibLR1
 		}
 		public Dictionary<string, CDB_Cutscene> Cutscenes
 		{
-			get { return m_Cutscenes; }
-			set { m_Cutscenes = value; }
+			get { return m_cutscenes; }
+			set { m_cutscenes = value; }
 		}
-		
-		public CDB(Stream stream)
+
+		public CDB(string p_filepath)
+			: this(BinaryFileHelper.Decompress(p_filepath))
 		{
-			while (stream.Position < stream.Length)
+		}
+
+		public CDB(LRBinaryReader p_reader)
+		{
+			while (p_reader.BaseStream.Position < p_reader.BaseStream.Length)
 			{
-				byte block_id = BinaryFileHelper.ReadByte(stream);
-				switch (block_id)
+				byte blockId = p_reader.ReadByte();
+				switch (blockId)
 				{
 					case ID_WDBS:
 					{
-						m_WDBs = BinaryFileHelper.ReadStringArrayBlock(stream);
+						m_WDBs = p_reader.ReadStringArrayBlock();
 						break;
 					}
 					case ID_CUTSCENE:
 					{
-						m_Cutscenes = BinaryFileHelper.ReadDictionaryBlock<CDB_Cutscene>(
-							stream,
-							new BinaryFileHelper.ReadObject<CDB_Cutscene>(
-								CDB_Cutscene.FromStream
+						m_cutscenes = p_reader.ReadDictionaryBlock<CDB_Cutscene>(
+							new LRBinaryReader.ReadObject<CDB_Cutscene>(
+								CDB_Cutscene.Read
 							),
 							ID_CUTSCENE
 						);
@@ -70,15 +75,13 @@ namespace LibLR1
 					}
 					default:
 					{
-						throw new UnexpectedBlockException(block_id, stream.Position - 1);
+						throw new UnexpectedBlockException(
+							blockId,
+							p_reader.BaseStream.Position - 1
+						);
 					}
 				}
 			}
-		}
-		
-		public CDB(string path, bool decompress = true)
-			: this(decompress ? BinaryFileHelper.Decompress(path) : (Stream)(new FileStream(path, FileMode.Open, FileAccess.Read)))
-		{
 		}
 	}
 	
@@ -109,30 +112,29 @@ namespace LibLR1
 		public KeyValuePair<string, CDB_AmbientLight>[]     AmbientLights     = new KeyValuePair<string, CDB_AmbientLight>[0];
 		public KeyValuePair<string, CDB_DirectionalLight>[] DirectionalLights = new KeyValuePair<string, CDB_DirectionalLight>[0];
 		
-		public static CDB_Cutscene FromStream(Stream stream)
+		public static CDB_Cutscene Read(LRBinaryReader p_reader)
 		{
 			CDB_Cutscene val = new CDB_Cutscene();
-			while (BinaryFileHelper.Next(stream, BinaryFileHelper.TYPE_RIGHT_CURLY) == false)
+			while (p_reader.Next(Token.RIGHT_CURLY) == false)
 			{
-				byte property_id = BinaryFileHelper.ReadByte(stream);
-				switch (property_id)
+				byte propertyId = p_reader.ReadByte();
+				switch (propertyId)
 				{
 					case PROPERTY_SPEED:
 					{
-						val.Speed = BinaryFileHelper.ReadIntWithHeader(stream);
+						val.Speed = p_reader.ReadIntWithHeader();
 						break;
 					}
 					case PROPERTY_DURATION:
 					{
-						val.Duration = BinaryFileHelper.ReadIntWithHeader(stream);
+						val.Duration = p_reader.ReadIntWithHeader();
 						break;
 					}
 					case PROPERTY_CAMERA:
 					{
-						val.Cameras = BinaryFileHelper.ReadCollidableDictionaryBlock<CDB_Camera>(
-							stream,
-							new BinaryFileHelper.ReadObject<CDB_Camera>(
-								CDB_Camera.FromStream
+						val.Cameras = p_reader.ReadCollidableDictionaryBlock<CDB_Camera>(
+							new LRBinaryReader.ReadObject<CDB_Camera>(
+								CDB_Camera.Read
 							),
 							PROPERTY_CAMERA
 						);
@@ -140,10 +142,9 @@ namespace LibLR1
 					}
 					case PROPERTY_MODEL:
 					{
-						val.Models = BinaryFileHelper.ReadCollidableDictionaryBlock<CDB_Model>(
-							stream,
-							new BinaryFileHelper.ReadObject<CDB_Model>(
-								CDB_Model.FromStream
+						val.Models = p_reader.ReadCollidableDictionaryBlock<CDB_Model>(
+							new LRBinaryReader.ReadObject<CDB_Model>(
+								CDB_Model.Read
 							),
 							PROPERTY_MODEL
 						);
@@ -151,10 +152,9 @@ namespace LibLR1
 					}
 					case PROPERTY_EVENT:
 					{
-						val.Events = BinaryFileHelper.ReadCollidableDictionaryBlock<CDB_Event>(
-							stream,
-							new BinaryFileHelper.ReadObject<CDB_Event>(
-								CDB_Event.FromStream
+						val.Events = p_reader.ReadCollidableDictionaryBlock<CDB_Event>(
+							new LRBinaryReader.ReadObject<CDB_Event>(
+								CDB_Event.Read
 							),
 							PROPERTY_EVENT
 						);
@@ -162,10 +162,9 @@ namespace LibLR1
 					}
 					case PROPERTY_LIGHTTYPE_AMBIENT:
 					{
-						val.AmbientLights = BinaryFileHelper.ReadCollidableDictionaryBlock<CDB_AmbientLight>(
-							stream,
-							new BinaryFileHelper.ReadObject<CDB_AmbientLight>(
-								CDB_AmbientLight.FromStream
+						val.AmbientLights = p_reader.ReadCollidableDictionaryBlock<CDB_AmbientLight>(
+							new LRBinaryReader.ReadObject<CDB_AmbientLight>(
+								CDB_AmbientLight.Read
 							),
 							PROPERTY_LIGHTTYPE_AMBIENT
 						);
@@ -173,10 +172,9 @@ namespace LibLR1
 					}
 					case PROPERTY_LIGHTTYPE_DIRECTIONAL:
 					{
-						val.DirectionalLights = BinaryFileHelper.ReadCollidableDictionaryBlock<CDB_DirectionalLight>(
-							stream,
-							new BinaryFileHelper.ReadObject<CDB_DirectionalLight>(
-								CDB_DirectionalLight.FromStream
+						val.DirectionalLights = p_reader.ReadCollidableDictionaryBlock<CDB_DirectionalLight>(
+							new LRBinaryReader.ReadObject<CDB_DirectionalLight>(
+								CDB_DirectionalLight.Read
 							),
 							PROPERTY_LIGHTTYPE_DIRECTIONAL
 						);
@@ -184,7 +182,10 @@ namespace LibLR1
 					}
 					default:
 					{
-						throw new UnexpectedPropertyException(property_id, stream.Position - 1);
+						throw new UnexpectedPropertyException(
+							propertyId,
+							p_reader.BaseStream.Position - 1
+						);
 					}
 				}
 			}
@@ -204,38 +205,41 @@ namespace LibLR1
 		public int    StartFrame;
 		public int    Duration;
 		public int    AnimationSequenceId;
-		
-		public static CDB_Camera FromStream(Stream stream)
+
+		public static CDB_Camera Read(LRBinaryReader p_reader)
 		{
 			CDB_Camera val = new CDB_Camera();
-			while (BinaryFileHelper.Next(stream, BinaryFileHelper.TYPE_RIGHT_CURLY) == false)
+			while (p_reader.Next(Token.RIGHT_CURLY) == false)
 			{
-				byte property_id = BinaryFileHelper.ReadByte(stream);
-				switch (property_id)
+				byte propertyId = p_reader.ReadByte();
+				switch (propertyId)
 				{
 					case PROPERTY_CAMERA_NAME:
 					{
-						val.ModelName = BinaryFileHelper.ReadStringWithHeader(stream);
+						val.ModelName = p_reader.ReadStringWithHeader();
 						break;
 					}
 					case PROPERTY_START_FRAME:
 					{
-						val.StartFrame = BinaryFileHelper.ReadIntWithHeader(stream);
+						val.StartFrame = p_reader.ReadIntWithHeader();
 						break;
 					}
 					case PROPERTY_DURATION:
 					{
-						val.Duration = BinaryFileHelper.ReadIntWithHeader(stream);
+						val.Duration = p_reader.ReadIntWithHeader();
 						break;
 					}
 					case PROPERTY_ANIM_SEQ_ID:
 					{
-						val.AnimationSequenceId = BinaryFileHelper.ReadIntWithHeader(stream);
+						val.AnimationSequenceId = p_reader.ReadIntWithHeader();
 						break;
 					}
 					default:
 					{
-						throw new UnexpectedPropertyException(property_id, stream.Position - 1);
+						throw new UnexpectedPropertyException(
+							propertyId,
+							p_reader.BaseStream.Position - 1
+						);
 					}
 				}
 			}
@@ -267,70 +271,72 @@ namespace LibLR1
 		public int         Duration;
 		public int         AnimationSequenceId;
 		public CDB_5ints[] Unknown;
-		
-		public static CDB_Model FromStream(Stream stream)
+
+		public static CDB_Model Read(LRBinaryReader p_reader)
 		{
 			CDB_Model val = new CDB_Model();
-			while (BinaryFileHelper.Next(stream, BinaryFileHelper.TYPE_RIGHT_CURLY) == false)
+			while (p_reader.Next(Token.RIGHT_CURLY) == false)
 			{
-				byte property_id = BinaryFileHelper.ReadByte(stream);
-				switch (property_id)
+				byte propertyId = p_reader.ReadByte();
+				switch (propertyId)
 				{
 					case PROPERTY_MODEL_NAME_STATIC:
 					{
-						val.StaticModelName = BinaryFileHelper.ReadStringWithHeader(stream);
+						val.StaticModelName = p_reader.ReadStringWithHeader();
 						break;
 					}
 					case PROPERTY_MODEL_NAME:
 					{
-						val.ModelName = BinaryFileHelper.ReadStringWithHeader(stream);
+						val.ModelName = p_reader.ReadStringWithHeader();
 						break;
 					}
 					case PROPERTY_MODEL_SPRITE_REFERENCE:
 					{
-						val.SpriteRefSceneId = BinaryFileHelper.ReadIntWithHeader(stream);
-						val.SpriteRefItemId  = BinaryFileHelper.ReadIntWithHeader(stream);
+						val.SpriteRefSceneId = p_reader.ReadIntWithHeader();
+						val.SpriteRefItemId = p_reader.ReadIntWithHeader();
 						break;
 					}
 					case PROPERTY_MODEL_LOCATION:
 					{
-						val.Location = LRVector3.FromStream(stream);
+						val.Location = LRVector3.Read(p_reader);
 						break;
 					}
 					case PROPERTY_MODEL_ROTATION:
 					{
-						val.RotationFwd = LRVector3.FromStream(stream);
-						val.RotationUp  = LRVector3.FromStream(stream);
+						val.RotationFwd = LRVector3.Read(p_reader);
+						val.RotationUp  = LRVector3.Read(p_reader);
 						break;
 					}
 					case PROPERTY_START_FRAME:
 					{
-						val.StartFrame = BinaryFileHelper.ReadIntWithHeader(stream);
+						val.StartFrame = p_reader.ReadIntWithHeader();
 						break;
 					}
 					case PROPERTY_DURATION:
 					{
-						val.Duration = BinaryFileHelper.ReadIntWithHeader(stream);
+						val.Duration = p_reader.ReadIntWithHeader();
 						break;
 					}
 					case PROPERTY_ANIM_SEQ_ID:
 					{
-						val.AnimationSequenceId = BinaryFileHelper.ReadIntWithHeader(stream);
+						val.AnimationSequenceId = p_reader.ReadIntWithHeader();
 						break;
 					}
 					case PROPERTY_UNKNOWN_36:
 					{
-						val.Unknown = BinaryFileHelper.ReadArrayBlock<CDB_5ints>(
-							stream,
-							new BinaryFileHelper.ReadObject<CDB_5ints>(
-								CDB_5ints.FromStream
+						val.Unknown = p_reader.ReadArrayBlock<CDB_5ints>(
+							new LRBinaryReader.ReadObject<CDB_5ints>(
+								CDB_5ints.Read
 							)
 						);
 						break;
 					}
 					default:
 					{
-						throw new UnexpectedPropertyException(property_id, stream.Position - 1);
+						throw new UnexpectedPropertyException(
+							propertyId,
+							p_reader.BaseStream.Position - 1
+						);
 					}
 				}
 			}
@@ -348,33 +354,36 @@ namespace LibLR1
 		public int     StartFrame;
 		public int     EndFrame;
 		public LRColor Color;
-		
-		public static CDB_AmbientLight FromStream(Stream stream)
+
+		public static CDB_AmbientLight Read(LRBinaryReader p_reader)
 		{
 			CDB_AmbientLight val = new CDB_AmbientLight();
-			while (BinaryFileHelper.Next(stream, BinaryFileHelper.TYPE_RIGHT_CURLY) == false)
+			while (p_reader.Next(Token.RIGHT_CURLY) == false)
 			{
-				byte property_id = BinaryFileHelper.ReadByte(stream);
-				switch (property_id)
+				byte propertyId = p_reader.ReadByte();
+				switch (propertyId)
 				{
 					case PROPERTY_START_FRAME:
 					{
-						val.StartFrame = BinaryFileHelper.ReadIntWithHeader(stream);
+						val.StartFrame = p_reader.ReadIntWithHeader();
 						break;
 					}
 					case PROPERTY_DURATION:
 					{
-						val.EndFrame = BinaryFileHelper.ReadIntWithHeader(stream);
+						val.EndFrame = p_reader.ReadIntWithHeader();
 						break;
 					}
 					case PROPERTY_LIGHT_COLOR:
 					{
-						val.Color = LRColor.FromStreamNoAlpha(stream);
+						val.Color = LRColor.ReadNoAlpha(p_reader);
 						break;
 					}
 					default:
 					{
-						throw new UnexpectedPropertyException(property_id, stream.Position - 1);
+						throw new UnexpectedPropertyException(
+							propertyId,
+							p_reader.BaseStream.Position - 1
+						);
 					}
 				}
 			}
@@ -394,39 +403,42 @@ namespace LibLR1
 		public LRVector3 RotationFwd, RotationUp;
 		public int       StartFrame;
 		public int       Duration;
-		
-		public static CDB_Event FromStream(Stream stream)
+
+		public static CDB_Event Read(LRBinaryReader p_reader)
 		{
 			CDB_Event val = new CDB_Event();
-			while (BinaryFileHelper.Next(stream, BinaryFileHelper.TYPE_RIGHT_CURLY) == false)
+			while (p_reader.Next(Token.RIGHT_CURLY) == false)
 			{
-				byte property_id = BinaryFileHelper.ReadByte(stream);
-				switch (property_id)
+				byte propertyId = p_reader.ReadByte();
+				switch (propertyId)
 				{
 					case PROPERTY_MODEL_LOCATION:
 					{
-						val.Location = LRVector3.FromStream(stream);
+						val.Location = LRVector3.Read(p_reader);
 						break;
 					}
 					case PROPERTY_MODEL_ROTATION:
 					{
-						val.RotationFwd = LRVector3.FromStream(stream);
-						val.RotationUp  = LRVector3.FromStream(stream);
+						val.RotationFwd = LRVector3.Read(p_reader);
+						val.RotationUp  = LRVector3.Read(p_reader);
 						break;
 					}
 					case PROPERTY_START_FRAME:
 					{
-						val.StartFrame = BinaryFileHelper.ReadIntWithHeader(stream);
+						val.StartFrame = p_reader.ReadIntWithHeader();
 						break;
 					}
 					case PROPERTY_DURATION:
 					{
-						val.Duration = BinaryFileHelper.ReadIntWithHeader(stream);
+						val.Duration = p_reader.ReadIntWithHeader();
 						break;
 					}
 					default:
 					{
-						throw new UnexpectedPropertyException(property_id, stream.Position - 1);
+						throw new UnexpectedPropertyException(
+							propertyId,
+							p_reader.BaseStream.Position - 1
+						);
 					}
 				}
 			}
@@ -448,45 +460,48 @@ namespace LibLR1
 		public LRColor   Color;
 		public LRVector3 Direction;
 		public int[]     Unknown3C;
-		
-		public static CDB_DirectionalLight FromStream(Stream stream)
+
+		public static CDB_DirectionalLight Read(LRBinaryReader p_reader)
 		{
 			CDB_DirectionalLight val = new CDB_DirectionalLight();
-			while (BinaryFileHelper.Next(stream, BinaryFileHelper.TYPE_RIGHT_CURLY) == false)
+			while (p_reader.Next(Token.RIGHT_CURLY) == false)
 			{
-				byte property_id = BinaryFileHelper.ReadByte(stream);
-				switch (property_id)
+				byte propertyId = p_reader.ReadByte();
+				switch (propertyId)
 				{
 					case PROPERTY_START_FRAME:
 					{
-						val.StartFrame = BinaryFileHelper.ReadIntWithHeader(stream);
+						val.StartFrame = p_reader.ReadIntWithHeader();
 						break;
 					}
 					case PROPERTY_DURATION:
 					{
-						val.EndFrame = BinaryFileHelper.ReadIntWithHeader(stream);
+						val.EndFrame = p_reader.ReadIntWithHeader();
 						break;
 					}
 					case PROPERTY_LIGHT_COLOR:
 					{
-						val.Color = LRColor.FromStreamNoAlpha(stream);
+						val.Color = LRColor.ReadNoAlpha(p_reader);
 						break;
 					}
 					case PROPERTY_LIGHT_DIRECTION:
 					{
-						val.Direction = LRVector3.FromStream(stream);
+						val.Direction = LRVector3.Read(p_reader);
 						break;
 					}
 					case PROPERTY_UNKNOWN_3C:
 					{
 						val.Unknown3C    = new int[2];
-						val.Unknown3C[0] = BinaryFileHelper.ReadIntWithHeader(stream);
-						val.Unknown3C[1] = BinaryFileHelper.ReadIntWithHeader(stream);
+						val.Unknown3C[0] = p_reader.ReadIntWithHeader();
+						val.Unknown3C[1] = p_reader.ReadIntWithHeader();
 						break;
 					}
 					default:
 					{
-						throw new UnexpectedPropertyException(property_id, stream.Position - 1);
+						throw new UnexpectedPropertyException(
+							propertyId,
+							p_reader.BaseStream.Position - 1
+						);
 					}
 				}
 			}
@@ -502,15 +517,15 @@ namespace LibLR1
 			Unknown3,
 			Unknown4,
 			Unknown5;
-		
-		public static CDB_5ints FromStream(Stream stream)
+
+		public static CDB_5ints Read(LRBinaryReader p_reader)
 		{
 			CDB_5ints val = new CDB_5ints();
-			val.Unknown1 = BinaryFileHelper.ReadIntWithHeader(stream);
-			val.Unknown2 = BinaryFileHelper.ReadIntWithHeader(stream);
-			val.Unknown3 = BinaryFileHelper.ReadIntWithHeader(stream);
-			val.Unknown4 = BinaryFileHelper.ReadIntWithHeader(stream);
-			val.Unknown5 = BinaryFileHelper.ReadIntWithHeader(stream);
+			val.Unknown1 = p_reader.ReadIntWithHeader();
+			val.Unknown2 = p_reader.ReadIntWithHeader();
+			val.Unknown3 = p_reader.ReadIntWithHeader();
+			val.Unknown4 = p_reader.ReadIntWithHeader();
+			val.Unknown5 = p_reader.ReadIntWithHeader();
 			return val;
 		}
 	}

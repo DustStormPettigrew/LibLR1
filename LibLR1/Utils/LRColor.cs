@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using LibLR1.IO;
+using System;
+using System.IO;
 
 namespace LibLR1.Utils
 {
@@ -23,56 +25,37 @@ namespace LibLR1.Utils
 			m_b = p_b;
 			m_a = p_a;
 		}
-		
-		public static LRColor FromStream(Stream p_stream)
+
+		public static LRColor Read(LRBinaryReader p_reader)
 		{
 			LRColor output = new LRColor();
-			output = FromStreamNoAlpha(p_stream);
-			byte t_a = BinaryFileHelper.Expect(p_stream, new byte[] { BinaryFileHelper.TYPE_BYTE, BinaryFileHelper.TYPE_INT32 });
-			switch (t_a)
-			{
-				case BinaryFileHelper.TYPE_BYTE:  { output.A =       BinaryFileHelper.ReadByte(p_stream); break; }
-				case BinaryFileHelper.TYPE_INT32: { output.A = (byte)BinaryFileHelper.ReadInt(p_stream);  break; }
-			}
+			output.R = (byte)p_reader.ReadIntegralWithHeader();
+			output.G = (byte)p_reader.ReadIntegralWithHeader();
+			output.B = (byte)p_reader.ReadIntegralWithHeader();
+			output.A = (byte)p_reader.ReadIntegralWithHeader();
 			return output;
 		}
-		
-		public static LRColor FromStreamNoAlpha(Stream p_stream)
+
+		public static LRColor ReadNoAlpha(LRBinaryReader p_reader)
 		{
 			LRColor output = new LRColor();
-			byte t_r = BinaryFileHelper.Expect(p_stream, new byte[] { BinaryFileHelper.TYPE_BYTE, BinaryFileHelper.TYPE_INT32 });
-			switch (t_r)
-			{
-				case BinaryFileHelper.TYPE_BYTE:  { output.R =       BinaryFileHelper.ReadByte(p_stream); break; }
-				case BinaryFileHelper.TYPE_INT32: { output.R = (byte)BinaryFileHelper.ReadInt(p_stream);  break; }
-			}
-			byte t_g = BinaryFileHelper.Expect(p_stream, new byte[] { BinaryFileHelper.TYPE_BYTE, BinaryFileHelper.TYPE_INT32 });
-			switch (t_g)
-			{
-				case BinaryFileHelper.TYPE_BYTE:  { output.G =       BinaryFileHelper.ReadByte(p_stream); break; }
-				case BinaryFileHelper.TYPE_INT32: { output.G = (byte)BinaryFileHelper.ReadInt(p_stream);  break; }
-			}
-			byte t_b = BinaryFileHelper.Expect(p_stream, new byte[] { BinaryFileHelper.TYPE_BYTE, BinaryFileHelper.TYPE_INT32 });
-			switch (t_b)
-			{
-				case BinaryFileHelper.TYPE_BYTE:  { output.B =       BinaryFileHelper.ReadByte(p_stream); break; }
-				case BinaryFileHelper.TYPE_INT32: { output.B = (byte)BinaryFileHelper.ReadInt(p_stream);  break; }
-			}
-			output.A = 0xFF;
+			output.R = (byte)p_reader.ReadIntegralWithHeader();
+			output.G = (byte)p_reader.ReadIntegralWithHeader();
+			output.B = (byte)p_reader.ReadIntegralWithHeader();
 			return output;
 		}
-		
-		public static void ToStream(Stream p_stream, LRColor p_color)
+
+		public static void Write(LRBinaryWriter p_writer, LRColor p_value)
 		{
-			ToStreamNoAlpha(p_stream, p_color);
-			BinaryFileHelper.WriteByteWithHeader(p_stream, p_color.A);
+			WriteNoAlpha(p_writer, p_value);
+			p_writer.WriteByteWithHeader(p_value.A);
 		}
-		
-		public static void ToStreamNoAlpha(Stream p_stream, LRColor p_color)
+
+		public static void WriteNoAlpha(LRBinaryWriter p_writer, LRColor p_value)
 		{
-			BinaryFileHelper.WriteByteWithHeader(p_stream, p_color.R);
-			BinaryFileHelper.WriteByteWithHeader(p_stream, p_color.G);
-			BinaryFileHelper.WriteByteWithHeader(p_stream, p_color.B);
+			p_writer.WriteByteWithHeader(p_value.R);
+			p_writer.WriteByteWithHeader(p_value.G);
+			p_writer.WriteByteWithHeader(p_value.B);
 		}
 	}
 }
