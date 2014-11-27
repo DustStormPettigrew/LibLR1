@@ -32,9 +32,7 @@ namespace LibLR1
 					case ID_GHOST_PATH:
 					{
 						m_ghostPath = p_reader.ReadStruct<GHB_GhostPath>(
-							new LRBinaryReader.ReadObject<GHB_GhostPath>(
-								GHB_GhostPath.Read
-							)
+							GHB_GhostPath.Read
 						);
 						break;
 					}
@@ -76,9 +74,7 @@ namespace LibLR1
 					case PROPERTY_NODES:
 					{
 						val.Nodes = p_reader.ReadArrayBlock<GHB_Node>(
-							new LRBinaryReader.ReadObject<GHB_Node>(
-								GHB_Node.Read
-							)
+							GHB_Node.Read
 						);
 						break;
 					}

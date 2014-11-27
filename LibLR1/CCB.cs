@@ -34,9 +34,7 @@ namespace LibLR1
 					case ID_CARS:
 					{
 						m_cars = p_reader.ReadDictionaryBlock<CCB_Car>(
-							new LRBinaryReader.ReadObject<CCB_Car>(
-								CCB_Car.Read
-							),
+							CCB_Car.Read,
 							ID_CARS
 						);
 						break;
@@ -64,9 +62,7 @@ namespace LibLR1
 		{
 			p_writer.WriteByte(ID_CARS);
 			p_writer.WriteDictionaryBlock<CCB_Car>(
-				new LRBinaryWriter.WriteObject<CCB_Car>(
-					CCB_Car.Write
-				),
+				CCB_Car.Write,
 				m_cars,
 				ID_CARS
 			);

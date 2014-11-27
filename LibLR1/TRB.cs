@@ -32,9 +32,7 @@ namespace LibLR1
 					case ID_UNKNOWN_27:
 					{
 						m_unknown27 = p_reader.ReadStructArrayBlock<TRB_Unknown27>(
-							new LRBinaryReader.ReadObject<TRB_Unknown27>(
-								TRB_Unknown27.Read
-							),
+							TRB_Unknown27.Read,
 							ID_UNKNOWN_27
 						);
 						break;

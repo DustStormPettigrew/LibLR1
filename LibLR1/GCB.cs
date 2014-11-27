@@ -42,18 +42,14 @@ namespace LibLR1
 					case ID_VERTICES:
 					{
 						m_vertices = p_reader.ReadArrayBlock<GCB_Vertex>(
-							new LRBinaryReader.ReadObject<GCB_Vertex>(
-								GCB_Vertex.Read
-							)
+							GCB_Vertex.Read
 						);
 						break;
 					}
 					case ID_MODELS:
 					{
 						m_modelSets = p_reader.ReadDictionaryBlock<GCB_ModelSet>(
-							new LRBinaryReader.ReadObject<GCB_ModelSet>(
-								GCB_ModelSet.Read
-							),
+							GCB_ModelSet.Read,
 							ID_MODELS
 						);
 						break;
@@ -110,9 +106,7 @@ namespace LibLR1
 					case PROPERTY_MODELS:
 					{
 						val.Models = p_reader.ReadStructArrayBlock<GCB_Model>(
-							new LRBinaryReader.ReadObject<GCB_Model>(
-								GCB_Model.Read
-							),
+							GCB_Model.Read,
 							PROPERTY_MODELS
 						);
 						break;
@@ -160,9 +154,7 @@ namespace LibLR1
 					case PROPERTY_POLYS:
 					{
 						val.Polys = p_reader.ReadArrayBlock<GCB_Polygon>(
-							new LRBinaryReader.ReadObject<GCB_Polygon>(
-								GCB_Polygon.Read
-							)
+							GCB_Polygon.Read
 						);
 						break;
 					}

@@ -38,9 +38,7 @@ namespace LibLR1
 					case ID_BONE:
 					{
 						m_bones = p_reader.ReadDictionaryBlock<SDB_Bone>(
-							new LRBinaryReader.ReadObject<SDB_Bone>(
-								SDB_Bone.Read
-							),
+							SDB_Bone.Read,
 							ID_BONE
 						);
 						break;
@@ -68,9 +66,7 @@ namespace LibLR1
 		{
 			p_writer.WriteByte(ID_BONE);
 			p_writer.WriteDictionaryBlock<SDB_Bone>(
-				new LRBinaryWriter.WriteObject<SDB_Bone>(
-					SDB_Bone.Write
-				),
+				SDB_Bone.Write,
 				m_bones,
 				ID_BONE
 			);

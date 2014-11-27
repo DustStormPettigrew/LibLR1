@@ -35,9 +35,7 @@ namespace LibLR1
 					case ID_MATERIALS:
 					{
 						m_materials = p_reader.ReadDictionaryBlock<MDB_Material>(
-							new LRBinaryReader.ReadObject<MDB_Material>(
-								MDB_Material.Read
-							),
+							MDB_Material.Read,
 							ID_MATERIALS
 						);
 						break;
@@ -65,9 +63,7 @@ namespace LibLR1
 		{
 			p_writer.WriteByte(ID_MATERIALS);
 			p_writer.WriteDictionaryBlock<MDB_Material>(
-				new LRBinaryWriter.WriteObject<MDB_Material>(
-					MDB_Material.Write
-				),
+				MDB_Material.Write,
 				m_materials,
 				ID_MATERIALS
 			);

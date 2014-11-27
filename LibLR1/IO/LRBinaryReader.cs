@@ -188,9 +188,7 @@ namespace LibLR1.IO
 			return ReadString();
 		}
 
-		public delegate T ReadObject<T>(LRBinaryReader p_reader);
-
-		public T[] ReadArrayBlock<T>(ReadObject<T> p_readFunc)
+		public T[] ReadArrayBlock<T>(Func<LRBinaryReader, T> p_readFunc)
 		{
 			// [array_len]
 			// {
@@ -212,7 +210,7 @@ namespace LibLR1.IO
 			return output;
 		}
 
-		public List<T> ReadListBlock<T>(ReadObject<T> p_readFunc)
+		public List<T> ReadListBlock<T>(Func<LRBinaryReader, T> p_readFunc)
 		{
 			Expect(Token.LeftBracket);
 			int array_len = ReadIntWithHeader();
@@ -227,7 +225,7 @@ namespace LibLR1.IO
 			return output;
 		}
 
-		public T[] ReadStructArrayBlock<T>(ReadObject<T> p_readFunc, byte p_typeByte)
+		public T[] ReadStructArrayBlock<T>(Func<LRBinaryReader, T> p_readFunc, byte p_typeByte)
 		{
 			// [array_len]
 			// {
@@ -255,7 +253,7 @@ namespace LibLR1.IO
 			return output;
 		}
 
-		public List<T> ReadStructListBlock<T>(ReadObject<T> p_readFunc, byte p_typeByte)
+		public List<T> ReadStructListBlock<T>(Func<LRBinaryReader, T> p_readFunc, byte p_typeByte)
 		{
 			Expect(Token.LeftBracket);
 			int array_len = ReadIntWithHeader();
@@ -271,7 +269,7 @@ namespace LibLR1.IO
 			return output;
 		}
 
-		public Dictionary<string, T> ReadDictionaryBlock<T>(ReadObject<T> p_readFunc, byte p_typeByte)
+		public Dictionary<string, T> ReadDictionaryBlock<T>(Func<LRBinaryReader, T> p_readFunc, byte p_typeByte)
 		{
 			// [array_len]
 			// {
@@ -307,7 +305,7 @@ namespace LibLR1.IO
 			return output;
 		}
 
-		public KeyValuePair<string, T>[] ReadCollidableDictionaryBlock<T>(ReadObject<T> p_readFunc, byte p_typeByte)
+		public KeyValuePair<string, T>[] ReadCollidableDictionaryBlock<T>(Func<LRBinaryReader, T> p_readFunc, byte p_typeByte)
 		{
 			// not a fucking clue what this is about.
 			Expect(Token.LeftBracket);
@@ -330,7 +328,7 @@ namespace LibLR1.IO
 			return output;
 		}
 
-		public T ReadStruct<T>(ReadObject<T> p_readFunc)
+		public T ReadStruct<T>(Func<LRBinaryReader, T> p_readFunc)
 		{
 			Expect(Token.LeftCurly);
 			T output = p_readFunc(this);
@@ -340,37 +338,37 @@ namespace LibLR1.IO
 
 		public byte[] ReadByteArrayBlock()
 		{
-			return ReadArrayBlock<byte>(new ReadObject<byte>((br) => br.ReadByteWithHeader()));
+			return ReadArrayBlock<byte>((br) => br.ReadByteWithHeader());
 		}
 
 		public float[] ReadFloatArrayBlock()
 		{
-			return ReadArrayBlock<float>(new ReadObject<float>((br) => br.ReadFloatWithHeader()));
+			return ReadArrayBlock<float>((br) => br.ReadFloatWithHeader());
 		}
 
 		public int[] ReadIntArrayBlock()
 		{
-			return ReadArrayBlock<int>(new ReadObject<int>((br) => br.ReadIntWithHeader()));
+			return ReadArrayBlock<int>((br) => br.ReadIntWithHeader());
 		}
 
 		public LRQuaternion[] ReadQuaternionArrayBlock()
 		{
-			return ReadArrayBlock<LRQuaternion>(new ReadObject<LRQuaternion>((br) => LRQuaternion.Read(br)));
+			return ReadArrayBlock<LRQuaternion>(LRQuaternion.Read);
 		}
 
 		public string[] ReadStringArrayBlock()
 		{
-			return ReadArrayBlock<string>(new ReadObject<string>((br) => br.ReadStringWithHeader()));
+			return ReadArrayBlock<string>((br) => br.ReadStringWithHeader());
 		}
 
 		public LRVector2[] ReadVector2fArrayBlock()
 		{
-			return ReadArrayBlock<LRVector2>(new ReadObject<LRVector2>((br) => LRVector2.Read(br)));
+			return ReadArrayBlock<LRVector2>(LRVector2.Read);
 		}
 
 		public LRVector3[] ReadVector3fArrayBlock()
 		{
-			return ReadArrayBlock<LRVector3>(new ReadObject<LRVector3>((br) => LRVector3.Read(br)));
+			return ReadArrayBlock<LRVector3>(LRVector3.Read);
 		}
 	}
 }

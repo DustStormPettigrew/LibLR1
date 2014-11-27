@@ -93,9 +93,7 @@ namespace LibLR1
 					case ID_ITEM_IMAGE:
 					{
 						m_imageItems = p_reader.ReadDictionaryBlock<MIB_ImageItem_38>(
-							new LRBinaryReader.ReadObject<MIB_ImageItem_38>(
-								MIB_ImageItem_38.Read
-							),
+							MIB_ImageItem_38.Read,
 							ID_ITEM_IMAGE
 						);
 						break;
@@ -103,9 +101,7 @@ namespace LibLR1
 					case ID_ITEM_TEXT:
 					{
 						m_textItems = p_reader.ReadDictionaryBlock<MIB_TextItem_39>(
-							new LRBinaryReader.ReadObject<MIB_TextItem_39>(
-								MIB_TextItem_39.Read
-							),
+							MIB_TextItem_39.Read,
 							ID_ITEM_TEXT
 						);
 						break;
@@ -113,9 +109,7 @@ namespace LibLR1
 					case ID_ITEM_SCENE_VIEW_42:
 					{
 						m_scene42Items = p_reader.ReadDictionaryBlock<MIB_SceneItem_42>(
-							new LRBinaryReader.ReadObject<MIB_SceneItem_42>(
-								MIB_SceneItem_42.Read
-							),
+							MIB_SceneItem_42.Read,
 							ID_ITEM_SCENE_VIEW_42
 						);
 						break;
@@ -123,9 +117,7 @@ namespace LibLR1
 					case ID_ITEM_SCENE_VIEW_45:
 					{
 						m_scene45Items = p_reader.ReadDictionaryBlock<MIB_SceneItem_45>(
-							new LRBinaryReader.ReadObject<MIB_SceneItem_45>(
-								MIB_SceneItem_45.Read
-							),
+							MIB_SceneItem_45.Read,
 							ID_ITEM_SCENE_VIEW_45
 						);
 						break;
@@ -133,9 +125,7 @@ namespace LibLR1
 					case ID_ITEM_TEXT_BUTTON_46:
 					{
 						m_textButtonItems = p_reader.ReadDictionaryBlock<MIB_TextButtonItem_46>(
-							new LRBinaryReader.ReadObject<MIB_TextButtonItem_46>(
-								MIB_TextButtonItem_46.Read
-							),
+							MIB_TextButtonItem_46.Read,
 							ID_ITEM_TEXT_BUTTON_46
 						);
 						break;
@@ -167,9 +157,7 @@ namespace LibLR1
 			{
 				p_writer.WriteByte(ID_ITEM_IMAGE);
 				p_writer.WriteDictionaryBlock<MIB_ImageItem_38>(
-					new LRBinaryWriter.WriteObject<MIB_ImageItem_38>(
-						MIB_ImageItem_38.Write
-					),
+					MIB_ImageItem_38.Write,
 					m_imageItems,
 					ID_ITEM_IMAGE
 				);
@@ -178,9 +166,7 @@ namespace LibLR1
 			{
 				p_writer.WriteByte(ID_ITEM_TEXT);
 				p_writer.WriteDictionaryBlock<MIB_TextItem_39>(
-					new LRBinaryWriter.WriteObject<MIB_TextItem_39>(
-						MIB_TextItem_39.Write
-					),
+					MIB_TextItem_39.Write,
 					m_textItems,
 					ID_ITEM_TEXT
 				);
@@ -189,9 +175,7 @@ namespace LibLR1
 			{
 				p_writer.WriteByte(ID_ITEM_SCENE_VIEW_42);
 				p_writer.WriteDictionaryBlock<MIB_SceneItem_42>(
-					new LRBinaryWriter.WriteObject<MIB_SceneItem_42>(
-						MIB_SceneItem_42.Write
-					),
+					MIB_SceneItem_42.Write,
 					m_scene42Items,
 					ID_ITEM_SCENE_VIEW_42
 				);
@@ -200,9 +184,7 @@ namespace LibLR1
 			{
 				p_writer.WriteByte(ID_ITEM_SCENE_VIEW_45);
 				p_writer.WriteDictionaryBlock<MIB_SceneItem_45>(
-					new LRBinaryWriter.WriteObject<MIB_SceneItem_45>(
-						MIB_SceneItem_45.Write
-					),
+					MIB_SceneItem_45.Write,
 					m_scene45Items,
 					ID_ITEM_SCENE_VIEW_45
 				);
@@ -211,9 +193,7 @@ namespace LibLR1
 			{
 				p_writer.WriteByte(ID_ITEM_TEXT_BUTTON_46);
 				p_writer.WriteDictionaryBlock<MIB_TextButtonItem_46>(
-					new LRBinaryWriter.WriteObject<MIB_TextButtonItem_46>(
-						MIB_TextButtonItem_46.Write
-					),
+					MIB_TextButtonItem_46.Write,
 					m_textButtonItems,
 					ID_ITEM_TEXT_BUTTON_46
 				);
@@ -355,9 +335,7 @@ namespace LibLR1
 					case PROPERTY_POSITION:
 					{
 						val.Position = p_reader.ReadStruct<MIB_Position>(
-							new LRBinaryReader.ReadObject<MIB_Position>(
-								MIB_Position.Read
-							)
+							MIB_Position.Read
 						);
 						break;
 					}
@@ -377,9 +355,7 @@ namespace LibLR1
 		{
 			p_writer.WriteByte(PROPERTY_POSITION);
 			p_writer.WriteStruct<MIB_Position>(
-				new LRBinaryWriter.WriteObject<MIB_Position>(
-					MIB_Position.Write
-				),
+				MIB_Position.Write,
 				p_value.Position
 			);
 		}
@@ -404,9 +380,7 @@ namespace LibLR1
 					case PROPERTY_POSITION:
 					{
 						val.Position = p_reader.ReadStruct<MIB_Position>(
-							new LRBinaryReader.ReadObject<MIB_Position>(
-								MIB_Position.Read
-							)
+							MIB_Position.Read
 						);
 						break;
 					}
@@ -431,9 +405,7 @@ namespace LibLR1
 		{
 			p_writer.WriteByte(PROPERTY_POSITION);
 			p_writer.WriteStruct<MIB_Position>(
-				new LRBinaryWriter.WriteObject<MIB_Position>(
-					MIB_Position.Write
-				),
+				MIB_Position.Write,
 				p_value.Position
 			);
 			if (p_value.Unknown_33.HasValue)
@@ -469,9 +441,7 @@ namespace LibLR1
 					case PROPERTY_POSITION:
 					{
 						val.Position = p_reader.ReadStruct<MIB_Position>(
-							new LRBinaryReader.ReadObject<MIB_Position>(
-								MIB_Position.Read
-							)
+							MIB_Position.Read
 						);
 						break;
 					}
@@ -513,9 +483,7 @@ namespace LibLR1
 		{
 			p_writer.WriteByte(PROPERTY_POSITION);
 			p_writer.WriteStruct<MIB_Position>(
-				new LRBinaryWriter.WriteObject<MIB_Position>(
-					MIB_Position.Write
-				),
+				MIB_Position.Write,
 				p_value.Position
 			);
 			if (p_value.HasSceneName)
@@ -557,9 +525,7 @@ namespace LibLR1
 					case PROPERTY_POSITION:
 					{
 						val.Position = p_reader.ReadStruct<MIB_Position>(
-							new LRBinaryReader.ReadObject<MIB_Position>(
-								MIB_Position.Read
-							)
+							MIB_Position.Read
 						);
 						break;
 					}
@@ -585,9 +551,7 @@ namespace LibLR1
 		{
 			p_writer.WriteByte(PROPERTY_POSITION);
 			p_writer.WriteStruct<MIB_Position>(
-				new LRBinaryWriter.WriteObject<MIB_Position>(
-					MIB_Position.Write
-				),
+				MIB_Position.Write,
 				p_value.Position
 			);
 			if (p_value.HasSceneName)
@@ -619,9 +583,7 @@ namespace LibLR1
 					case PROPERTY_POSITION:
 					{
 						val.Position = p_reader.ReadStruct<MIB_Position>(
-							new LRBinaryReader.ReadObject<MIB_Position>(
-								MIB_Position.Read
-							)
+							MIB_Position.Read
 						);
 						break;
 					}
@@ -651,9 +613,7 @@ namespace LibLR1
 		{
 			p_writer.WriteByte(PROPERTY_POSITION);
 			p_writer.WriteStruct<MIB_Position>(
-				new LRBinaryWriter.WriteObject<MIB_Position>(
-					MIB_Position.Write
-				),
+				MIB_Position.Write,
 				p_value.Position
 			);
 			if (p_value.Unknown_32.HasValue)

@@ -216,9 +216,7 @@ namespace LibLR1
 					case ID_STATIC_MODEL:
 					{
 						m_staticModels = p_reader.ReadDictionaryBlock<WDB_StaticModel>(
-							new LRBinaryReader.ReadObject<WDB_StaticModel>(
-								WDB_StaticModel.Read
-							),
+							WDB_StaticModel.Read,
 							ID_STATIC_MODEL
 						);
 						break;
@@ -226,9 +224,7 @@ namespace LibLR1
 					case ID_ANIMATED_MODEL:
 					{
 						m_animatedModels = p_reader.ReadDictionaryBlock<WDB_AnimatedModel>(
-							new LRBinaryReader.ReadObject<WDB_AnimatedModel>(
-								WDB_AnimatedModel.Read
-							),
+							WDB_AnimatedModel.Read,
 							ID_ANIMATED_MODEL
 						);
 						break;
@@ -236,9 +232,7 @@ namespace LibLR1
 					case ID_BDB_MODEL:
 					{
 						m_BDBModels = p_reader.ReadDictionaryBlock<WDB_BDBModel>(
-							new LRBinaryReader.ReadObject<WDB_BDBModel>(
-								WDB_BDBModel.Read
-							),
+							WDB_BDBModel.Read,
 							ID_BDB_MODEL
 						);
 						break;
@@ -246,9 +240,7 @@ namespace LibLR1
 					case ID_BILLBOARD_SPRITE:
 					{
 						m_billboards = p_reader.ReadStructArrayBlock<WDB_Billboard>(
-							new LRBinaryReader.ReadObject<WDB_Billboard>(
-								WDB_Billboard.Read
-							),
+							WDB_Billboard.Read,
 							ID_BILLBOARD_SPRITE
 						);
 						break;
@@ -256,9 +248,7 @@ namespace LibLR1
 					case ID_BVB_MODEL:
 					{
 						m_BVBModels = p_reader.ReadDictionaryBlock<WDB_BVBModel>(
-							new LRBinaryReader.ReadObject<WDB_BVBModel>(
-								WDB_BVBModel.Read
-							),
+							WDB_BVBModel.Read,
 							ID_BVB_MODEL
 						);
 						break;
@@ -266,9 +256,7 @@ namespace LibLR1
 					case ID_CAMERA:
 					{
 						m_cameras = p_reader.ReadDictionaryBlock<WDB_Camera>(
-							new LRBinaryReader.ReadObject<WDB_Camera>(
-								WDB_Camera.Read
-							),
+							WDB_Camera.Read,
 							ID_CAMERA
 						);
 						break;
@@ -276,9 +264,7 @@ namespace LibLR1
 					case ID_AMBIENT_LIGHT:
 					{
 						m_ambientLights = p_reader.ReadDictionaryBlock<WDB_AmbientLight>(
-							new LRBinaryReader.ReadObject<WDB_AmbientLight>(
-								WDB_AmbientLight.Read
-							),
+							WDB_AmbientLight.Read,
 							ID_AMBIENT_LIGHT
 						);
 						break;
@@ -286,9 +272,7 @@ namespace LibLR1
 					case ID_DIRECTIONAL_LIGHT:
 					{
 						m_directionalLights = p_reader.ReadDictionaryBlock<WDB_DirectionalLight>(
-							new LRBinaryReader.ReadObject<WDB_DirectionalLight>(
-								WDB_DirectionalLight.Read
-							),
+							WDB_DirectionalLight.Read,
 							ID_DIRECTIONAL_LIGHT
 						);
 						break;
@@ -449,9 +433,7 @@ namespace LibLR1
 					case PROPERTY_UNKNOWN_3E:
 					{
 						val.Unknown_3E = p_reader.ReadArrayBlock<WDB_Unknown3E>(
-							new LRBinaryReader.ReadObject<WDB_Unknown3E>(
-								WDB_Unknown3E.Read
-							)
+							WDB_Unknown3E.Read
 						);
 						break;
 					}
@@ -520,9 +502,7 @@ namespace LibLR1
 					case PROPERTY_UNKNOWN_3E:
 					{
 						val.Unknown_3E = p_reader.ReadArrayBlock<WDB_Unknown3E>(
-							new LRBinaryReader.ReadObject<WDB_Unknown3E>(
-								WDB_Unknown3E.Read
-							)
+							WDB_Unknown3E.Read
 						);
 						break;
 					}
@@ -735,9 +715,7 @@ namespace LibLR1
 					case PROPERTY_UNKNOWN_3E:
 					{
 						val.Unknown_3E = p_reader.ReadArrayBlock<WDB_Unknown3E>(
-							new LRBinaryReader.ReadObject<WDB_Unknown3E>(
-								WDB_Unknown3E.Read
-							)
+							WDB_Unknown3E.Read
 						);
 					}
 					break;

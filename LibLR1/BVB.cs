@@ -62,9 +62,7 @@ namespace LibLR1
 					case ID_POLYGONS:
 					{
 						m_polygons = p_reader.ReadArrayBlock<BVB_Polygon>(
-							new LRBinaryReader.ReadObject<BVB_Polygon>(
-								BVB_Polygon.Read
-							)
+							BVB_Polygon.Read
 						);
 						break;
 					}
@@ -76,9 +74,7 @@ namespace LibLR1
 					case ID_POLYGON_RANGES:
 					{
 						m_polygonRanges = p_reader.ReadArrayBlock<BVB_PolygonRange>(
-							new LRBinaryReader.ReadObject<BVB_PolygonRange>(
-								BVB_PolygonRange.Read
-							)
+							BVB_PolygonRange.Read
 						);
 						break;
 					}

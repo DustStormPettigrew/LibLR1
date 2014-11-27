@@ -65,9 +65,7 @@ namespace LibLR1
 					case ID_CUTSCENE:
 					{
 						m_cutscenes = p_reader.ReadDictionaryBlock<CDB_Cutscene>(
-							new LRBinaryReader.ReadObject<CDB_Cutscene>(
-								CDB_Cutscene.Read
-							),
+							CDB_Cutscene.Read,
 							ID_CUTSCENE
 						);
 						break;
@@ -132,9 +130,7 @@ namespace LibLR1
 					case PROPERTY_CAMERA:
 					{
 						val.Cameras = p_reader.ReadCollidableDictionaryBlock<CDB_Camera>(
-							new LRBinaryReader.ReadObject<CDB_Camera>(
-								CDB_Camera.Read
-							),
+							CDB_Camera.Read,
 							PROPERTY_CAMERA
 						);
 						break;
@@ -142,9 +138,7 @@ namespace LibLR1
 					case PROPERTY_MODEL:
 					{
 						val.Models = p_reader.ReadCollidableDictionaryBlock<CDB_Model>(
-							new LRBinaryReader.ReadObject<CDB_Model>(
-								CDB_Model.Read
-							),
+							CDB_Model.Read,
 							PROPERTY_MODEL
 						);
 						break;
@@ -152,9 +146,7 @@ namespace LibLR1
 					case PROPERTY_EVENT:
 					{
 						val.Events = p_reader.ReadCollidableDictionaryBlock<CDB_Event>(
-							new LRBinaryReader.ReadObject<CDB_Event>(
-								CDB_Event.Read
-							),
+							CDB_Event.Read,
 							PROPERTY_EVENT
 						);
 						break;
@@ -162,9 +154,7 @@ namespace LibLR1
 					case PROPERTY_LIGHTTYPE_AMBIENT:
 					{
 						val.AmbientLights = p_reader.ReadCollidableDictionaryBlock<CDB_AmbientLight>(
-							new LRBinaryReader.ReadObject<CDB_AmbientLight>(
-								CDB_AmbientLight.Read
-							),
+							CDB_AmbientLight.Read,
 							PROPERTY_LIGHTTYPE_AMBIENT
 						);
 						break;
@@ -172,9 +162,7 @@ namespace LibLR1
 					case PROPERTY_LIGHTTYPE_DIRECTIONAL:
 					{
 						val.DirectionalLights = p_reader.ReadCollidableDictionaryBlock<CDB_DirectionalLight>(
-							new LRBinaryReader.ReadObject<CDB_DirectionalLight>(
-								CDB_DirectionalLight.Read
-							),
+							CDB_DirectionalLight.Read,
 							PROPERTY_LIGHTTYPE_DIRECTIONAL
 						);
 						break;
@@ -324,9 +312,7 @@ namespace LibLR1
 					case PROPERTY_UNKNOWN_36:
 					{
 						val.Unknown = p_reader.ReadArrayBlock<CDB_5ints>(
-							new LRBinaryReader.ReadObject<CDB_5ints>(
-								CDB_5ints.Read
-							)
+							CDB_5ints.Read
 						);
 						break;
 					}

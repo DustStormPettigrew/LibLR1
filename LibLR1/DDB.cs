@@ -37,9 +37,7 @@ namespace LibLR1
 					case ID_DRIVERS:
 					{
 						m_drivers = p_reader.ReadDictionaryBlock<DDB_Driver>(
-							new LRBinaryReader.ReadObject<DDB_Driver>(
-								DDB_Driver.Read
-							),
+							DDB_Driver.Read,
 							ID_DRIVERS
 						);
 						break;
@@ -67,9 +65,7 @@ namespace LibLR1
 		{
 			p_writer.WriteByte(ID_DRIVERS);
 			p_writer.WriteDictionaryBlock<DDB_Driver>(
-				new LRBinaryWriter.WriteObject<DDB_Driver>(
-					DDB_Driver.Write
-				),
+				DDB_Driver.Write,
 				m_drivers,
 				ID_DRIVERS
 			);

@@ -33,9 +33,7 @@ namespace LibLR1
 					case ID_LOADSCREEN:
 					{
 						m_loadScreen = p_reader.ReadStruct<LSB_LoadScreen>(
-							new LRBinaryReader.ReadObject<LSB_LoadScreen>(
-								LSB_LoadScreen.Read
-							)
+							LSB_LoadScreen.Read
 						);
 						break;
 					}
@@ -62,9 +60,7 @@ namespace LibLR1
 		{
 			p_writer.WriteByte(ID_LOADSCREEN);
 			p_writer.WriteStruct<LSB_LoadScreen>(
-				new LRBinaryWriter.WriteObject<LSB_LoadScreen>(
-					LSB_LoadScreen.Write
-				),
+				LSB_LoadScreen.Write,
 				m_loadScreen
 			);
 		}

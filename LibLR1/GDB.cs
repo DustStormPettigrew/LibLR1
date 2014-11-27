@@ -77,36 +77,28 @@ namespace LibLR1
 					case ID_VERTEX_NORMALED:
 					{
 						m_vertexNormals = p_reader.ReadArrayBlock<GDB_Vertex_Normal>(
-							new LRBinaryReader.ReadObject<GDB_Vertex_Normal>(
-								GDB_Vertex_Normal.Read
-							)
+							GDB_Vertex_Normal.Read
 						);
 						break;
 					}
 					case ID_VERTEX_COLORED:
 					{
 						m_vertexColors = p_reader.ReadArrayBlock<GDB_Vertex_Color>(
-							new LRBinaryReader.ReadObject<GDB_Vertex_Color>(
-								GDB_Vertex_Color.Read
-							)
+							GDB_Vertex_Color.Read
 						);
 						break;
 					}
 					case ID_INDICES:
 					{
 						m_polygons = p_reader.ReadArrayBlock<GDB_Polygon>(
-							new LRBinaryReader.ReadObject<GDB_Polygon>(
-								GDB_Polygon.Read
-							)
+							GDB_Polygon.Read
 						);
 						break;
 					}
 					case ID_INDICES_META:
 					{
 						m_meta = p_reader.ReadArrayBlock<GDB_Meta>(
-							new LRBinaryReader.ReadObject<GDB_Meta>(
-								GDB_Meta.Read
-							)
+							GDB_Meta.Read
 						);
 						break;
 					}
@@ -142,9 +134,7 @@ namespace LibLR1
 			{
 				p_writer.WriteByte(ID_VERTEX_NORMALED);
 				p_writer.WriteArrayBlock<GDB_Vertex_Normal>(
-					new LRBinaryWriter.WriteObject<GDB_Vertex_Normal>(
-						GDB_Vertex_Normal.Write
-					),
+					GDB_Vertex_Normal.Write,
 					m_vertexNormals
 				);
 			}
@@ -152,26 +142,20 @@ namespace LibLR1
 			{
 				p_writer.WriteByte(ID_VERTEX_COLORED);
 				p_writer.WriteArrayBlock<GDB_Vertex_Color>(
-					new LRBinaryWriter.WriteObject<GDB_Vertex_Color>(
-						GDB_Vertex_Color.Write
-					),
+					GDB_Vertex_Color.Write,
 					m_vertexColors
 				);
 			}
 			p_writer.WriteByte(ID_INDICES);
 			p_writer.WriteArrayBlock<GDB_Polygon>(
-				new LRBinaryWriter.WriteObject<GDB_Polygon>(
-					GDB_Polygon.Write
-				),
+				GDB_Polygon.Write,
 				m_polygons
 			);
 			if (m_meta != null)
 			{
 				p_writer.WriteByte(ID_INDICES_META);
 				p_writer.WriteArrayBlock<GDB_Meta>(
-					new LRBinaryWriter.WriteObject<GDB_Meta>(
-						GDB_Meta.Write
-					),
+					GDB_Meta.Write,
 					m_meta
 				);
 			}

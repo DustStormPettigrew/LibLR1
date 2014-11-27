@@ -144,9 +144,7 @@ namespace LibLR1.IO
 			WriteString(p_value);
 		}
 
-		public delegate void WriteObject<T>(LRBinaryWriter p_writer, T p_value);
-
-		public void WriteArrayBlock<T>(WriteObject<T> p_writeFunc, T[] p_values)
+		public void WriteArrayBlock<T>(Action<LRBinaryWriter, T> p_writeFunc, T[] p_values)
 		{
 			WriteToken(Token.LeftBracket);
 			WriteIntWithHeader(p_values.Length);
@@ -159,7 +157,7 @@ namespace LibLR1.IO
 			WriteToken(Token.RightCurly);
 		}
 
-		public void WriteListBlock<T>(WriteObject<T> p_writeFunc, List<T> p_values)
+		public void WriteListBlock<T>(Action<LRBinaryWriter, T> p_writeFunc, List<T> p_values)
 		{
 			WriteToken(Token.LeftBracket);
 			WriteIntWithHeader(p_values.Count);
@@ -172,7 +170,7 @@ namespace LibLR1.IO
 			WriteToken(Token.RightCurly);
 		}
 
-		public void WriteStructArrayBlock<T>(WriteObject<T> p_writeFunc, T[] p_values, byte p_typeByte)
+		public void WriteStructArrayBlock<T>(Action<LRBinaryWriter, T> p_writeFunc, T[] p_values, byte p_typeByte)
 		{
 			WriteToken(Token.LeftBracket);
 			WriteIntWithHeader(p_values.Length);
@@ -186,7 +184,7 @@ namespace LibLR1.IO
 			WriteToken(Token.RightCurly);
 		}
 
-		public void WriteStructListBlock<T>(WriteObject<T> p_writeFunc, List<T> p_values, byte p_typeByte)
+		public void WriteStructListBlock<T>(Action<LRBinaryWriter, T> p_writeFunc, List<T> p_values, byte p_typeByte)
 		{
 			WriteToken(Token.LeftBracket);
 			WriteIntWithHeader(p_values.Count);
@@ -200,7 +198,7 @@ namespace LibLR1.IO
 			WriteToken(Token.RightCurly);
 		}
 
-		public void WriteDictionaryBlock<T>(WriteObject<T> p_writeFunc, Dictionary<string, T> p_values, byte p_typeByte)
+		public void WriteDictionaryBlock<T>(Action<LRBinaryWriter, T> p_writeFunc, Dictionary<string, T> p_values, byte p_typeByte)
 		{
 			WriteToken(Token.LeftBracket);
 			WriteIntWithHeader(p_values.Count);
@@ -215,7 +213,7 @@ namespace LibLR1.IO
 			WriteToken(Token.RightCurly);
 		}
 
-		public void WriteCollidableDictionaryBlock<T>(WriteObject<T> p_writeFunc, KeyValuePair<string, T>[] p_values, byte p_typeByte)
+		public void WriteCollidableDictionaryBlock<T>(Action<LRBinaryWriter, T> p_writeFunc, KeyValuePair<string, T>[] p_values, byte p_typeByte)
 		{
 			WriteToken(Token.LeftBracket);
 			WriteIntWithHeader(p_values.Length);
@@ -230,7 +228,7 @@ namespace LibLR1.IO
 			WriteToken(Token.RightCurly);
 		}
 
-		public void WriteStruct<T>(WriteObject<T> p_writeFunc, T p_value)
+		public void WriteStruct<T>(Action<LRBinaryWriter, T> p_writeFunc, T p_value)
 		{
 			WriteToken(Token.LeftCurly);
 			p_writeFunc(this, p_value);
@@ -239,37 +237,37 @@ namespace LibLR1.IO
 
 		public void WriteByteArrayBlock(byte[] p_values)
 		{
-			WriteArrayBlock<byte>(new WriteObject<byte>((bw, val) => WriteByteWithHeader(val)), p_values);
+			WriteArrayBlock<byte>((bw, val) => WriteByteWithHeader(val), p_values);
 		}
 
 		public void WriteFloatArrayBlock(float[] p_values)
 		{
-			WriteArrayBlock<float>(new WriteObject<float>((bw, val) => WriteFloatWithHeader(val)), p_values);
+			WriteArrayBlock<float>((bw, val) => WriteFloatWithHeader(val), p_values);
 		}
 
 		public void WriteIntArrayBlock(int[] p_values)
 		{
-			WriteArrayBlock<int>(new WriteObject<int>((bw, val) => WriteIntWithHeader(val)), p_values);
+			WriteArrayBlock<int>((bw, val) => WriteIntWithHeader(val), p_values);
 		}
 
 		public void WriteQuaternionArrayBlock(LRQuaternion[] p_values)
 		{
-			WriteArrayBlock<LRQuaternion>(new WriteObject<LRQuaternion>(LRQuaternion.Write), p_values);
+			WriteArrayBlock<LRQuaternion>(LRQuaternion.Write, p_values);
 		}
 
 		public void WriteStringArrayBlock(string[] p_values)
 		{
-			WriteArrayBlock<string>(new WriteObject<string>((bw, val) => bw.WriteStringWithHeader(val)), p_values);
+			WriteArrayBlock<string>((bw, val) => bw.WriteStringWithHeader(val), p_values);
 		}
 
 		public void WriteVector2fArrayBlock(LRVector2[] p_values)
 		{
-			WriteArrayBlock<LRVector2>(new WriteObject<LRVector2>(LRVector2.Write), p_values);
+			WriteArrayBlock<LRVector2>(LRVector2.Write, p_values);
 		}
 
 		public void WriteVector3fArrayBlock(LRVector3[] p_values)
 		{
-			WriteArrayBlock<LRVector3>(new WriteObject<LRVector3>(LRVector3.Write), p_values);
+			WriteArrayBlock<LRVector3>(LRVector3.Write, p_values);
 		}
 	}
 }

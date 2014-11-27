@@ -54,27 +54,21 @@ namespace LibLR1
 					case ID_ANIM_DATA:
 					{
 						m_data = p_reader.ReadStruct<ADB_Data>(
-							new LRBinaryReader.ReadObject<ADB_Data>(
-								ADB_Data.Read
-							)
+							ADB_Data.Read
 						);
 						break;
 					}
 					case ID_ANIM_POINTERS:
 					{
 						m_pointers = p_reader.ReadArrayBlock<ADB_Pointer>(
-							new LRBinaryReader.ReadObject<ADB_Pointer>(
-								ADB_Pointer.Read
-							)
+							ADB_Pointer.Read
 						);
 						break;
 					}
 					case ID_ANIM_META:
 					{
 						m_animations = p_reader.ReadDictionaryBlock<ADB_Meta>(
-							new LRBinaryReader.ReadObject<ADB_Meta>(
-								ADB_Meta.Read
-							),
+							ADB_Meta.Read,
 							ID_ANIM_META
 						);
 						break;
@@ -102,25 +96,19 @@ namespace LibLR1
 		{
 			p_writer.WriteByte(ID_ANIM_DATA);
 			p_writer.WriteStruct<ADB_Data>(
-				new LRBinaryWriter.WriteObject<ADB_Data>(
-					ADB_Data.Write
-				),
+				ADB_Data.Write,
 				m_data
 			);
 
 			p_writer.WriteByte(ID_ANIM_POINTERS);
 			p_writer.WriteArrayBlock<ADB_Pointer>(
-				new LRBinaryWriter.WriteObject<ADB_Pointer>(
-					ADB_Pointer.Write
-				),
+				ADB_Pointer.Write,
 				m_pointers
 			);
 
 			p_writer.WriteByte(ID_ANIM_META);
 			p_writer.WriteDictionaryBlock<ADB_Meta>(
-				new LRBinaryWriter.WriteObject<ADB_Meta>(
-					ADB_Meta.Write
-				),
+				ADB_Meta.Write,
 				m_animations,
 				ID_ANIM_META
 			);

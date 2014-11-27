@@ -54,9 +54,7 @@ namespace LibLR1
 					case ID_COLOR_BRICKS:
 					{
 						m_colorBricks = p_reader.ReadStructListBlock<PWB_ColorBrick>(
-							new LRBinaryReader.ReadObject<PWB_ColorBrick>(
-								PWB_ColorBrick.Read
-							),
+							PWB_ColorBrick.Read,
 							ID_COLOR_BRICKS
 						);
 						break;
@@ -64,9 +62,7 @@ namespace LibLR1
 					case ID_WHITE_BRICKS:
 					{
 						m_whiteBricks = p_reader.ReadStructListBlock<PWB_WhiteBrick>(
-							new LRBinaryReader.ReadObject<PWB_WhiteBrick>(
-								PWB_WhiteBrick.Read
-							),
+							PWB_WhiteBrick.Read,
 							ID_WHITE_BRICKS
 						);
 						break;
@@ -94,17 +90,13 @@ namespace LibLR1
 		{
 			p_writer.WriteByte(ID_COLOR_BRICKS);
 			p_writer.WriteStructListBlock<PWB_ColorBrick>(
-				new LRBinaryWriter.WriteObject<PWB_ColorBrick>(
-					PWB_ColorBrick.Write
-				),
+				PWB_ColorBrick.Write,
 				m_colorBricks,
 				ID_COLOR_BRICKS
 			);
 			p_writer.WriteByte(ID_WHITE_BRICKS);
 			p_writer.WriteStructListBlock<PWB_WhiteBrick>(
-				new LRBinaryWriter.WriteObject<PWB_WhiteBrick>(
-					PWB_WhiteBrick.Write
-				),
+				PWB_WhiteBrick.Write,
 				m_whiteBricks,
 				ID_WHITE_BRICKS
 			);

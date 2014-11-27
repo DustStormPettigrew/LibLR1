@@ -38,9 +38,7 @@ namespace LibLR1
 					case ID_CIRCUIT:
 					{
 						m_circuits = p_reader.ReadDictionaryBlock<CRB_Circuit>(
-							new LRBinaryReader.ReadObject<CRB_Circuit>(
-								CRB_Circuit.Read
-							),
+							CRB_Circuit.Read,
 							ID_CIRCUIT
 						);
 						break;
@@ -68,9 +66,7 @@ namespace LibLR1
 		{
 			p_writer.WriteByte(ID_CIRCUIT);
 			p_writer.WriteDictionaryBlock<CRB_Circuit>(
-				new LRBinaryWriter.WriteObject<CRB_Circuit>(
-					CRB_Circuit.Write
-				),
+				CRB_Circuit.Write,
 				m_circuits,
 				ID_CIRCUIT
 			);

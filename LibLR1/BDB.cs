@@ -49,18 +49,14 @@ namespace LibLR1
 					case ID_UNKNOWN_27:
 					{
 						m_unknown27 = p_reader.ReadArrayBlock<BDB_Unknown27>(
-							new LRBinaryReader.ReadObject<BDB_Unknown27>(
-								BDB_Unknown27.Read
-							)
+							BDB_Unknown27.Read
 						);
 						break;
 					}
 					case ID_BOUNDING_BOXES:
 					{
 						m_boundingBoxes = p_reader.ReadArrayBlock<BDB_BoundingBox>(
-							new LRBinaryReader.ReadObject<BDB_BoundingBox>(
-								BDB_BoundingBox.Read
-							)
+							BDB_BoundingBox.Read
 						);
 						break;
 					}

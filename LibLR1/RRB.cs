@@ -79,9 +79,7 @@ namespace LibLR1
 					case ID_NODES:
 					{
 						m_nodes = p_reader.ReadArrayBlock<RRB_Node>(
-							new LRBinaryReader.ReadObject<RRB_Node>(
-								RRB_Node.Read
-							)
+							RRB_Node.Read
 						);
 					}
 					break;
@@ -150,9 +148,7 @@ namespace LibLR1
 			p_writer.WriteIntWithHeader(m_unknown2D);
 			p_writer.WriteByte(ID_NODES);
 			p_writer.WriteArrayBlock<RRB_Node>(
-				new LRBinaryWriter.WriteObject<RRB_Node>(
-					RRB_Node.Write
-				),
+				RRB_Node.Write,
 				m_nodes
 			);
 		}

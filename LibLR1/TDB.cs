@@ -35,9 +35,7 @@ namespace LibLR1
 					case ID_TEXTURES:
 					{
 						m_textures = p_reader.ReadDictionaryBlock<TDB_Texture>(
-							new LRBinaryReader.ReadObject<TDB_Texture>(
-								TDB_Texture.Read
-							),
+							TDB_Texture.Read,
 							ID_TEXTURES
 						);
 						break;
@@ -65,9 +63,7 @@ namespace LibLR1
 		{
 			p_writer.WriteByte(ID_TEXTURES);
 			p_writer.WriteDictionaryBlock<TDB_Texture>(
-				new LRBinaryWriter.WriteObject<TDB_Texture>(
-					TDB_Texture.Write
-				),
+				TDB_Texture.Write,
 				m_textures,
 				ID_TEXTURES
 			);

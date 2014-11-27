@@ -34,9 +34,7 @@ namespace LibLR1
 					case ID_TRACK:
 					{
 						m_tracks = p_reader.ReadDictionaryBlock<RCB_Track>(
-							new LRBinaryReader.ReadObject<RCB_Track>(
-								RCB_Track.Read
-							),
+							RCB_Track.Read,
 							ID_TRACK
 						);
 						break;
@@ -64,9 +62,7 @@ namespace LibLR1
 		{
 			p_writer.WriteByte(ID_TRACK);
 			p_writer.WriteDictionaryBlock<RCB_Track>(
-				new LRBinaryWriter.WriteObject<RCB_Track>(
-					RCB_Track.Write
-				),
+				RCB_Track.Write,
 				m_tracks,
 				ID_TRACK
 			);

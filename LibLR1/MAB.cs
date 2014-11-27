@@ -40,18 +40,14 @@ namespace LibLR1
 					case ID_MATERIALFRAMES:
 					{
 						m_materialFrames = p_reader.ReadArrayBlock<MAB_MaterialFrame>(
-							new LRBinaryReader.ReadObject<MAB_MaterialFrame>(
-								MAB_MaterialFrame.Read
-							)
+							MAB_MaterialFrame.Read
 						);
 						break;
 					}
 					case ID_ANIMATIONS:
 					{
 						m_animations = p_reader.ReadStructArrayBlock<MAB_Animation>(
-							new LRBinaryReader.ReadObject<MAB_Animation>(
-								MAB_Animation.Read
-							),
+							MAB_Animation.Read,
 							ID_ANIMATIONS
 						);
 						break;
@@ -79,16 +75,12 @@ namespace LibLR1
 		{
 			p_writer.WriteByte(ID_MATERIALFRAMES);
 			p_writer.WriteArrayBlock<MAB_MaterialFrame>(
-				new LRBinaryWriter.WriteObject<MAB_MaterialFrame>(
-					MAB_MaterialFrame.Write
-				),
+				MAB_MaterialFrame.Write,
 				m_materialFrames
 			);
 			p_writer.WriteByte(ID_ANIMATIONS);
 			p_writer.WriteStructArrayBlock<MAB_Animation>(
-				new LRBinaryWriter.WriteObject<MAB_Animation>(
-					MAB_Animation.Write
-				),
+				MAB_Animation.Write,
 				m_animations,
 				ID_ANIMATIONS
 			);

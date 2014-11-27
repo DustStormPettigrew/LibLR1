@@ -38,9 +38,7 @@ namespace LibLR1
 					case ID_CHECKPOINT:
 					{
 						m_checkpoints = p_reader.ReadStructArrayBlock<CPB_Checkpoint>(
-							new LRBinaryReader.ReadObject<CPB_Checkpoint>(
-								CPB_Checkpoint.Read
-							),
+							CPB_Checkpoint.Read,
 							ID_CHECKPOINT
 						);
 						break;
