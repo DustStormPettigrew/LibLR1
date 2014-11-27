@@ -1,6 +1,5 @@
-﻿using System.IO;
-using LibLR1.Utils;
-using LibLR1.IO;
+﻿using LibLR1.IO;
+using System.IO;
 
 namespace LibLR1 {
 	public class SRF

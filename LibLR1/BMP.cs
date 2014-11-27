@@ -1,9 +1,8 @@
 ﻿#define FAIL_ON_COMPRESSED_BLOCK
 
+using LibLR1.IO;
 using System;
 using System.IO;
-using LibLR1.Utils;
-using LibLR1.IO;
 
 namespace LibLR1
 {

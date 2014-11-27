@@ -1,6 +1,4 @@
 ﻿using LibLR1.IO;
-using System;
-using System.IO;
 
 namespace LibLR1.Utils
 {

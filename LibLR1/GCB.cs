@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using LibLR1.Exceptions;
-using LibLR1.Utils;
+﻿using LibLR1.Exceptions;
 using LibLR1.IO;
+using LibLR1.Utils;
+using System.Collections.Generic;
 
 namespace LibLR1
 {
