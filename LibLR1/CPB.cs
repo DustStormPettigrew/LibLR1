@@ -82,7 +82,7 @@ namespace LibLR1
 		public static CPB_Checkpoint Read(LRBinaryReader p_reader)
 		{
 			CPB_Checkpoint val = new CPB_Checkpoint();
-			while (!p_reader.Next(Token.RIGHT_CURLY))
+			while (!p_reader.Next(Token.RightCurly))
 			{
 				byte propertyId = p_reader.ReadByte();
 				switch (propertyId)

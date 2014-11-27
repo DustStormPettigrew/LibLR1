@@ -110,7 +110,7 @@ namespace LibLR1
 		public static MDB_Material Read(LRBinaryReader p_reader)
 		{
 			MDB_Material val = new MDB_Material();
-			while (!p_reader.Next(Token.RIGHT_CURLY))
+			while (!p_reader.Next(Token.RightCurly))
 			{
 				byte propertyId = p_reader.ReadByte();
 				switch (propertyId)

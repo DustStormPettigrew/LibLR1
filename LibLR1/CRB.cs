@@ -106,7 +106,7 @@ namespace LibLR1
 		public static CRB_Circuit Read(LRBinaryReader p_reader)
 		{
 			CRB_Circuit val = new CRB_Circuit();
-			while (!p_reader.Next(Token.RIGHT_CURLY))
+			while (!p_reader.Next(Token.RightCurly))
 			{
 				byte propertyId = p_reader.ReadByte();
 				switch (propertyId)

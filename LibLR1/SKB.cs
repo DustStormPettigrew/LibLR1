@@ -79,7 +79,7 @@ namespace LibLR1
 		public static SKB_Gradient FromStream(LRBinaryReader p_reader)
 		{
 			SKB_Gradient val = new SKB_Gradient();
-			while (!p_reader.Next(Token.RIGHT_CURLY))
+			while (!p_reader.Next(Token.RightCurly))
 			{
 				byte propertyId = p_reader.ReadByte();
 				switch (propertyId)

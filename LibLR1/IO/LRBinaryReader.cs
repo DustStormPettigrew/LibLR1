@@ -87,19 +87,19 @@ namespace LibLR1.IO
 
 		public byte ReadByteWithHeader()
 		{
-			Expect(Token.BYTE);
+			Expect(Token.Byte);
 			return ReadByte();
 		}
 
 		public sbyte ReadSByteWithHeader()
 		{
-			Expect(Token.SBYTE);
+			Expect(Token.SByte);
 			return ReadSByte();
 		}
 
 		public Fract8Bit ReadFract8BitWithHeader()
 		{
-			Expect(Token.FRACT8);
+			Expect(Token.Fract8);
 			return Fract8Bit.Read(this);
 		}
 
@@ -115,19 +115,19 @@ namespace LibLR1.IO
 
 		public ushort ReadUShortWithHeader()
 		{
-			Expect(Token.USHORT);
+			Expect(Token.UShort);
 			return ReadUShort();
 		}
 
 		public short ReadShortWithHeader()
 		{
-			Expect(Token.SHORT);
+			Expect(Token.Short);
 			return ReadShort();
 		}
 
 		public Fract16Bit ReadFract16BitWithHeader()
 		{
-			Expect(Token.FRACT16);
+			Expect(Token.Fract16);
 			return Fract16Bit.Read(this);
 		}
 
@@ -143,20 +143,20 @@ namespace LibLR1.IO
 
 		public int ReadIntWithHeader()
 		{
-			Expect(Token.INT32);
+			Expect(Token.Int32);
 			return ReadInt();
 		}
 
 		public int ReadIntegralWithHeader()
 		{
-			Token type = Expect(new Token[] { Token.SBYTE, Token.BYTE, Token.INT32, Token.USHORT, Token.SHORT });
+			Token type = Expect(new Token[] { Token.SByte, Token.Byte, Token.Int32, Token.UShort, Token.Short });
 			switch (type)
 			{
-				case Token.SBYTE:  return ReadSByte();
-				case Token.BYTE:   return ReadByte();
-				case Token.INT32:  return ReadInt();
-				case Token.USHORT: return ReadUShort();
-				case Token.SHORT:  return ReadShort();
+				case Token.SByte:  return ReadSByte();
+				case Token.Byte:   return ReadByte();
+				case Token.Int32:  return ReadInt();
+				case Token.UShort: return ReadUShort();
+				case Token.Short:  return ReadShort();
 			}
 			throw new UnexpectedTypeException(type, m_baseReader.BaseStream.Position - 1);
 		}
@@ -168,7 +168,7 @@ namespace LibLR1.IO
 
 		public float ReadFloatWithHeader()
 		{
-			Expect(Token.FLOAT);
+			Expect(Token.Float);
 			return ReadFloat();
 		}
 
@@ -185,7 +185,7 @@ namespace LibLR1.IO
 
 		public string ReadStringWithHeader()
 		{
-			Expect(Token.STRING);
+			Expect(Token.String);
 			return ReadString();
 		}
 
@@ -200,31 +200,31 @@ namespace LibLR1.IO
 			//     :
 			//     output[array_len - 1]
 			// }
-			Expect(Token.LEFT_BRACKET);
+			Expect(Token.LeftBracket);
 			int array_len = ReadIntWithHeader();
 			T[] output = new T[array_len];
-			Expect(Token.RIGHT_BRACKET);
-			Expect(Token.LEFT_CURLY);
+			Expect(Token.RightBracket);
+			Expect(Token.LeftCurly);
 			for (int i = 0; i < array_len; i++)
 			{
 				output[i] = p_readFunc(this);
 			}
-			Expect(Token.RIGHT_CURLY);
+			Expect(Token.RightCurly);
 			return output;
 		}
 
 		public List<T> ReadListBlock<T>(ReadObject<T> p_readFunc)
 		{
-			Expect(Token.LEFT_BRACKET);
+			Expect(Token.LeftBracket);
 			int array_len = ReadIntWithHeader();
 			List<T> output = new List<T>();
-			Expect(Token.RIGHT_BRACKET);
-			Expect(Token.LEFT_CURLY);
+			Expect(Token.RightBracket);
+			Expect(Token.LeftCurly);
 			for (int i = 0; i < array_len; i++)
 			{
 				output.Add(p_readFunc(this));
 			}
-			Expect(Token.RIGHT_CURLY);
+			Expect(Token.RightCurly);
 			return output;
 		}
 
@@ -242,33 +242,33 @@ namespace LibLR1.IO
 			//         output[array_len - 1],
 			//     }
 			// }
-			Expect(Token.LEFT_BRACKET);
+			Expect(Token.LeftBracket);
 			int array_len = ReadIntWithHeader();
 			T[] output = new T[array_len];
-			Expect(Token.RIGHT_BRACKET);
-			Expect(Token.LEFT_CURLY);
+			Expect(Token.RightBracket);
+			Expect(Token.LeftCurly);
 			for (int i = 0; i < array_len; i++)
 			{
 				Expect(p_typeByte);
 				output[i] = ReadStruct<T>(p_readFunc);
 			}
-			Expect(Token.RIGHT_CURLY);
+			Expect(Token.RightCurly);
 			return output;
 		}
 
 		public List<T> ReadStructListBlock<T>(ReadObject<T> p_readFunc, byte p_typeByte)
 		{
-			Expect(Token.LEFT_BRACKET);
+			Expect(Token.LeftBracket);
 			int array_len = ReadIntWithHeader();
 			List<T> output = new List<T>();
-			Expect(Token.RIGHT_BRACKET);
-			Expect(Token.LEFT_CURLY);
+			Expect(Token.RightBracket);
+			Expect(Token.LeftCurly);
 			for (int i = 0; i < array_len; i++)
 			{
 				Expect(p_typeByte);
 				output.Add(ReadStruct<T>(p_readFunc));
 			}
-			Expect(Token.RIGHT_CURLY);
+			Expect(Token.RightCurly);
 			return output;
 		}
 
@@ -289,53 +289,53 @@ namespace LibLR1.IO
 			//     }
 			// }
 			Dictionary<string, T> output = new Dictionary<string, T>();
-			Expect(Token.LEFT_BRACKET);
+			Expect(Token.LeftBracket);
 			int dict_len = ReadIntWithHeader();
-			Expect(Token.RIGHT_BRACKET);
-			Expect(Token.LEFT_CURLY);
+			Expect(Token.RightBracket);
+			Expect(Token.LeftCurly);
 			for (int i = 0; i < dict_len; i++)
 			{
 				Expect(p_typeByte);
 				string item_key = i.ToString();
-				if (Next(Token.STRING))
+				if (Next(Token.String))
 				{
 					item_key = ReadStringWithHeader();
 				}
 				T item_value = ReadStruct<T>(p_readFunc);
 				output.Add(item_key, item_value);
 			}
-			Expect(Token.RIGHT_CURLY);
+			Expect(Token.RightCurly);
 			return output;
 		}
 
 		public KeyValuePair<string, T>[] ReadCollidableDictionaryBlock<T>(ReadObject<T> p_readFunc, byte p_typeByte)
 		{
 			// not a fucking clue what this is about.
-			Expect(Token.LEFT_BRACKET);
+			Expect(Token.LeftBracket);
 			int dict_len = ReadIntWithHeader();
 			KeyValuePair<string, T>[] output = new KeyValuePair<string, T>[dict_len];
-			Expect(Token.RIGHT_BRACKET);
-			Expect(Token.LEFT_CURLY);
+			Expect(Token.RightBracket);
+			Expect(Token.LeftCurly);
 			for (int i = 0; i < dict_len; i++)
 			{
 				Expect(p_typeByte);
 				string item_key = i.ToString();
-				if (Next(Token.STRING))
+				if (Next(Token.String))
 				{
 					item_key = ReadStringWithHeader();
 				}
 				T item_value = ReadStruct<T>(p_readFunc);
 				output[i] = new KeyValuePair<string, T>(item_key, item_value);
 			}
-			Expect(Token.RIGHT_CURLY);
+			Expect(Token.RightCurly);
 			return output;
 		}
 
 		public T ReadStruct<T>(ReadObject<T> p_readFunc)
 		{
-			Expect(Token.LEFT_CURLY);
+			Expect(Token.LeftCurly);
 			T output = p_readFunc(this);
-			Expect(Token.RIGHT_CURLY);
+			Expect(Token.RightCurly);
 			return output;
 		}
 

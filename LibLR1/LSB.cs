@@ -84,7 +84,7 @@ namespace LibLR1
 		public static LSB_LoadScreen Read(LRBinaryReader p_reader)
 		{
 			LSB_LoadScreen val = new LSB_LoadScreen();
-			while (!p_reader.Next(Token.RIGHT_CURLY))
+			while (!p_reader.Next(Token.RightCurly))
 			{
 				byte propertyId = p_reader.ReadByte();
 				switch (propertyId)

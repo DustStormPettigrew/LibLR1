@@ -106,7 +106,7 @@ namespace LibLR1
 		public static GCB_ModelSet Read(LRBinaryReader p_reader)
 		{
 			GCB_ModelSet val = new GCB_ModelSet();
-			while (!p_reader.Next(Token.RIGHT_CURLY))
+			while (!p_reader.Next(Token.RightCurly))
 			{
 				byte propertyId = p_reader.ReadByte();
 				switch (propertyId)
@@ -151,7 +151,7 @@ namespace LibLR1
 		public static GCB_Model Read(LRBinaryReader p_reader)
 		{
 			GCB_Model val = new GCB_Model();
-			while (!p_reader.Next(Token.RIGHT_CURLY))
+			while (!p_reader.Next(Token.RightCurly))
 			{
 				byte propertyId = p_reader.ReadByte();
 				switch (propertyId)

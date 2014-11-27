@@ -106,7 +106,7 @@ namespace LibLR1
 		public static TDB_Texture Read(LRBinaryReader p_reader)
 		{
 			TDB_Texture val = new TDB_Texture();
-			while (!p_reader.Next(Token.RIGHT_CURLY))
+			while (!p_reader.Next(Token.RightCurly))
 			{
 				byte propertyId = p_reader.ReadByte();
 				switch (propertyId)

@@ -135,7 +135,7 @@ namespace LibLR1
 		public static PWB_ColorBrick Read(LRBinaryReader p_reader)
 		{
 			PWB_ColorBrick val = new PWB_ColorBrick();
-			while (!p_reader.Next(Token.RIGHT_CURLY))
+			while (!p_reader.Next(Token.RightCurly))
 			{
 				byte propertyId = p_reader.ReadByte();
 				switch (propertyId)
@@ -191,7 +191,7 @@ namespace LibLR1
 		public static PWB_WhiteBrick Read(LRBinaryReader p_reader)
 		{
 			PWB_WhiteBrick val = new PWB_WhiteBrick();
-			while (!p_reader.Next(Token.RIGHT_CURLY))
+			while (!p_reader.Next(Token.RightCurly))
 			{
 				byte propertyId = p_reader.ReadByte();
 				switch (propertyId)

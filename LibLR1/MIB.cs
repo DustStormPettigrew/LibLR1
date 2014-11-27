@@ -289,7 +289,7 @@ namespace LibLR1
 		public static MIB_Position Read(LRBinaryReader p_reader)
 		{
 			MIB_Position val = new MIB_Position();
-			while (!p_reader.Next(Token.RIGHT_CURLY))
+			while (!p_reader.Next(Token.RightCurly))
 			{
 				byte propertyId = p_reader.ReadByte();
 				switch (propertyId)
@@ -347,7 +347,7 @@ namespace LibLR1
 		public static MIB_ImageItem_38 Read(LRBinaryReader p_reader)
 		{
 			MIB_ImageItem_38 val = new MIB_ImageItem_38();
-			while (!p_reader.Next( Token.RIGHT_CURLY))
+			while (!p_reader.Next( Token.RightCurly))
 			{
 				byte propertyId = p_reader.ReadByte();
 				switch (propertyId)
@@ -396,7 +396,7 @@ namespace LibLR1
 		public static MIB_TextItem_39 Read(LRBinaryReader p_reader)
 		{
 			MIB_TextItem_39 val = new MIB_TextItem_39();
-			while (!p_reader.Next(Token.RIGHT_CURLY))
+			while (!p_reader.Next(Token.RightCurly))
 			{
 				byte propertyId = p_reader.ReadByte();
 				switch (propertyId)
@@ -461,7 +461,7 @@ namespace LibLR1
 		public static MIB_SceneItem_42 Read(LRBinaryReader p_reader)
 		{
 			MIB_SceneItem_42 val = new MIB_SceneItem_42();
-			while (!p_reader.Next(Token.RIGHT_CURLY))
+			while (!p_reader.Next(Token.RightCurly))
 			{
 				byte propertyId = p_reader.ReadByte();
 				switch (propertyId)
@@ -549,7 +549,7 @@ namespace LibLR1
 		public static MIB_SceneItem_45 Read(LRBinaryReader p_reader)
 		{
 			MIB_SceneItem_45 val = new MIB_SceneItem_45();
-			while (!p_reader.Next(Token.RIGHT_CURLY))
+			while (!p_reader.Next(Token.RightCurly))
 			{
 				byte propertyId = p_reader.ReadByte();
 				switch (propertyId)
@@ -611,7 +611,7 @@ namespace LibLR1
 		public static MIB_TextButtonItem_46 Read(LRBinaryReader p_reader)
 		{
 			MIB_TextButtonItem_46 val = new MIB_TextButtonItem_46();
-			while (!p_reader.Next(Token.RIGHT_CURLY))
+			while (!p_reader.Next(Token.RightCurly))
 			{
 				byte propertyId = p_reader.ReadByte();
 				switch (propertyId)

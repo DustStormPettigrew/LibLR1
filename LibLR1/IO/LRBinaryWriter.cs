@@ -50,13 +50,13 @@ namespace LibLR1.IO
 
 		public void WriteByteWithHeader(byte p_value)
 		{
-			WriteToken(Token.BYTE);
+			WriteToken(Token.Byte);
 			WriteByte(p_value);
 		}
 
 		public void WriteFract8BitWithHeader(Fract8Bit p_value)
 		{
-			WriteToken(Token.FRACT8);
+			WriteToken(Token.Fract8);
 			Fract8Bit.Write(this, p_value);
 		}
 
@@ -72,13 +72,13 @@ namespace LibLR1.IO
 
 		public void WriteFract16BitWithHeader(Fract16Bit p_value)
 		{
-			WriteToken(Token.FRACT16);
+			WriteToken(Token.Fract16);
 			Fract16Bit.Write(this, p_value);
 		}
 
 		public void WriteUShortWithHeader(ushort p_value)
 		{
-			WriteToken(Token.USHORT);
+			WriteToken(Token.UShort);
 			WriteUShort(p_value);
 		}
 
@@ -94,7 +94,7 @@ namespace LibLR1.IO
 
 		public void WriteIntWithHeader(int p_value)
 		{
-			WriteToken(Token.INT32);
+			WriteToken(Token.Int32);
 			WriteInt(p_value);
 		}
 
@@ -128,7 +128,7 @@ namespace LibLR1.IO
 
 		public void WriteFloatWithHeader(float p_value)
 		{
-			WriteToken(Token.FLOAT);
+			WriteToken(Token.Float);
 			WriteFloat(p_value);
 		}
 
@@ -141,7 +141,7 @@ namespace LibLR1.IO
 
 		public void WriteStringWithHeader(string p_value)
 		{
-			WriteToken(Token.STRING);
+			WriteToken(Token.String);
 			WriteString(p_value);
 		}
 
@@ -149,93 +149,93 @@ namespace LibLR1.IO
 
 		public void WriteArrayBlock<T>(WriteObject<T> p_writeFunc, T[] p_values)
 		{
-			WriteToken(Token.LEFT_BRACKET);
+			WriteToken(Token.LeftBracket);
 			WriteIntWithHeader(p_values.Length);
-			WriteToken(Token.RIGHT_BRACKET);
-			WriteToken(Token.LEFT_CURLY);
+			WriteToken(Token.RightBracket);
+			WriteToken(Token.LeftCurly);
 			for (int i = 0; i < p_values.Length; i++)
 			{
 				p_writeFunc(this, p_values[i]);
 			}
-			WriteToken(Token.RIGHT_CURLY);
+			WriteToken(Token.RightCurly);
 		}
 
 		public void WriteListBlock<T>(WriteObject<T> p_writeFunc, List<T> p_values)
 		{
-			WriteToken(Token.LEFT_BRACKET);
+			WriteToken(Token.LeftBracket);
 			WriteIntWithHeader(p_values.Count);
-			WriteToken(Token.RIGHT_BRACKET);
-			WriteToken(Token.LEFT_CURLY);
+			WriteToken(Token.RightBracket);
+			WriteToken(Token.LeftCurly);
 			for (int i = 0; i < p_values.Count; i++)
 			{
 				p_writeFunc(this, p_values[i]);
 			}
-			WriteToken(Token.RIGHT_CURLY);
+			WriteToken(Token.RightCurly);
 		}
 
 		public void WriteStructArrayBlock<T>(WriteObject<T> p_writeFunc, T[] p_values, byte p_typeByte)
 		{
-			WriteToken(Token.LEFT_BRACKET);
+			WriteToken(Token.LeftBracket);
 			WriteIntWithHeader(p_values.Length);
-			WriteToken(Token.RIGHT_BRACKET);
-			WriteToken(Token.LEFT_CURLY);
+			WriteToken(Token.RightBracket);
+			WriteToken(Token.LeftCurly);
 			for (int i = 0; i < p_values.Length; i++)
 			{
 				WriteByte(p_typeByte);
 				WriteStruct<T>(p_writeFunc, p_values[i]);
 			}
-			WriteToken(Token.RIGHT_CURLY);
+			WriteToken(Token.RightCurly);
 		}
 
 		public void WriteStructListBlock<T>(WriteObject<T> p_writeFunc, List<T> p_values, byte p_typeByte)
 		{
-			WriteToken(Token.LEFT_BRACKET);
+			WriteToken(Token.LeftBracket);
 			WriteIntWithHeader(p_values.Count);
-			WriteToken(Token.RIGHT_BRACKET);
-			WriteToken(Token.LEFT_CURLY);
+			WriteToken(Token.RightBracket);
+			WriteToken(Token.LeftCurly);
 			for (int i = 0; i < p_values.Count; i++)
 			{
 				WriteByte(p_typeByte);
 				WriteStruct<T>(p_writeFunc, p_values[i]);
 			}
-			WriteToken(Token.RIGHT_CURLY);
+			WriteToken(Token.RightCurly);
 		}
 
 		public void WriteDictionaryBlock<T>(WriteObject<T> p_writeFunc, Dictionary<string, T> p_values, byte p_typeByte)
 		{
-			WriteToken(Token.LEFT_BRACKET);
+			WriteToken(Token.LeftBracket);
 			WriteIntWithHeader(p_values.Count);
-			WriteToken(Token.RIGHT_BRACKET);
-			WriteToken(Token.LEFT_CURLY);
+			WriteToken(Token.RightBracket);
+			WriteToken(Token.LeftCurly);
 			foreach (KeyValuePair<string, T> kvp in p_values)
 			{
 				WriteByte(p_typeByte);
 				WriteStringWithHeader(kvp.Key);
 				WriteStruct<T>(p_writeFunc, kvp.Value);
 			}
-			WriteToken(Token.RIGHT_CURLY);
+			WriteToken(Token.RightCurly);
 		}
 
 		public void WriteCollidableDictionaryBlock<T>(WriteObject<T> p_writeFunc, KeyValuePair<string, T>[] p_values, byte p_typeByte)
 		{
-			WriteToken(Token.LEFT_BRACKET);
+			WriteToken(Token.LeftBracket);
 			WriteIntWithHeader(p_values.Length);
-			WriteToken(Token.RIGHT_BRACKET);
-			WriteToken(Token.LEFT_CURLY);
+			WriteToken(Token.RightBracket);
+			WriteToken(Token.LeftCurly);
 			foreach (KeyValuePair<string, T> kvp in p_values)
 			{
 				WriteByte(p_typeByte);
 				WriteStringWithHeader(kvp.Key);
 				WriteStruct<T>(p_writeFunc, kvp.Value);
 			}
-			WriteToken(Token.RIGHT_CURLY);
+			WriteToken(Token.RightCurly);
 		}
 
 		public void WriteStruct<T>(WriteObject<T> p_writeFunc, T p_value)
 		{
-			WriteToken(Token.LEFT_CURLY);
+			WriteToken(Token.LeftCurly);
 			p_writeFunc(this, p_value);
-			WriteToken(Token.RIGHT_CURLY);
+			WriteToken(Token.RightCurly);
 		}
 
 		public void WriteByteArrayBlock(byte[] p_values)

@@ -76,7 +76,7 @@ namespace LibLR1
 		public static TRB_Unknown27 Read(LRBinaryReader p_reader)
 		{
 			TRB_Unknown27 val = new TRB_Unknown27();
-			while (!p_reader.Next(Token.RIGHT_CURLY))
+			while (!p_reader.Next(Token.RightCurly))
 			{
 				byte propertyId = p_reader.ReadByte();
 				switch (propertyId)

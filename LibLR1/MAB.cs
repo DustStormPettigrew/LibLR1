@@ -130,7 +130,7 @@ namespace LibLR1
 		public static MAB_Animation Read(LRBinaryReader p_reader)
 		{
 			MAB_Animation val = new MAB_Animation();
-			while (!p_reader.Next(Token.RIGHT_CURLY))
+			while (!p_reader.Next(Token.RightCurly))
 			{
 				byte propertyId = p_reader.ReadByte();
 				switch (propertyId)

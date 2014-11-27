@@ -73,14 +73,14 @@ namespace LibLR1
 		public static TIB_Unknown27 Read(LRBinaryReader p_reader)
 		{
 			TIB_Unknown27 val = new TIB_Unknown27();
-			while (!p_reader.Next(Token.RIGHT_CURLY))
+			while (!p_reader.Next(Token.RightCurly))
 			{
 				byte propertyId = p_reader.ReadByte();
 				switch (propertyId)
 				{
 					case PROPERTY_28:
 					{
-						if (!p_reader.Next(Token.INT32))
+						if (!p_reader.Next(Token.Int32))
 						{
 							p_reader.BaseStream.Position++;  // 0x2B bodge
 						}
@@ -89,7 +89,7 @@ namespace LibLR1
 					}
 					case PROPERTY_29:
 					{
-						if (!p_reader.Next(Token.INT32))
+						if (!p_reader.Next(Token.Int32))
 						{
 							p_reader.BaseStream.Position++;  // 0x2B bodge
 						}
@@ -98,7 +98,7 @@ namespace LibLR1
 					}
 					case PROPERTY_2A:
 					{
-						if (!p_reader.Next(Token.INT32))
+						if (!p_reader.Next(Token.Int32))
 						{
 							p_reader.BaseStream.Position++;  // 0x2B bodge
 						}
@@ -107,7 +107,7 @@ namespace LibLR1
 					}
 					case PROPERTY_2D:
 					{
-						if (!p_reader.Next(Token.INT32))
+						if (!p_reader.Next(Token.Int32))
 						{
 							p_reader.BaseStream.Position++;  // 0x2B bodge
 						}

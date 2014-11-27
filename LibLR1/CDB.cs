@@ -115,7 +115,7 @@ namespace LibLR1
 		public static CDB_Cutscene Read(LRBinaryReader p_reader)
 		{
 			CDB_Cutscene val = new CDB_Cutscene();
-			while (p_reader.Next(Token.RIGHT_CURLY) == false)
+			while (p_reader.Next(Token.RightCurly) == false)
 			{
 				byte propertyId = p_reader.ReadByte();
 				switch (propertyId)
@@ -209,7 +209,7 @@ namespace LibLR1
 		public static CDB_Camera Read(LRBinaryReader p_reader)
 		{
 			CDB_Camera val = new CDB_Camera();
-			while (p_reader.Next(Token.RIGHT_CURLY) == false)
+			while (p_reader.Next(Token.RightCurly) == false)
 			{
 				byte propertyId = p_reader.ReadByte();
 				switch (propertyId)
@@ -275,7 +275,7 @@ namespace LibLR1
 		public static CDB_Model Read(LRBinaryReader p_reader)
 		{
 			CDB_Model val = new CDB_Model();
-			while (p_reader.Next(Token.RIGHT_CURLY) == false)
+			while (p_reader.Next(Token.RightCurly) == false)
 			{
 				byte propertyId = p_reader.ReadByte();
 				switch (propertyId)
@@ -358,7 +358,7 @@ namespace LibLR1
 		public static CDB_AmbientLight Read(LRBinaryReader p_reader)
 		{
 			CDB_AmbientLight val = new CDB_AmbientLight();
-			while (p_reader.Next(Token.RIGHT_CURLY) == false)
+			while (p_reader.Next(Token.RightCurly) == false)
 			{
 				byte propertyId = p_reader.ReadByte();
 				switch (propertyId)
@@ -407,7 +407,7 @@ namespace LibLR1
 		public static CDB_Event Read(LRBinaryReader p_reader)
 		{
 			CDB_Event val = new CDB_Event();
-			while (p_reader.Next(Token.RIGHT_CURLY) == false)
+			while (p_reader.Next(Token.RightCurly) == false)
 			{
 				byte propertyId = p_reader.ReadByte();
 				switch (propertyId)
@@ -464,7 +464,7 @@ namespace LibLR1
 		public static CDB_DirectionalLight Read(LRBinaryReader p_reader)
 		{
 			CDB_DirectionalLight val = new CDB_DirectionalLight();
-			while (p_reader.Next(Token.RIGHT_CURLY) == false)
+			while (p_reader.Next(Token.RightCurly) == false)
 			{
 				byte propertyId = p_reader.ReadByte();
 				switch (propertyId)

@@ -154,7 +154,7 @@ namespace LibLR1
 		public static ADB_Data Read(LRBinaryReader p_reader)
 		{
 			ADB_Data val = new ADB_Data();
-			while (p_reader.Next(Token.RIGHT_CURLY) == false)
+			while (p_reader.Next(Token.RightCurly) == false)
 			{
 				byte propertyId = p_reader.ReadByte();
 				switch (propertyId)
@@ -278,7 +278,7 @@ namespace LibLR1
 		public static ADB_Meta Read(LRBinaryReader p_reader)
 		{
 			ADB_Meta val = new ADB_Meta();
-			while (p_reader.Next(Token.RIGHT_CURLY) == false)
+			while (p_reader.Next(Token.RightCurly) == false)
 			{
 				byte propertyId = p_reader.ReadByte();
 				switch (propertyId)

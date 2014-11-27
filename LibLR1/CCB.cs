@@ -93,7 +93,7 @@ namespace LibLR1
 		public static CCB_Car Read(LRBinaryReader p_reader)
 		{
 			CCB_Car val = new CCB_Car();
-			while (p_reader.Next(Token.RIGHT_CURLY) == false)
+			while (p_reader.Next(Token.RightCurly) == false)
 			{
 				byte propertyId = p_reader.ReadByte();
 				switch (propertyId)

@@ -426,7 +426,7 @@ namespace LibLR1
 		public static WDB_StaticModel Read(LRBinaryReader p_reader)
 		{
 			WDB_StaticModel val = new WDB_StaticModel();
-			while (!p_reader.Next( Token.RIGHT_CURLY))
+			while (!p_reader.Next( Token.RightCurly))
 			{
 				byte propertyId = p_reader.ReadByte();
 				switch (propertyId)
@@ -497,7 +497,7 @@ namespace LibLR1
 		public static WDB_BDBModel Read(LRBinaryReader p_reader)
 		{
 			WDB_BDBModel val = new WDB_BDBModel();
-			while (!p_reader.Next(Token.RIGHT_CURLY))
+			while (!p_reader.Next(Token.RightCurly))
 			{
 				byte propertyId = p_reader.ReadByte();
 				switch (propertyId)
@@ -569,7 +569,7 @@ namespace LibLR1
 		public static WDB_Billboard Read(LRBinaryReader p_reader)
 		{
 			WDB_Billboard val = new WDB_Billboard();
-			while (!p_reader.Next(Token.RIGHT_CURLY))
+			while (!p_reader.Next(Token.RightCurly))
 			{
 				byte propertyId = p_reader.ReadByte();
 				switch (propertyId)
@@ -643,7 +643,7 @@ namespace LibLR1
 		public static WDB_BVBModel Read(LRBinaryReader p_reader)
 		{
 			WDB_BVBModel val = new WDB_BVBModel();
-			while (!p_reader.Next(Token.RIGHT_CURLY))
+			while (!p_reader.Next(Token.RightCurly))
 			{
 				byte propertyId = p_reader.ReadByte();
 				switch (propertyId)
@@ -702,7 +702,7 @@ namespace LibLR1
 		public static WDB_AnimatedModel Read(LRBinaryReader p_reader)
 		{
 			WDB_AnimatedModel val = new WDB_AnimatedModel();
-			while (!p_reader.Next(Token.RIGHT_CURLY))
+			while (!p_reader.Next(Token.RightCurly))
 			{
 				byte propertyId = p_reader.ReadByte();
 				switch (propertyId)
@@ -792,7 +792,7 @@ namespace LibLR1
 		public static WDB_Camera Read(LRBinaryReader p_reader)
 		{
 			WDB_Camera val = new WDB_Camera();
-			while (!p_reader.Next(Token.RIGHT_CURLY))
+			while (!p_reader.Next(Token.RightCurly))
 			{
 				byte propertyId = p_reader.ReadByte();
 				switch (propertyId)
@@ -856,7 +856,7 @@ namespace LibLR1
 		public static WDB_AmbientLight Read(LRBinaryReader p_reader)
 		{
 			WDB_AmbientLight val = new WDB_AmbientLight();
-			while (!p_reader.Next(Token.RIGHT_CURLY))
+			while (!p_reader.Next(Token.RightCurly))
 			{
 				byte property_id = p_reader.ReadByte();
 				switch (property_id)
@@ -891,7 +891,7 @@ namespace LibLR1
 		public static WDB_DirectionalLight Read(LRBinaryReader p_reader)
 		{
 			WDB_DirectionalLight val = new WDB_DirectionalLight();
-			while (!p_reader.Next(Token.RIGHT_CURLY))
+			while (!p_reader.Next(Token.RightCurly))
 			{
 				byte propertyId = p_reader.ReadByte();
 				switch (propertyId)

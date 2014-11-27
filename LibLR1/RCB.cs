@@ -116,7 +116,7 @@ namespace LibLR1
 		public static RCB_Track Read(LRBinaryReader p_reader)
 		{
 			RCB_Track val = new RCB_Track();
-			while (!p_reader.Next(Token.RIGHT_CURLY))
+			while (!p_reader.Next(Token.RightCurly))
 			{
 				byte propertyId = p_reader.ReadByte();
 				switch (propertyId)

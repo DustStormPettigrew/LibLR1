@@ -73,7 +73,7 @@ namespace LibLR1
 		public static GHB_GhostPath Read(LRBinaryReader p_reader)
 		{
 			GHB_GhostPath val = new GHB_GhostPath();
-			while (p_reader.Next(Token.RIGHT_CURLY) == false)
+			while (p_reader.Next(Token.RightCurly) == false)
 			{
 				byte propertyId = p_reader.ReadByte();
 				switch (propertyId)

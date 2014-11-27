@@ -7,20 +7,20 @@ namespace LibLR1.Utils
 {
 	public enum Token
 	{
-		STRING        = 0x02,
-		FLOAT         = 0x03,
-		INT32         = 0x04,
-		LEFT_CURLY    = 0x05,
-		RIGHT_CURLY   = 0x06,
-		LEFT_BRACKET  = 0x07,
-		RIGHT_BRACKET = 0x08,
-		FRACT8        = 0x0B,
-		SBYTE         = 0x0B,
-		BYTE          = 0x0C,
-		FRACT16       = 0x0D,
-		SHORT         = 0x0D,
-		USHORT        = 0x0E,
-		ARRAY         = 0x14, // compression pass only
-		STRUCT        = 0x16, // compression pass only
+		String       = 0x02,
+		Float        = 0x03,
+		Int32        = 0x04,
+		LeftCurly    = 0x05,
+		RightCurly   = 0x06,
+		LeftBracket  = 0x07,
+		RightBracket = 0x08,
+		Fract8       = 0x0B,
+		SByte        = 0x0B,
+		Byte         = 0x0C,
+		Fract16      = 0x0D,
+		Short        = 0x0D,
+		UShort       = 0x0E,
+		Array        = 0x14, // compression pass only
+		Struct       = 0x16, // compression pass only
 	}
 }
