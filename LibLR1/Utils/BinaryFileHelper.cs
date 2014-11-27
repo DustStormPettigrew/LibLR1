@@ -237,7 +237,7 @@ namespace LibLR1.Utils
 				case TYPE_USHORT: return ReadUShort(p_stream);
 				case TYPE_SHORT:  return ReadShort(p_stream);
 			}
-			throw new UnexpectedTypeException(type, p_stream.Position - 1);
+			throw new UnexpectedTypeException((Token)type, p_stream.Position - 1);
 		}
 		
 		public static float ReadFloat(Stream p_stream)

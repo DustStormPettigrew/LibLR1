@@ -2,6 +2,8 @@
 using System.IO;
 using LibLR1.Exceptions;
 using LibLR1.Utils;
+using LibLR1.IO;
+using System;
 
 namespace LibLR1
 {
@@ -35,42 +37,44 @@ namespace LibLR1
 			set { m_Animations = value; }
 		}
 
-		public ADB(Stream stream)
+		public ADB(string p_path, bool p_decompress = true)
+			: this(new LRBinaryReader(p_decompress ? BinaryFileHelper.Decompress(p_path) : (Stream)File.OpenRead(p_path)))
+		{
+		}
+
+		public ADB(LRBinaryReader p_reader)
 		{
 			m_Data       = new ADB_Data();
 			m_Pointers   = new ADB_Pointer[0];
 			m_Animations = new Dictionary<string, ADB_Meta>();
-			while (stream.Position < stream.Length)
+			while (p_reader.BaseStream.Position < p_reader.BaseStream.Length)
 			{
-				byte block_id = BinaryFileHelper.ReadByte(stream);
+				byte block_id = p_reader.ReadByte();//BinaryFileHelper.ReadByte(p_reader);
 				switch (block_id)
 				{
 					case ID_ANIM_DATA:
 					{
-						m_Data = BinaryFileHelper.ReadStruct<ADB_Data>(
-							stream,
-							new BinaryFileHelper.ReadObject<ADB_Data>(
-								ADB_Data.FromStream
+						m_Data = p_reader.ReadStruct<ADB_Data>(
+							new LRBinaryReader.ReadObject<ADB_Data>(
+								ADB_Data.Read
 							)
 						);
 						break;
 					}
 					case ID_ANIM_POINTERS:
 					{
-						m_Pointers = BinaryFileHelper.ReadArrayBlock<ADB_Pointer>(
-							stream,
-							new BinaryFileHelper.ReadObject<ADB_Pointer>(
-								ADB_Pointer.FromStream
+						m_Pointers = p_reader.ReadArrayBlock<ADB_Pointer>(
+							new LRBinaryReader.ReadObject<ADB_Pointer>(
+								ADB_Pointer.Read
 							)
 						);
 						break;
 					}
 					case ID_ANIM_META:
 					{
-						m_Animations = BinaryFileHelper.ReadDictionaryBlock<ADB_Meta>(
-							stream,
-							new BinaryFileHelper.ReadObject<ADB_Meta>(
-								ADB_Meta.FromStream
+						m_Animations = p_reader.ReadDictionaryBlock<ADB_Meta>(
+							new LRBinaryReader.ReadObject<ADB_Meta>(
+								ADB_Meta.Read
 							),
 							ID_ANIM_META
 						);
@@ -78,53 +82,45 @@ namespace LibLR1
 					}
 					default:
 					{
-						throw new UnexpectedBlockException(block_id, stream.Position - 1);
+						throw new UnexpectedBlockException(block_id, p_reader.BaseStream.Position - 1);
 					}
 				}
 			}
 		}
-		
-		public ADB(string path, bool decompress = true)
-			: this(decompress ? BinaryFileHelper.Decompress(path) : (Stream)(new FileStream(path, FileMode.Open, FileAccess.Read)))
+
+		public void Save(LRBinaryWriter p_writer)
 		{
-		}
-		
-		public void Save(Stream stream)
-		{
-			stream.WriteByte(ID_ANIM_DATA);
-			BinaryFileHelper.WriteStruct<ADB_Data>(
-				stream,
-				new BinaryFileHelper.WriteObject<ADB_Data>(
-					ADB_Data.ToStream
+			p_writer.WriteByte(ID_ANIM_DATA);
+			p_writer.WriteStruct<ADB_Data>(
+				new LRBinaryWriter.WriteObject<ADB_Data>(
+					ADB_Data.Write
 				),
 				m_Data
 			);
-			
-			stream.WriteByte(ID_ANIM_POINTERS);
-			BinaryFileHelper.WriteArrayBlock<ADB_Pointer>(
-				stream,
-				new BinaryFileHelper.WriteObject<ADB_Pointer>(
-					ADB_Pointer.ToStream
+
+			p_writer.WriteByte(ID_ANIM_POINTERS);
+			p_writer.WriteArrayBlock<ADB_Pointer>(
+				new LRBinaryWriter.WriteObject<ADB_Pointer>(
+					ADB_Pointer.Write
 				),
 				m_Pointers
 			);
-			
-			stream.WriteByte(ID_ANIM_META);
-			BinaryFileHelper.WriteDictionaryBlock<ADB_Meta>(
-				stream,
-				new BinaryFileHelper.WriteObject<ADB_Meta>(
-					ADB_Meta.ToStream
+
+			p_writer.WriteByte(ID_ANIM_META);
+			p_writer.WriteDictionaryBlock<ADB_Meta>(
+				new LRBinaryWriter.WriteObject<ADB_Meta>(
+					ADB_Meta.Write
 				),
 				m_Animations,
 				ID_ANIM_META
 			);
 		}
 		
-		public void Save(string path)
+		public void Save(string p_filepath)
 		{
-			using (FileStream fsOut = new FileStream(path, FileMode.Create, FileAccess.Write))
+			using (LRBinaryWriter writer = new LRBinaryWriter(File.OpenWrite(p_filepath)))
 			{
-				Save(fsOut);
+				Save(writer);
 			}
 		}
 	}
@@ -152,48 +148,48 @@ namespace LibLR1
 			TimeOffsets     = timeoffsets;
 		}
 		
-		public static ADB_Data FromStream(Stream stream)
+		public static ADB_Data Read(LRBinaryReader p_reader)
 		{
 			ADB_Data val = new ADB_Data();
-			while (BinaryFileHelper.Next(stream, BinaryFileHelper.TYPE_RIGHT_CURLY) == false)
+			while (p_reader.Next(BinaryFileHelper.TYPE_RIGHT_CURLY) == false)
 			{
-				byte property_id = BinaryFileHelper.ReadByte(stream);
+				byte property_id = p_reader.ReadByte();
 				switch (property_id)
 				{
 					case PROPERTY_DATA_XYZ_OFFSETS:
 					{
-						val.PositionOffsets = BinaryFileHelper.ReadVector3fArrayBlock(stream);
+						val.PositionOffsets = p_reader.ReadVector3fArrayBlock();
 						break;
 					}
 					case PROPERTY_DATA_TRANSFORMS:
 					{
-						val.Transforms = BinaryFileHelper.ReadQuaternionArrayBlock(stream);
+						val.Transforms = p_reader.ReadQuaternionArrayBlock();
 						break;
 					}
 					case PROPERTY_DATA_TIME_OFFSETS:
 					{
-						val.TimeOffsets = BinaryFileHelper.ReadIntArrayBlock(stream);
+						val.TimeOffsets = p_reader.ReadIntArrayBlock();
 						break;
 					}
 					default:
 					{
-						throw new UnexpectedPropertyException(property_id, stream.Position - 1);
+						throw new UnexpectedPropertyException(property_id, p_reader.BaseStream.Position - 1);
 					}
 				}
 			}
 			return val;
 		}
-		
-		public static void ToStream(Stream stream, ADB_Data value)
+
+		public static void Write(LRBinaryWriter p_writer, ADB_Data p_value)
 		{
-			stream.WriteByte(PROPERTY_DATA_XYZ_OFFSETS);
-			BinaryFileHelper.WriteVector3fArrayBlock(stream, value.PositionOffsets);
+			p_writer.WriteByte(PROPERTY_DATA_XYZ_OFFSETS);
+			p_writer.WriteVector3fArrayBlock(p_value.PositionOffsets);
 			
-			stream.WriteByte(PROPERTY_DATA_TRANSFORMS);
-			BinaryFileHelper.WriteQuaternionArrayBlock(stream, value.Transforms);
+			p_writer.WriteByte(PROPERTY_DATA_TRANSFORMS);
+			p_writer.WriteQuaternionArrayBlock(p_value.Transforms);
 			
-			stream.WriteByte(PROPERTY_DATA_TIME_OFFSETS);
-			BinaryFileHelper.WriteIntArrayBlock(stream, value.TimeOffsets);
+			p_writer.WriteByte(PROPERTY_DATA_TIME_OFFSETS);
+			p_writer.WriteIntArrayBlock(p_value.TimeOffsets);
 		}
 	}
 	
@@ -221,26 +217,26 @@ namespace LibLR1
 			PositionLength      = positionlength;
 		}
 		
-		public static ADB_Pointer FromStream(Stream stream)
+		public static ADB_Pointer Read(LRBinaryReader p_reader)
 		{
 			ADB_Pointer val = new ADB_Pointer();
-			val.TransformOffset     = BinaryFileHelper.ReadIntWithHeader(stream);
-			val.TransformTimeOffset = BinaryFileHelper.ReadIntWithHeader(stream);
-			val.TransformLength     = BinaryFileHelper.ReadIntWithHeader(stream);
-			val.PositionOffset      = BinaryFileHelper.ReadIntWithHeader(stream);
-			val.PositionTimeOffset  = BinaryFileHelper.ReadIntWithHeader(stream);
-			val.PositionLength      = BinaryFileHelper.ReadIntWithHeader(stream);
+			val.TransformOffset     = p_reader.ReadIntWithHeader();
+			val.TransformTimeOffset = p_reader.ReadIntWithHeader();
+			val.TransformLength     = p_reader.ReadIntWithHeader();
+			val.PositionOffset      = p_reader.ReadIntWithHeader();
+			val.PositionTimeOffset  = p_reader.ReadIntWithHeader();
+			val.PositionLength      = p_reader.ReadIntWithHeader();
 			return val;
 		}
-		
-		public static void ToStream(Stream stream, ADB_Pointer value)
+
+		public static void Write(LRBinaryWriter p_writer, ADB_Pointer p_value)
 		{
-			BinaryFileHelper.WriteIntWithHeader(stream, value.TransformOffset);
-			BinaryFileHelper.WriteIntWithHeader(stream, value.TransformTimeOffset);
-			BinaryFileHelper.WriteIntWithHeader(stream, value.TransformLength);
-			BinaryFileHelper.WriteIntWithHeader(stream, value.PositionOffset);
-			BinaryFileHelper.WriteIntWithHeader(stream, value.PositionTimeOffset);
-			BinaryFileHelper.WriteIntWithHeader(stream, value.PositionLength);
+			p_writer.WriteIntWithHeader(p_value.TransformOffset);
+			p_writer.WriteIntWithHeader(p_value.TransformTimeOffset);
+			p_writer.WriteIntWithHeader(p_value.TransformLength);
+			p_writer.WriteIntWithHeader(p_value.PositionOffset);
+			p_writer.WriteIntWithHeader(p_value.PositionTimeOffset);
+			p_writer.WriteIntWithHeader(p_value.PositionLength);
 		}
 	}
 	
@@ -276,68 +272,68 @@ namespace LibLR1
 			InitialQuaternion  = initialtransform;
 		}
 		
-		public static ADB_Meta FromStream(Stream stream)
+		public static ADB_Meta Read(LRBinaryReader p_reader)
 		{
 			ADB_Meta val = new ADB_Meta();
-			while (BinaryFileHelper.Next(stream, BinaryFileHelper.TYPE_RIGHT_CURLY) == false)
+			while (p_reader.Next(Token.RIGHT_CURLY) == false)
 			{
-				byte property_id = BinaryFileHelper.ReadByte(stream);
+				byte property_id = p_reader.ReadByte();
 				switch (property_id)
 				{
 					case PROPERTY_META_LENGTH:
 					{
-						val.Length = BinaryFileHelper.ReadIntWithHeader(stream);
+						val.Length = p_reader.ReadIntWithHeader();
 						break;
 					}
 					case PROPERTY_META_LENGTH_1:
 					{
-						val.Length1 = BinaryFileHelper.ReadIntWithHeader(stream);
+						val.Length1 = p_reader.ReadIntWithHeader();
 						break;
 					}
 					case PROPERTY_META_SPEED:
 					{
-						val.Speed = BinaryFileHelper.ReadIntWithHeader(stream);
+						val.Speed = p_reader.ReadIntWithHeader();
 						break;
 					}
 					case PROPERTY_META_XYZ_OFFSET:
 					{
-						val.InitialPosition = LRVector3.FromStream(stream);
+						val.InitialPosition = LRVector3.Read(p_reader);
 						break;
 					}
 					case PROPERTY_META_TRANSFORM:
 					{
-						val.InitialQuaternion = LRQuaternion.FromStream(stream);
+						val.InitialQuaternion = LRQuaternion.Read(p_reader);
 						break;
 					}
 					case PROPERTY_META_POINTERS_OFFSET:
 					{
-						val.PointerTableOffset = BinaryFileHelper.ReadIntWithHeader(stream);
+						val.PointerTableOffset = p_reader.ReadIntWithHeader();
 						break;
 					}
 				}
 			}
 			return val;
 		}
-		
-		public static void ToStream(Stream stream, ADB_Meta value)
+
+		public static void Write(LRBinaryWriter p_writer, ADB_Meta p_value)
 		{
-			stream.WriteByte(PROPERTY_META_LENGTH);
-			BinaryFileHelper.WriteIntWithHeader(stream, value.Length);
-			
-			stream.WriteByte(PROPERTY_META_LENGTH_1);
-			BinaryFileHelper.WriteIntWithHeader(stream, value.Length1);
-			
-			stream.WriteByte(PROPERTY_META_SPEED);
-			BinaryFileHelper.WriteIntWithHeader(stream, value.Speed);
-			
-			stream.WriteByte(PROPERTY_META_XYZ_OFFSET);
-			LRVector3.ToStream(stream, value.InitialPosition);
-			
-			stream.WriteByte(PROPERTY_META_TRANSFORM);
-			LRQuaternion.ToStream(stream, value.InitialQuaternion);
-			
-			stream.WriteByte(PROPERTY_META_POINTERS_OFFSET);
-			BinaryFileHelper.WriteIntWithHeader(stream, value.PointerTableOffset);
+			p_writer.WriteByte(PROPERTY_META_LENGTH);
+			p_writer.WriteIntWithHeader(p_value.Length);
+
+			p_writer.WriteByte(PROPERTY_META_LENGTH_1);
+			p_writer.WriteIntWithHeader(p_value.Length1);
+
+			p_writer.WriteByte(PROPERTY_META_SPEED);
+			p_writer.WriteIntWithHeader(p_value.Speed);
+
+			p_writer.WriteByte(PROPERTY_META_XYZ_OFFSET);
+			LRVector3.Write(p_writer, p_value.InitialPosition);
+
+			p_writer.WriteByte(PROPERTY_META_TRANSFORM);
+			LRQuaternion.Write(p_writer, p_value.InitialQuaternion);
+
+			p_writer.WriteByte(PROPERTY_META_POINTERS_OFFSET);
+			p_writer.WriteIntWithHeader(p_value.PointerTableOffset);
 		}
 	}
 }

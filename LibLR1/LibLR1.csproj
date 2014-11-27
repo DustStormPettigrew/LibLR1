@@ -54,6 +54,8 @@
     <Compile Include="GCB.cs" />
     <Compile Include="GDB.cs" />
     <Compile Include="GHB.cs" />
+    <Compile Include="IO\LRBinaryReader.cs" />
+    <Compile Include="IO\LRBinaryWriter.cs" />
     <Compile Include="TIB.cs" />
     <Compile Include="TRB.cs" />
     <Compile Include="Utils\Fract16Bit.cs" />
@@ -75,6 +77,7 @@
     <Compile Include="SKB.cs" />
     <Compile Include="SRF.cs" />
     <Compile Include="TDB.cs" />
+    <Compile Include="Utils\Token.cs" />
     <Compile Include="WDB.cs" />
     <Compile Include="Exceptions\UnexpectedPropertyException.cs" />
     <Compile Include="Utils\LRVector2.cs" />

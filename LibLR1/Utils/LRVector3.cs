@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using LibLR1.IO;
+using System;
+using System.IO;
 
 namespace LibLR1.Utils
 {
@@ -22,6 +24,7 @@ namespace LibLR1.Utils
 			m_z = p_z;
 		}
 
+		[Obsolete]
 		public static LRVector3 FromStream(Stream p_stream)
 		{
 			LRVector3 val = new LRVector3();
@@ -31,11 +34,28 @@ namespace LibLR1.Utils
 			return val;
 		}
 
+		public static LRVector3 Read(LRBinaryReader p_reader)
+		{
+			LRVector3 val = new LRVector3();
+			val.X = p_reader.ReadFloatWithHeader();
+			val.Y = p_reader.ReadFloatWithHeader();
+			val.Z = p_reader.ReadFloatWithHeader();
+			return val;
+		}
+
+		[Obsolete]
 		public static void ToStream(Stream p_stream, LRVector3 p_vec)
 		{
 			BinaryFileHelper.WriteFloatWithHeader(p_stream, p_vec.X);
 			BinaryFileHelper.WriteFloatWithHeader(p_stream, p_vec.Y);
 			BinaryFileHelper.WriteFloatWithHeader(p_stream, p_vec.Z);
+		}
+
+		public static void Write(LRBinaryWriter p_writer, LRVector3 p_vec)
+		{
+			p_writer.WriteFloatWithHeader(p_vec.X);
+			p_writer.WriteFloatWithHeader(p_vec.Y);
+			p_writer.WriteFloatWithHeader(p_vec.Z);
 		}
 		
 		public override string ToString()

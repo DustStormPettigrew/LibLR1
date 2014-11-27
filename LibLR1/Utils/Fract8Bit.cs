@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using LibLR1.IO;
+using System;
+using System.IO;
 
 namespace LibLR1.Utils
 {
@@ -27,10 +29,16 @@ namespace LibLR1.Utils
 		{
 			m_value = p_value;
 		}
-		
+
+		[Obsolete]
 		public static Fract8Bit FromStream(Stream p_stream)
 		{
 			return new Fract8Bit(BinaryFileHelper.ReadSByte(p_stream));
+		}
+
+		public static Fract8Bit Read(LRBinaryReader p_reader)
+		{
+			return new Fract8Bit(p_reader.ReadSByte());
 		}
 	}
 }
