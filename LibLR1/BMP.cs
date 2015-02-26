@@ -1,101 +1,219 @@
-﻿#define FAIL_ON_COMPRESSED_BLOCK
-
-using LibLR1.IO;
-using System;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
+using System.Linq;
 
 namespace LibLR1
 {
 	public class BMP
 	{
-		private const byte
-			ENCODING_4BPP = 0x04,
-			ENCODING_8BPP = 0x08,
-			ENCODING_RGB  = 0x98;
-		
-		private BMP_Header m_header;
-		private BMP_Color[] m_palette;
-		
-		public BMP_Header Header
+		private int m_width, m_height;
+		private BitmapColor[] m_image;
+
+		public int Width  { get { return m_width;  } }
+		public int Height { get { return m_height; } }
+
+		public BitmapColor GetPixel(int p_x, int p_y)
 		{
-			get { return m_header; }
-			set { m_header = value; }
+			if (p_x < 0 || p_y < 0 || p_x >= m_width || p_y >= m_height)
+			{
+				throw new IndexOutOfRangeException();
+			}
+			return m_image[p_y * m_width + p_x];
 		}
-		public BMP_Color[] Palette
+
+		private enum ImageEncoding : byte
 		{
-			get { return m_palette; }
-			set { m_palette = value; }
+			Palette4Bit = 0x04,
+			Palette8Bit = 0x08,
+			RGB         = 0x98,
 		}
 
 		public BMP(string p_filepath)
-			: this(new LRBinaryReader(File.OpenRead(p_filepath)))
 		{
-		}
+			using (BinaryReader br = new BinaryReader(File.OpenRead(p_filepath)))
+			{
+				ImageEncoding encoding = (ImageEncoding)br.ReadByte();
 
-		public BMP(LRBinaryReader p_reader)
-		{
-			m_header = BMP_Header.Read(p_reader);
-			if (m_header.Encoding == ENCODING_RGB)
-			{
-				throw new Exception("Unimplemented encoding 0x" + m_header.Encoding.ToString("X2"));
-			}
-			
-			m_palette = new BMP_Color[m_header.PaletteLength + 1];
-			for (int i = 0; i < m_palette.Length; i++)
-			{
-				m_palette[i] = BMP_Color.Read(p_reader);
-			}
-
-			while (p_reader.BaseStream.Position < p_reader.BaseStream.Length)
-			{
-				ushort block_len_raw = p_reader.ReadUShort();
-				ushort block_len_com = p_reader.ReadUShort();
-				byte[] data_com = new byte[block_len_com];
-				byte[] data_raw = new byte[block_len_raw];
-				p_reader.BaseStream.Read(data_com, 0, block_len_com);
-				if (block_len_com == block_len_raw)
+				// check if it's a valid encoding
+				if (((ImageEncoding[])Enum.GetValues(typeof(ImageEncoding))).Contains(encoding) == false)
 				{
-					data_com.CopyTo(data_raw, 0);
+					throw new InvalidDataException(string.Format("Unexpected bitmap encoding 0x{0:X2}", (byte)encoding));
+				}
+
+				byte paletteSize = br.ReadByte();
+
+				m_width  = br.ReadInt16();
+				m_height = br.ReadInt16();
+
+				BitmapColor[] palette;
+				if (encoding == ImageEncoding.RGB)
+				{
+					palette = new BitmapColor[0];
 				}
 				else
 				{
-#if FAIL_ON_COMPRESSED_BLOCK
-					throw new Exception("BMP: FAIL_ON_COMPRESSED_BLOCK");
-#endif
+					palette = new BitmapColor[paletteSize + 1];
+					for (int i = 0; i < palette.Length; ++i)
+					{
+						palette[i] = new BitmapColor(br);
+					}
+				}
+
+				int bufferLength = 0;
+				switch (encoding)
+				{
+					case ImageEncoding.Palette4Bit:
+					{
+						//TODO: check the +1
+						bufferLength = (m_width * m_height + 1) / 2;
+						break;
+					}
+					case ImageEncoding.Palette8Bit:
+					{
+						bufferLength = m_width * m_height;
+						break;
+					}
+					case ImageEncoding.RGB:
+					{
+						bufferLength = m_width * m_height * 3;
+						break;
+					}
+				}
+
+				byte[] imageBuffer = new byte[bufferLength];
+				int bufferPos = 0;
+				while (bufferPos < bufferLength)
+				{
+					byte[] block = ReadBlock(br);
+					Array.Copy(block, 0, imageBuffer, bufferPos, block.Length);
+					bufferPos += block.Length;
+				}
+
+				m_image = new BitmapColor[m_width * m_height];
+				switch (encoding)
+				{
+					case ImageEncoding.RGB:
+					{
+						for (int i = 0; i < m_width * m_height; ++i)
+						{
+							//TODO: possibly the other way round? (bgr vs rgb)
+							m_image[i] = new BitmapColor(
+								imageBuffer[i * 3 + 0],
+								imageBuffer[i * 3 + 1],
+								imageBuffer[i * 3 + 2]
+							);
+						}
+						break;
+					}
+					case ImageEncoding.Palette4Bit:
+					{
+						for (int i = 0; i < m_width * m_height; ++i)
+						{
+							byte index = imageBuffer[i / 2];
+							index >>= 4 * (1 - (i % 2));
+							index &= 0xF;
+							m_image[i] = palette[index];
+						}
+						break;
+					}
+					case ImageEncoding.Palette8Bit:
+					{
+						for (int i = 0; i < m_width * m_height; ++i)
+						{
+							byte index = imageBuffer[i];
+							m_image[i] = palette[index];
+						}
+						break;
+					}
 				}
 			}
 		}
-	}
-	
-	public class BMP_Header
-	{
-		public byte   Encoding;
-		public byte   PaletteLength;
-		public ushort Width;
-		public ushort Height;
 
-		public static BMP_Header Read(LRBinaryReader p_reader)
+		private byte[] ReadBlock(BinaryReader p_reader)
 		{
-			BMP_Header val = new BMP_Header();
-			val.Encoding      = p_reader.ReadByte();
-			val.PaletteLength = p_reader.ReadByte();
-			val.Width         = p_reader.ReadUShort();
-			val.Height        = p_reader.ReadUShort();
-			return val;
+			short blockLengthDecompressed = p_reader.ReadInt16();
+			short blockLengthCompressed = p_reader.ReadInt16();
+
+			if (blockLengthCompressed == blockLengthDecompressed)
+			{
+				return p_reader.ReadBytes(blockLengthCompressed);
+			}
+
+			List<byte> buffer = new List<byte>(blockLengthDecompressed); // allocate a buffer for the block
+			buffer.Add(p_reader.ReadByte()); // always copy the first byte
+
+			while (ReadSubBlock(p_reader, buffer)) ;
+
+			Debug.Assert(buffer.Count == blockLengthDecompressed);
+			return buffer.ToArray();
+		}
+
+		private bool ReadSubBlock(BinaryReader p_reader, List<byte> p_buffer)
+		{
+			// mad thanks to Sluicer for this <3
+
+			byte blockMap = p_reader.ReadByte();
+			for (int i = 0; i < 8; i++) // for all eight bits in blockMap
+			{
+				if ((blockMap & 0x80) != 0) // if highest bit is set - RLE
+				{
+					byte foo = p_reader.ReadByte();
+					int repeat = foo & 0x0F;
+					int goback = (foo & 0xF0) << 4;
+
+					goback += p_reader.ReadByte();
+					if (repeat != 0)
+					{
+						repeat = -(repeat - 0x12);
+					}
+					else
+					{
+						if (repeat == 0 && goback == 0)
+						{
+							return false; // section is finished
+						}
+
+						repeat = p_reader.ReadByte() + 0x12; // override
+					}
+
+					for (int j = 0; j < repeat; j++)
+					{
+						p_buffer.Add(p_buffer[p_buffer.Count - goback]);
+					}
+				}
+				else // if highest bit is not set - copy byte
+				{
+					p_buffer.Add(p_reader.ReadByte());
+				}
+				blockMap <<= 1; // move to next bit
+			}
+			return true;
 		}
 	}
-	
-	public class BMP_Color
-	{
-		public byte R, G, B;
 
-		public static BMP_Color Read(LRBinaryReader p_reader)
+	public struct BitmapColor
+	{
+		public byte r, g, b;
+
+		public BitmapColor(BinaryReader p_reader)
 		{
-			BMP_Color val = new BMP_Color();
-			val.B = p_reader.ReadByte();
-			val.G = p_reader.ReadByte();
-			val.R = p_reader.ReadByte();
-			return val;
+			b = p_reader.ReadByte();
+			g = p_reader.ReadByte();
+			r = p_reader.ReadByte();
+		}
+
+		public BitmapColor(byte p_r, byte p_g, byte p_b)
+		{
+			r = p_r;
+			g = p_g;
+			b = p_b;
+		}
+
+		public override string ToString()
+		{
+			return string.Format("BitmapColor({0}, {1}, {2})", r, g, b);
 		}
 	}
 }

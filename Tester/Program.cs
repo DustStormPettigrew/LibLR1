@@ -15,6 +15,7 @@ namespace Tester
 
 			Test(gameFolder, "*.ADB", (path) => new ADB(path));
 			Test(gameFolder, "*.BDB", (path) => new BDB(path));
+			Test(gameFolder, "*.BMP", (path) => new BMP(path));
 			Test(gameFolder, "*.BVB", (path) => new BVB(path));
 			Test(gameFolder, "*.CCB", (path) => new CCB(path));
 			Test(gameFolder, "*.CDB", (path) => new CDB(path));
@@ -80,7 +81,7 @@ namespace Tester
 			{
 				Console.ForegroundColor = ConsoleColor.Yellow;
 			}
-			Console.WriteLine("{0}/{1} tests passed!", ms_testsPassed, ms_testsRun);
+			Console.WriteLine("{0}/{1} ({2:0.0%}) tests passed!", ms_testsPassed, ms_testsRun, (float)ms_testsPassed / ms_testsRun);
 			Console.ResetColor();
 		}
 	}
