@@ -1,0 +1,37 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "H:\\Video Games\\Modding Tools\\Lego Racers\\WillKirkby-liblr1-b20393c9db0d\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{7D3D99F3-3965-46E0-986B-54C7B5BACFD4}|LibLR1\\LibLR1.csproj|h:\\video games\\modding tools\\lego racers\\willkirkby-liblr1-b20393c9db0d\\liblr1\\bvb.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7D3D99F3-3965-46E0-986B-54C7B5BACFD4}|LibLR1\\LibLR1.csproj|solutionrelative:liblr1\\bvb.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "BVB.cs",
+              "DocumentMoniker": "H:\\Video Games\\Modding Tools\\Lego Racers\\WillKirkby-liblr1-b20393c9db0d\\LibLR1\\BVB.cs",
+              "RelativeDocumentMoniker": "LibLR1\\BVB.cs",
+              "ToolTip": "H:\\Video Games\\Modding Tools\\Lego Racers\\WillKirkby-liblr1-b20393c9db0d\\LibLR1\\BVB.cs",
+              "RelativeToolTip": "LibLR1\\BVB.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAADMAAAAvAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-10-21T00:53:57.87Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

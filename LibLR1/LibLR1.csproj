@@ -1,0 +1,97 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{7D3D99F3-3965-46E0-986B-54C7B5BACFD4}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>LibLR1</RootNamespace>
+    <AssemblyName>LibLR1</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ADB.cs" />
+    <Compile Include="BDB.cs" />
+    <Compile Include="BMP.cs" />
+    <Compile Include="BVB.cs" />
+    <Compile Include="CCB.cs" />
+    <Compile Include="CDB.cs" />
+    <Compile Include="CPB.cs" />
+    <Compile Include="CRB.cs" />
+    <Compile Include="DDB.cs" />
+    <Compile Include="Exceptions\UnexpectedBlockException.cs" />
+    <Compile Include="Exceptions\UnexpectedTypeException.cs" />
+    <Compile Include="GCB.cs" />
+    <Compile Include="GDB.cs" />
+    <Compile Include="GHB.cs" />
+    <Compile Include="IO\LRBinaryReader.cs" />
+    <Compile Include="IO\LRBinaryWriter.cs" />
+    <Compile Include="TIB.cs" />
+    <Compile Include="TRB.cs" />
+    <Compile Include="Utils\Fract16Bit.cs" />
+    <Compile Include="Utils\LRColor.cs" />
+    <Compile Include="Utils\LRQuaternion.cs" />
+    <Compile Include="Utils\LRRect.cs" />
+    <Compile Include="Utils\Fract8Bit.cs" />
+    <Compile Include="LSB.cs" />
+    <Compile Include="MAB.cs" />
+    <Compile Include="MDB.cs" />
+    <Compile Include="MIB.cs" />
+    <Compile Include="PWB.cs" />
+    <Compile Include="RAB.cs" />
+    <Compile Include="RCB.cs" />
+    <Compile Include="RRB.cs" />
+    <Compile Include="SDB.cs" />
+    <Compile Include="Utils\BinaryFileHelper.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SKB.cs" />
+    <Compile Include="SRF.cs" />
+    <Compile Include="TDB.cs" />
+    <Compile Include="Utils\Token.cs" />
+    <Compile Include="WDB.cs" />
+    <Compile Include="Exceptions\UnexpectedPropertyException.cs" />
+    <Compile Include="Utils\LRVector2.cs" />
+    <Compile Include="Utils\LRVector3.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
