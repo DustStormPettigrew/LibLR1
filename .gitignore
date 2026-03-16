@@ -419,3 +419,7 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
+
+# .NET compiler/builder logs and tools
+.dotnet/
+.dotnet-cli/

@@ -1,4 +1,4 @@
-﻿using LibLR1.Exceptions;
+using LibLR1.Exceptions;
 using LibLR1.IO;
 using LibLR1.Utils;
 using System.Collections.Generic;
@@ -12,40 +12,40 @@ namespace LibLR1
 	public class WDB
 	{
 		private const byte
-			ID_TDB                     = 0x27,
-			ID_MDB                     = 0x28,
-			ID_ADB                     = 0x29,
-			ID_GDB                     = 0x2A,
-			ID_GDB2                    = 0x2B,
-			ID_SDB                     = 0x2C,
-			ID_BDB                     = 0x2D,
-			ID_STATIC_MODEL            = 0x2E,
-			ID_ANIMATED_MODEL          = 0x2F,
-			ID_BDB_MODEL               = 0x30,
-			ID_BILLBOARD_SPRITE        = 0x37,
-			ID_MAB                     = 0x3D,
-			ID_BVB                     = 0x40,
-			ID_BVB_MODEL               = 0x41,
-			ID_CAMERA                  = 0x43,
-			ID_AMBIENT_LIGHT           = 0x48,
-			ID_DIRECTIONAL_LIGHT       = 0x49,
-			PROPERTY_GDB               = 0x2A,
-			PROPERTY_ADB_SDB           = 0x2C,
-			PROPERTY_ANIMATED_MODEL    = 0x2F,
-			PROPERTY_OBJECT_POSITION   = 0x31,
-			PROPERTY_OBJECT_ROTATION   = 0x32,
-			PROPERTY_GDB_ADB_SDB       = 0x33,
-			PROPERTY_UNKNOWN_35        = 0x35,
-			PROPERTY_UNKNOWN_3E        = 0x3E,
-			PROPERTY_UNKNOWN_3F        = 0x3F,
-			PROPERTY_BVB               = 0x40,
-			PROPERTY_UNKNOWN_42        = 0x42,
+			ID_TDB = 0x27,
+			ID_MDB = 0x28,
+			ID_ADB = 0x29,
+			ID_GDB = 0x2A,
+			ID_GDB2 = 0x2B,
+			ID_SDB = 0x2C,
+			ID_BDB = 0x2D,
+			ID_STATIC_MODEL = 0x2E,
+			ID_ANIMATED_MODEL = 0x2F,
+			ID_BDB_MODEL = 0x30,
+			ID_BILLBOARD_SPRITE = 0x37,
+			ID_MAB = 0x3D,
+			ID_BVB = 0x40,
+			ID_BVB_MODEL = 0x41,
+			ID_CAMERA = 0x43,
+			ID_AMBIENT_LIGHT = 0x48,
+			ID_DIRECTIONAL_LIGHT = 0x49,
+			PROPERTY_GDB = 0x2A,
+			PROPERTY_ADB_SDB = 0x2C,
+			PROPERTY_ANIMATED_MODEL = 0x2F,
+			PROPERTY_OBJECT_POSITION = 0x31,
+			PROPERTY_OBJECT_ROTATION = 0x32,
+			PROPERTY_GDB_ADB_SDB = 0x33,
+			PROPERTY_UNKNOWN_35 = 0x35,
+			PROPERTY_UNKNOWN_3E = 0x3E,
+			PROPERTY_UNKNOWN_3F = 0x3F,
+			PROPERTY_BVB = 0x40,
+			PROPERTY_UNKNOWN_42 = 0x42,
 			PROPERTY_CAMERA_NEAR_PLANE = 0x45,
-			PROPERTY_CAMERA_FAR_PLANE  = 0x46,
-			PROPERTY_CAMERA_FOV        = 0x47,
-			PROPERTY_LIGHT_COLOR       = 0x4A,
-			PROPERTY_LIGHT_DIRECTION   = 0x4B,
-			PROPERTY_UNKNOWN_4C        = 0x4C;
+			PROPERTY_CAMERA_FAR_PLANE = 0x46,
+			PROPERTY_CAMERA_FOV = 0x47,
+			PROPERTY_LIGHT_COLOR = 0x4A,
+			PROPERTY_LIGHT_DIRECTION = 0x4B,
+			PROPERTY_UNKNOWN_4C = 0x4C;
 
 		private string[] m_TDBs;
 		private string[] m_MDBs;
@@ -307,7 +307,7 @@ namespace LibLR1
 		{
 			WDB_Ref_GDB val = new WDB_Ref_GDB();
 			val.IndexGDB = p_reader.ReadIntWithHeader();
-			val.Unknown  = p_reader.ReadFloatWithHeader();
+			val.Unknown = p_reader.ReadFloatWithHeader();
 			return val;
 		}
 	}
@@ -427,7 +427,7 @@ namespace LibLR1
 					case PROPERTY_OBJECT_ROTATION:
 					{
 						val.RotationFwd = LRVector3.Read(p_reader);
-						val.RotationUp  = LRVector3.Read(p_reader);
+						val.RotationUp = LRVector3.Read(p_reader);
 						break;
 					}
 					case PROPERTY_UNKNOWN_3E:
@@ -496,7 +496,7 @@ namespace LibLR1
 					case PROPERTY_OBJECT_ROTATION:
 					{
 						val.RotationFwd = LRVector3.Read(p_reader);
-						val.RotationUp  = LRVector3.Read(p_reader);
+						val.RotationUp = LRVector3.Read(p_reader);
 						break;
 					}
 					case PROPERTY_UNKNOWN_3E:
@@ -787,7 +787,7 @@ namespace LibLR1
 					case PROPERTY_OBJECT_ROTATION:
 					{
 						val.RotationFwd = LRVector3.Read(p_reader);
-						val.RotationUp  = LRVector3.Read(p_reader);
+						val.RotationUp = LRVector3.Read(p_reader);
 						break;
 					}
 					case PROPERTY_UNKNOWN_35:

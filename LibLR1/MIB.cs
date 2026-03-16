@@ -1,4 +1,4 @@
-﻿using LibLR1.Exceptions;
+using LibLR1.Exceptions;
 using LibLR1.IO;
 using LibLR1.Utils;
 using System;
@@ -10,23 +10,23 @@ namespace LibLR1
 	public class MIB
 	{
 		private const byte
-			ID_NUM_ITEMS           = 0x27,
-			ID_ITEM_IMAGE          = 0x38,
-			ID_ITEM_TEXT           = 0x39,
-			ID_ITEM_SCENE_VIEW_42  = 0x42,
-			ID_ITEM_SCENE_VIEW_45  = 0x45,
+			ID_NUM_ITEMS = 0x27,
+			ID_ITEM_IMAGE = 0x38,
+			ID_ITEM_TEXT = 0x39,
+			ID_ITEM_SCENE_VIEW_42 = 0x42,
+			ID_ITEM_SCENE_VIEW_45 = 0x45,
 			ID_ITEM_TEXT_BUTTON_46 = 0x46,
-			PROPERTY_SCENE_NAME    = 0x2D,
-			PROPERTY_RECT          = 0x2F,
-			PROPERTY_PARENT        = 0x31,
-			PROPERTY_UNKNOWN_32    = 0x32,
-			PROPERTY_UNKNOWN_33    = 0x33,
-			PROPERTY_POSITION      = 0x36;
+			PROPERTY_SCENE_NAME = 0x2D,
+			PROPERTY_RECT = 0x2F,
+			PROPERTY_PARENT = 0x31,
+			PROPERTY_UNKNOWN_32 = 0x32,
+			PROPERTY_UNKNOWN_33 = 0x33,
+			PROPERTY_POSITION = 0x36;
 
-		private Dictionary<string, MIB_ImageItem_38>      m_imageItems;
-		private Dictionary<string, MIB_TextItem_39>       m_textItems;
-		private Dictionary<string, MIB_SceneItem_42>      m_scene42Items;
-		private Dictionary<string, MIB_SceneItem_45>      m_scene45Items;
+		private Dictionary<string, MIB_ImageItem_38> m_imageItems;
+		private Dictionary<string, MIB_TextItem_39> m_textItems;
+		private Dictionary<string, MIB_SceneItem_42> m_scene42Items;
+		private Dictionary<string, MIB_SceneItem_45> m_scene45Items;
 		private Dictionary<string, MIB_TextButtonItem_46> m_textButtonItems;
 
 		public int NumItems
@@ -73,10 +73,10 @@ namespace LibLR1
 
 		public MIB(LRBinaryReader p_reader)
 		{
-			m_imageItems      = new Dictionary<string, MIB_ImageItem_38>();
-			m_textItems       = new Dictionary<string, MIB_TextItem_39>();
-			m_scene42Items    = new Dictionary<string, MIB_SceneItem_42>();
-			m_scene45Items    = new Dictionary<string, MIB_SceneItem_45>();
+			m_imageItems = new Dictionary<string, MIB_ImageItem_38>();
+			m_textItems = new Dictionary<string, MIB_TextItem_39>();
+			m_scene42Items = new Dictionary<string, MIB_SceneItem_42>();
+			m_scene45Items = new Dictionary<string, MIB_SceneItem_45>();
 			m_textButtonItems = new Dictionary<string, MIB_TextButtonItem_46>();
 
 			while (p_reader.BaseStream.Position < p_reader.BaseStream.Length)
@@ -567,7 +567,7 @@ namespace LibLR1
 		private const byte
 			PROPERTY_UNKNOWN_32 = 0x32,
 			PROPERTY_UNKNOWN_33 = 0x33,
-			PROPERTY_POSITION   = 0x36;
+			PROPERTY_POSITION = 0x36;
 
 		public int? Unknown_32;
 		public int? Unknown_33;

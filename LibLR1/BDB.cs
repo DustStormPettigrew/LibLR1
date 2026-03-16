@@ -1,4 +1,4 @@
-﻿using LibLR1.Exceptions;
+using LibLR1.Exceptions;
 using LibLR1.IO;
 using LibLR1.Utils;
 
@@ -7,15 +7,15 @@ namespace LibLR1
 	public class BDB
 	{
 		private const byte
-			ID_UNKNOWN_27     = 0x27,
-			ID_UNKNOWN_28     = 0x28,
-			ID_UNKNOWN_29     = 0x29,
+			ID_UNKNOWN_27 = 0x27,
+			ID_UNKNOWN_28 = 0x28,
+			ID_UNKNOWN_29 = 0x29,
 			ID_BOUNDING_BOXES = 0x2A,
-			ID_UNKNOWN_2B     = 0x2B;
+			ID_UNKNOWN_2B = 0x2B;
 		
-		private BDB_Unknown27[]   m_unknown27;
+		private BDB_Unknown27[] m_unknown27;
 		private BDB_BoundingBox[] m_boundingBoxes;
-		private int[]             m_unknown2B;
+		private int[] m_unknown2B;
 		
 		public BDB_Unknown27[] Unknown27
 		{
@@ -117,7 +117,7 @@ namespace LibLR1
 			get { return ID_UNKNOWN_28; }
 		}
 		
-		public int   a, b, c;
+		public int a, b, c;
 		public float d, e, f, g;
 
 		public static new BDB_Unknown28 Read(LRBinaryReader p_reader)
@@ -141,7 +141,7 @@ namespace LibLR1
 			get { return ID_UNKNOWN_29; }
 		}
 		
-		public ushort     a, b, c;
+		public ushort a, b, c;
 		public Fract16Bit d, e, f;
 
 		public static new BDB_Unknown29 Read(LRBinaryReader p_reader)

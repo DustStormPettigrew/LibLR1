@@ -1,4 +1,4 @@
-﻿using LibLR1.Exceptions;
+using LibLR1.Exceptions;
 using LibLR1.IO;
 using LibLR1.Utils;
 using System.Collections.Generic;
@@ -92,11 +92,11 @@ namespace LibLR1
 
 		public CRB_Circuit(string[] p_players, int p_circuitnumber, int p_circuitnumberagain, bool p_hasunlock, string p_unlock)
 		{
-			Players            = p_players;
-			CircuitNumber      = p_circuitnumber;
+			Players = p_players;
+			CircuitNumber = p_circuitnumber;
 			CircuitNumberAgain = p_circuitnumberagain;
-			HasUnlock          = p_hasunlock;
-			Unlock             = p_unlock;
+			HasUnlock = p_hasunlock;
+			Unlock = p_unlock;
 		}
 
 		public static CRB_Circuit Read(LRBinaryReader p_reader)

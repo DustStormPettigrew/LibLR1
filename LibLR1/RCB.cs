@@ -1,4 +1,4 @@
-﻿using LibLR1.Exceptions;
+using LibLR1.Exceptions;
 using LibLR1.IO;
 using LibLR1.Utils;
 using System.Collections.Generic;
@@ -73,18 +73,18 @@ namespace LibLR1
 	{
 		private const byte
 			PROPERTY_POSITION_IN_CIRCUIT = 0x28,
-			PROPERTY_FOLDER              = 0x29,
-			PROPERTY_CIRCUIT             = 0x2A,
-			PROPERTY_TRACK_ID            = 0x2B,
-			PROPERTY_MIRROR_FLAG         = 0x2C,
-			PROPERTY_THEME_STRING        = 0x2D,
-			PROPERTY_MASCOT              = 0x2E;
+			PROPERTY_FOLDER = 0x29,
+			PROPERTY_CIRCUIT = 0x2A,
+			PROPERTY_TRACK_ID = 0x2B,
+			PROPERTY_MIRROR_FLAG = 0x2C,
+			PROPERTY_THEME_STRING = 0x2D,
+			PROPERTY_MASCOT = 0x2E;
 
-		public int    PositionInCircuit;
+		public int PositionInCircuit;
 		public string Folder;
 		public string Circuit;
-		public int    NameIndex;
-		public bool   Mirror;
+		public int NameIndex;
+		public bool Mirror;
 		public string ThemeStr;
 		public string Mascot;
 
@@ -101,12 +101,12 @@ namespace LibLR1
 			string p_mascot)
 		{
 			PositionInCircuit = p_positionincircuit;
-			Folder            = p_folder;
-			Circuit           = p_circuit;
-			NameIndex         = p_nameindex;
-			Mirror            = p_mirror;
-			ThemeStr          = p_themestr;
-			Mascot            = p_mascot;
+			Folder = p_folder;
+			Circuit = p_circuit;
+			NameIndex = p_nameindex;
+			Mirror = p_mirror;
+			ThemeStr = p_themestr;
+			Mascot = p_mascot;
 		}
 
 		public static RCB_Track Read(LRBinaryReader p_reader)

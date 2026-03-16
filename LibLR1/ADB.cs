@@ -1,4 +1,4 @@
-﻿using LibLR1.Exceptions;
+using LibLR1.Exceptions;
 using LibLR1.IO;
 using LibLR1.Utils;
 using System.Collections.Generic;
@@ -12,12 +12,12 @@ namespace LibLR1
 	public class ADB
 	{
 		private const byte
-			ID_ANIM_DATA     = 0x27,
+			ID_ANIM_DATA = 0x27,
 			ID_ANIM_POINTERS = 0x2B,
-			ID_ANIM_META     = 0x2C;
+			ID_ANIM_META = 0x2C;
 		
-		private ADB_Data                     m_data;
-		private ADB_Pointer[]                m_pointers;
+		private ADB_Data m_data;
+		private ADB_Pointer[] m_pointers;
 		private Dictionary<string, ADB_Meta> m_animations;
 
 		public ADB_Data Data
@@ -43,8 +43,8 @@ namespace LibLR1
 
 		public ADB(LRBinaryReader p_reader)
 		{
-			m_data       = new ADB_Data();
-			m_pointers   = new ADB_Pointer[0];
+			m_data = new ADB_Data();
+			m_pointers = new ADB_Pointer[0];
 			m_animations = new Dictionary<string, ADB_Meta>();
 			while (p_reader.BaseStream.Position < p_reader.BaseStream.Length)
 			{
@@ -118,13 +118,13 @@ namespace LibLR1
 	public class ADB_Data
 	{
 		private const byte
-			PROPERTY_DATA_XYZ_OFFSETS  = 0x28,
-			PROPERTY_DATA_TRANSFORMS   = 0x29,
+			PROPERTY_DATA_XYZ_OFFSETS = 0x28,
+			PROPERTY_DATA_TRANSFORMS = 0x29,
 			PROPERTY_DATA_TIME_OFFSETS = 0x2A;
 		
-		public LRVector3[]    PositionOffsets;
+		public LRVector3[] PositionOffsets;
 		public LRQuaternion[] Transforms;
-		public int[]          TimeOffsets;
+		public int[] TimeOffsets;
 		
 		public ADB_Data()
 			: this(new LRVector3[0], new LRQuaternion[0], new int[0])
@@ -134,8 +134,8 @@ namespace LibLR1
 		public ADB_Data(LRVector3[] p_positionoffsets, LRQuaternion[] p_transforms, int[] p_timeoffsets)
 		{
 			PositionOffsets = p_positionoffsets;
-			Transforms      = p_transforms;
-			TimeOffsets     = p_timeoffsets;
+			Transforms = p_transforms;
+			TimeOffsets = p_timeoffsets;
 		}
 		
 		public static ADB_Data Read(LRBinaryReader p_reader)
@@ -199,23 +199,23 @@ namespace LibLR1
 
 		public ADB_Pointer(int p_transformoffset, int p_transformtimeoffset, int p_transformlength, int p_positionoffset, int p_positiontimeoffset, int p_positionlength)
 		{
-			TransformOffset     = p_transformoffset;
+			TransformOffset = p_transformoffset;
 			TransformTimeOffset = p_transformtimeoffset;
-			TransformLength     = p_transformlength;
-			PositionOffset      = p_positionoffset;
-			PositionTimeOffset  = p_positiontimeoffset;
-			PositionLength      = p_positionlength;
+			TransformLength = p_transformlength;
+			PositionOffset = p_positionoffset;
+			PositionTimeOffset = p_positiontimeoffset;
+			PositionLength = p_positionlength;
 		}
 		
 		public static ADB_Pointer Read(LRBinaryReader p_reader)
 		{
 			ADB_Pointer val = new ADB_Pointer();
-			val.TransformOffset     = p_reader.ReadIntWithHeader();
+			val.TransformOffset = p_reader.ReadIntWithHeader();
 			val.TransformTimeOffset = p_reader.ReadIntWithHeader();
-			val.TransformLength     = p_reader.ReadIntWithHeader();
-			val.PositionOffset      = p_reader.ReadIntWithHeader();
-			val.PositionTimeOffset  = p_reader.ReadIntWithHeader();
-			val.PositionLength      = p_reader.ReadIntWithHeader();
+			val.TransformLength = p_reader.ReadIntWithHeader();
+			val.PositionOffset = p_reader.ReadIntWithHeader();
+			val.PositionTimeOffset = p_reader.ReadIntWithHeader();
+			val.PositionLength = p_reader.ReadIntWithHeader();
 			return val;
 		}
 
@@ -234,17 +234,17 @@ namespace LibLR1
 	{
 		private const byte
 			PROPERTY_META_POINTERS_OFFSET = 0x2B,
-			PROPERTY_META_LENGTH          = 0x2D,
-			PROPERTY_META_LENGTH_1        = 0x2E,
-			PROPERTY_META_SPEED           = 0x2F,
-			PROPERTY_META_XYZ_OFFSET      = 0x30,
-			PROPERTY_META_TRANSFORM       = 0x31;
+			PROPERTY_META_LENGTH = 0x2D,
+			PROPERTY_META_LENGTH_1 = 0x2E,
+			PROPERTY_META_SPEED = 0x2F,
+			PROPERTY_META_XYZ_OFFSET = 0x30,
+			PROPERTY_META_TRANSFORM = 0x31;
 		
-		public int          PointerTableOffset;
-		public int          Length;
-		public int          Length1;
-		public int          Speed;
-		public LRVector3    InitialPosition;
+		public int PointerTableOffset;
+		public int Length;
+		public int Length1;
+		public int Speed;
+		public LRVector3 InitialPosition;
 		public LRQuaternion InitialQuaternion;
 		
 		public ADB_Meta()
@@ -255,11 +255,11 @@ namespace LibLR1
 		public ADB_Meta(int p_pointertableoffset, int p_length, int p_length1, int p_speed, LRVector3 p_initialposition, LRQuaternion p_initialtransform)
 		{
 			PointerTableOffset = p_pointertableoffset;
-			Length             = p_length;
-			Length1            = p_length1;
-			Speed              = p_speed;
-			InitialPosition    = p_initialposition;
-			InitialQuaternion  = p_initialtransform;
+			Length = p_length;
+			Length1 = p_length1;
+			Speed = p_speed;
+			InitialPosition = p_initialposition;
+			InitialQuaternion = p_initialtransform;
 		}
 		
 		public static ADB_Meta Read(LRBinaryReader p_reader)

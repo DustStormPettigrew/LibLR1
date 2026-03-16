@@ -1,4 +1,4 @@
-﻿using LibLR1.Exceptions;
+using LibLR1.Exceptions;
 using LibLR1.IO;
 using LibLR1.Utils;
 
@@ -7,14 +7,14 @@ namespace LibLR1
 	public class BVB
 	{
 		private const byte
-			ID_MATERIALS      = 0x27,
-			ID_POLYGONS       = 0x2D,
-			ID_VERTICES       = 0x34,
+			ID_MATERIALS = 0x27,
+			ID_POLYGONS = 0x2D,
+			ID_VERTICES = 0x34,
 			ID_POLYGON_RANGES = 0x8E;
 		
-		private string[]           m_materials;
-		private LRVector3[]        m_vertices;
-		private BVB_Polygon[]      m_polygons;
+		private string[] m_materials;
+		private LRVector3[] m_vertices;
+		private BVB_Polygon[] m_polygons;
 		private BVB_PolygonRange[] m_polygonRanges;
 		
 		public string[] Materials
@@ -101,9 +101,9 @@ namespace LibLR1
 		public static BVB_Polygon Read(LRBinaryReader p_reader)
 		{
 			BVB_Polygon val = new BVB_Polygon();
-			val.V0       = p_reader.ReadIntegralWithHeader();
-			val.V1       = p_reader.ReadIntegralWithHeader();
-			val.V2       = p_reader.ReadIntegralWithHeader();
+			val.V0 = p_reader.ReadIntegralWithHeader();
+			val.V1 = p_reader.ReadIntegralWithHeader();
+			val.V2 = p_reader.ReadIntegralWithHeader();
 			val.Material = p_reader.ReadIntegralWithHeader();
 			return val;
 		}
@@ -131,13 +131,13 @@ namespace LibLR1
 		public static BVB_PolygonRange Read(LRBinaryReader p_reader)
 		{
 			BVB_PolygonRange val = new BVB_PolygonRange();
-			val.i0        = p_reader.ReadIntegralWithHeader();
-			val.i1        = p_reader.ReadIntegralWithHeader();
-			val.i2        = p_reader.ReadIntegralWithHeader();
-			val.i3        = p_reader.ReadIntegralWithHeader();
-			val.i4        = p_reader.ReadIntegralWithHeader();
+			val.i0 = p_reader.ReadIntegralWithHeader();
+			val.i1 = p_reader.ReadIntegralWithHeader();
+			val.i2 = p_reader.ReadIntegralWithHeader();
+			val.i3 = p_reader.ReadIntegralWithHeader();
+			val.i4 = p_reader.ReadIntegralWithHeader();
 			val.FirstPoly = p_reader.ReadIntegralWithHeader();
-			val.NumPolys  = p_reader.ReadIntegralWithHeader();
+			val.NumPolys = p_reader.ReadIntegralWithHeader();
 			return val;
 		}
 	}

@@ -1,4 +1,4 @@
-﻿using LibLR1.Exceptions;
+using LibLR1.Exceptions;
 using LibLR1.IO;
 using LibLR1.Utils;
 
@@ -75,7 +75,7 @@ namespace LibLR1
 					{
 						if (!p_reader.Next(Token.Int32))
 						{
-							p_reader.BaseStream.Position++;  // 0x2B bodge
+							p_reader.BaseStream.Position++; // 0x2B bodge
 						}
 						val.Int28 = p_reader.ReadIntWithHeader();
 						break;
@@ -84,7 +84,7 @@ namespace LibLR1
 					{
 						if (!p_reader.Next(Token.Int32))
 						{
-							p_reader.BaseStream.Position++;  // 0x2B bodge
+							p_reader.BaseStream.Position++; // 0x2B bodge
 						}
 						val.Int29 = p_reader.ReadIntWithHeader();
 						break;
@@ -93,7 +93,7 @@ namespace LibLR1
 					{
 						if (!p_reader.Next(Token.Int32))
 						{
-							p_reader.BaseStream.Position++;  // 0x2B bodge
+							p_reader.BaseStream.Position++; // 0x2B bodge
 						}
 						val.Int2A = p_reader.ReadIntWithHeader();
 						break;
@@ -102,7 +102,7 @@ namespace LibLR1
 					{
 						if (!p_reader.Next(Token.Int32))
 						{
-							p_reader.BaseStream.Position++;  // 0x2B bodge
+							p_reader.BaseStream.Position++; // 0x2B bodge
 						}
 						val.Int2D = p_reader.ReadIntWithHeader();
 						break;

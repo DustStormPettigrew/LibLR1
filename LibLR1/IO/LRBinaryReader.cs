@@ -1,4 +1,4 @@
-﻿using LibLR1.Exceptions;
+using LibLR1.Exceptions;
 using LibLR1.Utils;
 using System;
 using System.Collections.Generic;
@@ -34,16 +34,6 @@ namespace LibLR1.IO
 			if (actual != p_expected)
 			{
 				throw new Exception(string.Format("Invalid data. Expected {0}, got {1}.", p_expected, actual));
-			}
-		}
-
-		[Obsolete] // should I remove this?
-		public void Expect(byte p_expected)
-		{
-			byte actual = m_baseReader.ReadByte();
-			if (actual != p_expected)
-			{
-				throw new Exception(string.Format("Invalid data. Expected 0x{0:X2}, got 0x{1:X2}.", p_expected, actual));
 			}
 		}
 
@@ -151,11 +141,11 @@ namespace LibLR1.IO
 			Token type = Expect(new Token[] { Token.SByte, Token.Byte, Token.Int32, Token.UShort, Token.Short });
 			switch (type)
 			{
-				case Token.SByte:  return ReadSByte();
-				case Token.Byte:   return ReadByte();
-				case Token.Int32:  return ReadInt();
+				case Token.SByte: return ReadSByte();
+				case Token.Byte: return ReadByte();
+				case Token.Int32: return ReadInt();
 				case Token.UShort: return ReadUShort();
-				case Token.Short:  return ReadShort();
+				case Token.Short: return ReadShort();
 			}
 			throw new UnexpectedTypeException(type, m_baseReader.BaseStream.Position - 1);
 		}
@@ -192,10 +182,10 @@ namespace LibLR1.IO
 		{
 			// [array_len]
 			// {
-			//     output[0],
-			//     output[1],
-			//     :
-			//     output[array_len - 1]
+			// output[0],
+			// output[1],
+			// :
+			// output[array_len - 1]
 			// }
 			Expect(Token.LeftBracket);
 			int array_len = ReadIntWithHeader();
@@ -229,15 +219,15 @@ namespace LibLR1.IO
 		{
 			// [array_len]
 			// {
-			//     0xtypeByte
-			//     {
-			//         output[0],
-			//     }
-			//     :
-			//     0xtypeByte
-			//     {
-			//         output[array_len - 1],
-			//     }
+			// 0xtypeByte
+			// {
+			// output[0],
+			// }
+			// :
+			// 0xtypeByte
+			// {
+			// output[array_len - 1],
+			// }
 			// }
 			Expect(Token.LeftBracket);
 			int array_len = ReadIntWithHeader();
@@ -246,7 +236,7 @@ namespace LibLR1.IO
 			Expect(Token.LeftCurly);
 			for (int i = 0; i < array_len; i++)
 			{
-				Expect(p_typeByte);
+				Expect((Token)p_typeByte);
 				output[i] = ReadStruct<T>(p_readFunc);
 			}
 			Expect(Token.RightCurly);
@@ -262,7 +252,7 @@ namespace LibLR1.IO
 			Expect(Token.LeftCurly);
 			for (int i = 0; i < array_len; i++)
 			{
-				Expect(p_typeByte);
+				Expect((Token)p_typeByte);
 				output.Add(ReadStruct<T>(p_readFunc));
 			}
 			Expect(Token.RightCurly);
@@ -273,17 +263,17 @@ namespace LibLR1.IO
 		{
 			// [array_len]
 			// {
-			//     0xtypeByte
-			//     "item_key"
-			//     {
-			//         output[0],
-			//     }
-			//     :
-			//     0xtypeByte
-			//     "item_key"
-			//     {
-			//         output[array_len - 1],
-			//     }
+			// 0xtypeByte
+			// "item_key"
+			// {
+			// output[0],
+			// }
+			// :
+			// 0xtypeByte
+			// "item_key"
+			// {
+			// output[array_len - 1],
+			// }
 			// }
 			Dictionary<string, T> output = new Dictionary<string, T>();
 			Expect(Token.LeftBracket);
@@ -292,7 +282,7 @@ namespace LibLR1.IO
 			Expect(Token.LeftCurly);
 			for (int i = 0; i < dict_len; i++)
 			{
-				Expect(p_typeByte);
+				Expect((Token)p_typeByte);
 				string item_key = i.ToString();
 				if (Next(Token.String))
 				{
@@ -315,7 +305,7 @@ namespace LibLR1.IO
 			Expect(Token.LeftCurly);
 			for (int i = 0; i < dict_len; i++)
 			{
-				Expect(p_typeByte);
+				Expect((Token)p_typeByte);
 				string item_key = i.ToString();
 				if (Next(Token.String))
 				{

@@ -1,4 +1,4 @@
-﻿using LibLR1.IO;
+using LibLR1.IO;
 using System.IO;
 
 namespace LibLR1 {
@@ -81,7 +81,7 @@ namespace LibLR1 {
 			{
 				p_writer.WriteUShort((ushort)p_value[c]);
 			}
-			p_writer.WriteUShort(0);   // null-terminator
+			p_writer.WriteUShort(0); // null-terminator
 		}
 	}
 }

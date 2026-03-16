@@ -1,4 +1,4 @@
-﻿using LibLR1.Exceptions;
+using LibLR1.Exceptions;
 using LibLR1.IO;
 using LibLR1.Utils;
 using System.Collections.Generic;
@@ -77,22 +77,22 @@ namespace LibLR1
 	{
 		private const byte
 			PROPERTY_POSITION = 0x28,
-			PROPERTY_MATRIX   = 0x29,
-			PROPERTY_PARENT   = 0x2A;
+			PROPERTY_MATRIX = 0x29,
+			PROPERTY_PARENT = 0x2A;
 
-		public LRVector3    Position;
+		public LRVector3 Position;
 		public LRQuaternion Transform;
-		public bool         HasParent;
-		public string       ParentBone;
+		public bool HasParent;
+		public string ParentBone;
 
 		public SDB_Bone()
 			: this(new LRVector3(), new LRQuaternion(), false, "") { }
 
 		public SDB_Bone(LRVector3 p_position, LRQuaternion p_transform, bool p_hasparent, string p_parentbone)
 		{
-			Position   = p_position;
-			Transform  = p_transform;
-			HasParent  = p_hasparent;
+			Position = p_position;
+			Transform = p_transform;
+			HasParent = p_hasparent;
 			ParentBone = p_parentbone;
 		}
 

@@ -1,4 +1,4 @@
-﻿using LibLR1.Exceptions;
+using LibLR1.Exceptions;
 using LibLR1.IO;
 using LibLR1.Utils;
 using System.IO;
@@ -22,7 +22,7 @@ namespace LibLR1
 
 		private RRB_Node[] m_nodes;
 		private LRQuaternion m_unknown28;
-		private LRVector3 m_unknown29;   // probably initial position, need to check this.
+		private LRVector3 m_unknown29; // probably initial position, need to check this.
 		private LRVector3 m_unknown2A;
 		private LRQuaternion m_unknown2B;
 		private int m_unknown2C;

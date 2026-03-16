@@ -1,4 +1,4 @@
-﻿using LibLR1.Exceptions;
+using LibLR1.Exceptions;
 using LibLR1.IO;
 using LibLR1.Utils;
 
@@ -64,39 +64,39 @@ namespace LibLR1
 	public class RAB_Track
 	{
 		private const byte
-			PROPERTY_UNKNOWN_27             = 0x27,
-			PROPERTY_UNKNOWN_28             = 0x28,
-			PROPERTY_UNKNOWN_29             = 0x29,
+			PROPERTY_UNKNOWN_27 = 0x27,
+			PROPERTY_UNKNOWN_28 = 0x28,
+			PROPERTY_UNKNOWN_29 = 0x29,
 			PROPERTY_MAYBE_COLLISION_MESHES = 0x2B,
-			PROPERTY_EVENT_SCRIPT_FILE      = 0x2C,
-			PROPERTY_UNKNOWN_2D             = 0x2D,
-			PROPERTY_TRACK_SCENE            = 0x2E,
-			PROPERTY_HUD_IMAGES_FILE        = 0x2F,
+			PROPERTY_EVENT_SCRIPT_FILE = 0x2C,
+			PROPERTY_UNKNOWN_2D = 0x2D,
+			PROPERTY_TRACK_SCENE = 0x2E,
+			PROPERTY_HUD_IMAGES_FILE = 0x2F,
 
-			PROPERTY_MUSIC_LIST_FILE    = 0x30,
-			PROPERTY_UNKNOWN_31         = 0x31,
-			PROPERTY_UNKNOWN_32         = 0x32,
-			PROPERTY_POWERUP_FILES      = 0x33,
-			PROPERTY_UNKNOWN_34         = 0x34,
-			PROPERTY_UNKNOWN_37         = 0x37,
-			PROPERTY_UNKNOWN_38         = 0x38,
-			PROPERTY_UNKNOWN_39         = 0x39,
-			PROPERTY_EMITTER_FILES      = 0x3A,
-			PROPERTY_UNKNOWN_3B         = 0x3B,
+			PROPERTY_MUSIC_LIST_FILE = 0x30,
+			PROPERTY_UNKNOWN_31 = 0x31,
+			PROPERTY_UNKNOWN_32 = 0x32,
+			PROPERTY_POWERUP_FILES = 0x33,
+			PROPERTY_UNKNOWN_34 = 0x34,
+			PROPERTY_UNKNOWN_37 = 0x37,
+			PROPERTY_UNKNOWN_38 = 0x38,
+			PROPERTY_UNKNOWN_39 = 0x39,
+			PROPERTY_EMITTER_FILES = 0x3A,
+			PROPERTY_UNKNOWN_3B = 0x3B,
 			PROPERTY_COMMON_SOUNDS_FILE = 0x3C,
-			PROPERTY_UNKNOWN_3D         = 0x3D,
-			PROPERTY_SOUND_LIST_FILE    = 0x3F,
+			PROPERTY_UNKNOWN_3D = 0x3D,
+			PROPERTY_SOUND_LIST_FILE = 0x3F,
 
-			PROPERTY_UNKNOWN_40  = 0x40,
-			PROPERTY_START_POS   = 0x41,
-			PROPERTY_SKYBOX      = 0x42,
-			PROPERTY_UNKNOWN_43  = 0x43,
+			PROPERTY_UNKNOWN_40 = 0x40,
+			PROPERTY_START_POS = 0x41,
+			PROPERTY_SKYBOX = 0x42,
+			PROPERTY_UNKNOWN_43 = 0x43,
 			PROPERTY_HAZARD_FILE = 0x44,
-			PROPERTY_UNKNOWN_45  = 0x45,
+			PROPERTY_UNKNOWN_45 = 0x45,
 			PROPERTY_BOUNDING_XZ = 0x46,
-			PROPERTY_UNKNOWN_48  = 0x48,
-			PROPERTY_UNKNOWN_49  = 0x49,
-			PROPERTY_UNKNOWN_4A  = 0x4A;
+			PROPERTY_UNKNOWN_48 = 0x48,
+			PROPERTY_UNKNOWN_49 = 0x49,
+			PROPERTY_UNKNOWN_4A = 0x4A;
 
 		public string Unknown27;
 		public LRVector3 Unknown28_A, Unknown28_B;
@@ -128,8 +128,8 @@ namespace LibLR1
 		public string Unknown39;
 
 		/// <summary>
-		/// [0] global from /COMMON  EM[T|B]
-		/// [1] track specific  EM[T|B]
+		/// [0] global from /COMMON EM[T|B]
+		/// [1] track specific EM[T|B]
 		/// </summary>
 		public string[] EmitterFiles;
 		public string Unknown3B;
