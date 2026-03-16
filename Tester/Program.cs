@@ -11,7 +11,7 @@ namespace Tester
 
 		public static void Main(string[] p_args)
 		{
-			const string gameFolder = @"E:\Games\LEGO Racers";
+			const string gameFolder = @"D:\Games\Lego Racers";
 
 			Test(gameFolder, "*.ADB", (path) => new ADB(path));
 			Test(gameFolder, "*.BDB", (path) => new BDB(path));
@@ -36,7 +36,7 @@ namespace Tester
 			Test(gameFolder, "*.RCB", (path) => new RCB(path));
 			Test(gameFolder, "*.RRB", (path) => new RRB(path));
 			Test(gameFolder, "*.SDB", (path) => new SDB(path));
-			//Test(gameFolder, "*.SKB", (path) => new SKB(path));
+			Test(gameFolder, "*.SKB", (path) => new SKB(path));
 			Test(gameFolder, "*.TDB", (path) => new TDB(path));
 			Test(gameFolder, "*.WDB", (path) => new WDB(path));
 			PrintStats();

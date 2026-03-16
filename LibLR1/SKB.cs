@@ -6,10 +6,7 @@ using System.Collections.Generic;
 
 namespace LibLR1
 {
-	/// <summary>
-	/// Private while I fix it.
-	/// </summary>
-	class SKB
+	public class SKB
 	{
 		private const byte
 			ID_GRADIENT = 0x27,
@@ -22,8 +19,12 @@ namespace LibLR1
 			PROPERTY_COLOR_3 = 0x2B;
 
 		private Dictionary<string, SKB_Gradient>[] m_gradients;
+		private string m_preferredSet;
+		private float? m_unknownFloat;
 
 		public Dictionary<string, SKB_Gradient>[] Gradients { get { return m_gradients; } set { m_gradients = value; } }
+		public string PreferredSet { get { return m_preferredSet; } set { m_preferredSet = value; } }
+		public float? UnknownFloat { get { return m_unknownFloat; } set { m_unknownFloat = value; } }
 
 		public SKB(string p_filepath)
 			: this(BinaryFileHelper.Decompress(p_filepath))
@@ -39,15 +40,40 @@ namespace LibLR1
 				{
 					case ID_GRADIENT_DICT_ARRAY:
 					{
-						throw new NotImplementedException("Will needs to work out how to do recursive array/dict loading :D");
-						/*_Gradients = BinaryFileHelper.ReadArrayBlock<Dictionary<string,SKB_Gradient>>(
-							stream,
-							new BinaryFileHelper.ReadObject<Dictionary<string,SKB_Gradient>>(
-								BinaryFileHelper.ReadDictionaryBlock<SKB_Gradient>(
-									stream, SKB_Gradient.FromStream, ID_GRADIENT
-								)
-							)
-						);*/
+						p_reader.Expect(Token.LeftBracket);
+						int arrayLen = p_reader.ReadIntWithHeader();
+						p_reader.Expect(Token.RightBracket);
+						p_reader.Expect(Token.LeftCurly);
+						m_gradients = new Dictionary<string, SKB_Gradient>[arrayLen];
+						for (int i = 0; i < arrayLen; i++)
+						{
+							p_reader.Expect((Token)ID_GRADIENT);
+							p_reader.Expect(Token.LeftBracket);
+							int dictLen = p_reader.ReadIntWithHeader();
+							p_reader.Expect(Token.RightBracket);
+							Dictionary<string, SKB_Gradient> dict = new Dictionary<string, SKB_Gradient>();
+							for (int j = 0; j < dictLen; j++)
+							{
+								string key = p_reader.ReadStringWithHeader();
+								p_reader.Expect(Token.LeftCurly);
+								p_reader.Expect((Token)ID_GRADIENT);
+								SKB_Gradient gradient = p_reader.ReadStruct<SKB_Gradient>(SKB_Gradient.FromStream);
+								p_reader.Expect(Token.RightCurly);
+								dict.Add(key, gradient);
+							}
+							m_gradients[i] = dict;
+						}
+						p_reader.Expect(Token.RightCurly);
+						break;
+					}
+					case ID_PREFERREDSET:
+					{
+						m_preferredSet = p_reader.ReadStringWithHeader();
+						break;
+					}
+					case ID_UNKNOWN_FLOAT:
+					{
+						m_unknownFloat = p_reader.ReadFloatWithHeader();
 						break;
 					}
 					default:
