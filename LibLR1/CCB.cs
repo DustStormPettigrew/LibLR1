@@ -1,4 +1,4 @@
-﻿using LibLR1.Exceptions;
+using LibLR1.Exceptions;
 using LibLR1.IO;
 using LibLR1.Utils;
 using System.Collections.Generic;
@@ -79,11 +79,11 @@ namespace LibLR1
 			PROPERTY_UNKNOWN_2C = 0x2C,
 			PROPERTY_UNKNOWN_2D = 0x2D;
 		
-		public string    Unknown28;
-		public string    Unknown29;
-		public string    Unknown2A;
-		public string    Unknown2B;
-		public float     Unknown2C;
+		public string Unknown28;
+		public string Unknown29;
+		public string Unknown2A;
+		public string Unknown2B;
+		public float Unknown2C;
 		public LRVector3 Unknown2D;
 
 		public static CCB_Car Read(LRBinaryReader p_reader)

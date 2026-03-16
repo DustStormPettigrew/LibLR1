@@ -1,4 +1,4 @@
-﻿using LibLR1.Exceptions;
+using LibLR1.Exceptions;
 using LibLR1.IO;
 using LibLR1.Utils;
 
@@ -51,17 +51,17 @@ namespace LibLR1
 	public class GHB_GhostPath
 	{
 		private const byte
-			PROPERTY_NODES      = 0x27,
-			PROPERTY_POSITION   = 0x28,
-			PROPERTY_ROTATION   = 0x29,
+			PROPERTY_NODES = 0x27,
+			PROPERTY_POSITION = 0x28,
+			PROPERTY_ROTATION = 0x29,
 			PROPERTY_UNKNOWN_2A = 0x2A,
 			PROPERTY_UNKNOWN_2B = 0x2B;
 		
-		public GHB_Node[]   Nodes;
-		public LRVector3    InitialPosition;
+		public GHB_Node[] Nodes;
+		public LRVector3 InitialPosition;
 		public LRQuaternion InitialRotation;
-		public int[]        Unknown2A;
-		public int          Unknown2B;
+		public int[] Unknown2A;
+		public int Unknown2B;
 		
 		public static GHB_GhostPath Read(LRBinaryReader p_reader)
 		{
@@ -118,7 +118,7 @@ namespace LibLR1
 	public class GHB_Node
 	{
 		public Fract16Bit px, py, pz;
-		public Fract8Bit  rx, ry, rz, rw;
+		public Fract8Bit rx, ry, rz, rw;
 		
 		public static GHB_Node Read(LRBinaryReader p_reader)
 		{

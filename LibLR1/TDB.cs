@@ -1,4 +1,4 @@
-﻿using LibLR1.Exceptions;
+using LibLR1.Exceptions;
 using LibLR1.IO;
 using LibLR1.Utils;
 using System.Collections.Generic;
@@ -9,11 +9,11 @@ namespace LibLR1
 	public class TDB
 	{
 		private const byte
-			ID_TEXTURES       = 0x27,
-			PROPERTY_28       = 0x28,
-			PROPERTY_BMP_TGA  = 0x2A,
+			ID_TEXTURES = 0x27,
+			PROPERTY_28 = 0x28,
+			PROPERTY_BMP_TGA = 0x2A,
 			PROPERTY_COLOR_2C = 0x2C,
-			PROPERTY_2D       = 0x2D;
+			PROPERTY_2D = 0x2D;
 
 		private Dictionary<string, TDB_Texture> m_textures;
 
@@ -73,30 +73,30 @@ namespace LibLR1
 	public class TDB_Texture
 	{
 		private const byte
-			PROPERTY_28       = 0x28,
-			PROPERTY_BMP_TGA  = 0x2A,
-			PROPERTY_2B       = 0x2B,
+			PROPERTY_28 = 0x28,
+			PROPERTY_BMP_TGA = 0x2A,
+			PROPERTY_2B = 0x2B,
 			PROPERTY_COLOR_2C = 0x2C,
-			PROPERTY_2D       = 0x2D;
+			PROPERTY_2D = 0x2D;
 
-		public bool    Bool28;
-		public bool    IsBitmap;
-		public bool    Bool2B;
-		public bool    HasColor2C;
+		public bool Bool28;
+		public bool IsBitmap;
+		public bool Bool2B;
+		public bool HasColor2C;
 		public LRColor Color2C;
-		public bool    Bool2D;
+		public bool Bool2D;
 
 		public TDB_Texture()
 			: this(false, false, false, false, new LRColor(), false) { }
 
 		public TDB_Texture(bool p_bool28, bool p_isbitmap, bool p_bool2b, bool p_hascolor2c, LRColor p_color2c, bool p_bool2d)
 		{
-			Bool28     = p_bool28;
-			IsBitmap   = p_isbitmap;
-			Bool2B     = p_bool2b;
+			Bool28 = p_bool28;
+			IsBitmap = p_isbitmap;
+			Bool2B = p_bool2b;
 			HasColor2C = p_hascolor2c;
-			Color2C    = p_color2c;
-			Bool2D     = p_bool2d;
+			Color2C = p_color2c;
+			Bool2D = p_bool2d;
 		}
 
 		public static TDB_Texture Read(LRBinaryReader p_reader)

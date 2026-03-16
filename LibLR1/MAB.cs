@@ -1,4 +1,4 @@
-﻿using LibLR1.Exceptions;
+using LibLR1.Exceptions;
 using LibLR1.IO;
 using LibLR1.Utils;
 using System.IO;
@@ -96,7 +96,7 @@ namespace LibLR1
 		{
 			MAB_MaterialFrame val = new MAB_MaterialFrame();
 			val.Material = p_reader.ReadStringWithHeader();
-			val.Frame    = p_reader.ReadIntWithHeader();
+			val.Frame = p_reader.ReadIntWithHeader();
 			return val;
 		}
 

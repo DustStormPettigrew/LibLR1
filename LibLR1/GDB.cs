@@ -1,4 +1,4 @@
-﻿using LibLR1.Exceptions;
+using LibLR1.Exceptions;
 using LibLR1.IO;
 using LibLR1.Utils;
 using System;
@@ -12,39 +12,39 @@ namespace LibLR1
 	public class GDB
 	{
 		private const byte
-			ID_MATERIALS          = 0x27,
-			ID_VERTEX_NORMALED    = 0x29,
-			ID_VERTEX_COLORED     = 0x2A,
-			ID_INDICES            = 0x2D,
-			ID_INDICES_META       = 0x2E,
-			ID_SCALE              = 0x33,
-			PROPERTY_MATERIAL_ID  = 0x27,
+			ID_MATERIALS = 0x27,
+			ID_VERTEX_NORMALED = 0x29,
+			ID_VERTEX_COLORED = 0x2A,
+			ID_INDICES = 0x2D,
+			ID_INDICES_META = 0x2E,
+			ID_SCALE = 0x33,
+			PROPERTY_MATERIAL_ID = 0x27,
 			PROPERTY_INDICES_META = 0x2D,
-			PROPERTY_VERTEX_META  = 0x31,
-			PROPERTY_BONE_ID      = 0x32;
+			PROPERTY_VERTEX_META = 0x31,
+			PROPERTY_BONE_ID = 0x32;
 
-		private string[]            m_materials;
+		private string[] m_materials;
 		private GDB_Vertex_Normal[] m_vertexNormals;
-		private GDB_Vertex_Color[]  m_vertexColors;
-		private GDB_Polygon[]       m_polygons;
-		private float               m_scale;
-		private GDB_Meta[]          m_meta;
+		private GDB_Vertex_Color[] m_vertexColors;
+		private GDB_Polygon[] m_polygons;
+		private float m_scale;
+		private GDB_Meta[] m_meta;
 
-		public string[]            Materials     { get { return m_materials;     } set { m_materials     = value; } }
+		public string[] Materials { get { return m_materials; } set { m_materials = value; } }
 		public GDB_Vertex_Normal[] VertexNormals { get { return m_vertexNormals; } set { m_vertexNormals = value; } }
-		public GDB_Vertex_Color[]  VertexColors  { get { return m_vertexColors;  } set { m_vertexColors  = value; } }
-		public GDB_Polygon[]       Polygons      { get { return m_polygons;      } set { m_polygons      = value; } }
-		public float               Scale         { get { return m_scale;         } set { m_scale         = value; } }
-		public GDB_Meta[]          Meta          { get { return m_meta;          } set { m_meta          = value; } }
+		public GDB_Vertex_Color[] VertexColors { get { return m_vertexColors; } set { m_vertexColors = value; } }
+		public GDB_Polygon[] Polygons { get { return m_polygons; } set { m_polygons = value; } }
+		public float Scale { get { return m_scale; } set { m_scale = value; } }
+		public GDB_Meta[] Meta { get { return m_meta; } set { m_meta = value; } }
 
 		public GDB()
 		{
-			m_materials     = new string[0];
+			m_materials = new string[0];
 			m_vertexNormals = new GDB_Vertex_Normal[0];
-			m_vertexColors  = new GDB_Vertex_Color[0];
-			m_polygons      = new GDB_Polygon[0];
-			m_scale         = 1;
-			m_meta          = new GDB_Meta[0];
+			m_vertexColors = new GDB_Vertex_Color[0];
+			m_polygons = new GDB_Polygon[0];
+			m_scale = 1;
+			m_meta = new GDB_Meta[0];
 		}
 
 		public GDB(string p_filepath)
@@ -54,11 +54,11 @@ namespace LibLR1
 
 		public GDB(LRBinaryReader p_reader)
 		{
-			m_materials     = new string[0];
+			m_materials = new string[0];
 			m_vertexNormals = new GDB_Vertex_Normal[0];
-			m_vertexColors  = new GDB_Vertex_Color[0];
-			m_polygons      = new GDB_Polygon[0];
-			m_scale         = 1;
+			m_vertexColors = new GDB_Vertex_Color[0];
+			m_polygons = new GDB_Polygon[0];
+			m_scale = 1;
 			while (p_reader.BaseStream.Position < p_reader.BaseStream.Length)
 			{
 				byte blockId = p_reader.ReadByte();
@@ -181,9 +181,9 @@ namespace LibLR1
 		public static GDB_Vertex_Normal Read(LRBinaryReader p_reader)
 		{
 			GDB_Vertex_Normal val = new GDB_Vertex_Normal();
-			val.Position  = LRVector3.Read(p_reader);
+			val.Position = LRVector3.Read(p_reader);
 			val.TexCoords = LRVector2.Read(p_reader);
-			val.Normal    = LRVector3.Read(p_reader);
+			val.Normal = LRVector3.Read(p_reader);
 			return val;
 		}
 
@@ -206,17 +206,17 @@ namespace LibLR1
 
 		public GDB_Vertex_Color(LRVector3 position, LRVector2 texcoords, LRColor color)
 		{
-			Position  = position;
+			Position = position;
 			TexCoords = texcoords;
-			Color     = color;
+			Color = color;
 		}
 
 		public static GDB_Vertex_Color Read(LRBinaryReader p_reader)
 		{
 			GDB_Vertex_Color val = new GDB_Vertex_Color();
-			val.Position  = LRVector3.Read(p_reader);
+			val.Position = LRVector3.Read(p_reader);
 			val.TexCoords = LRVector2.Read(p_reader);
-			val.Color     = LRColor.Read(p_reader);
+			val.Color = LRColor.Read(p_reader);
 			return val;
 		}
 
@@ -262,10 +262,10 @@ namespace LibLR1
 	public abstract class GDB_Meta
 	{
 		public const byte
-			PROPERTY_MATERIAL_ID  = 0x27,
+			PROPERTY_MATERIAL_ID = 0x27,
 			PROPERTY_INDICES_META = 0x2D,
-			PROPERTY_VERTEX_META  = 0x31,
-			PROPERTY_BONE_ID      = 0x32;
+			PROPERTY_VERTEX_META = 0x31,
+			PROPERTY_BONE_ID = 0x32;
 
 		public virtual byte Type { get { return 0; } }
 
@@ -388,7 +388,7 @@ namespace LibLR1
 			get { return PROPERTY_VERTEX_META; }
 		}
 
-		public byte   UnknownByte;
+		public byte UnknownByte;
 		public ushort Offset;
 		public ushort Length;
 
@@ -396,8 +396,8 @@ namespace LibLR1
 		{
 			GDB_Meta_Vertices val = new GDB_Meta_Vertices();
 			val.UnknownByte = p_reader.ReadByteWithHeader();
-			val.Offset      = p_reader.ReadUShortWithHeader();
-			val.Length      = p_reader.ReadUShortWithHeader();
+			val.Offset = p_reader.ReadUShortWithHeader();
+			val.Length = p_reader.ReadUShortWithHeader();
 			return val;
 		}
 

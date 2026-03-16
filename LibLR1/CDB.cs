@@ -1,4 +1,4 @@
-﻿using LibLR1.Exceptions;
+using LibLR1.Exceptions;
 using LibLR1.IO;
 using LibLR1.Utils;
 using System.Collections.Generic;
@@ -11,27 +11,27 @@ namespace LibLR1
 	public class CDB
 	{
 		private const byte
-			ID_WDBS     = 0x28,
+			ID_WDBS = 0x28,
 			ID_CUTSCENE = 0x27;
 		
 		private const byte
-			PROPERTY_CAMERA                = 0x29,
-			PROPERTY_CAMERA_NAME           = 0x2A,
-			PROPERTY_START_FRAME           = 0x2B,
-			PROPERTY_DURATION              = 0x2C,
-			PROPERTY_ANIM_SEQ_ID           = 0x2D,
-			PROPERTY_MODEL                 = 0x2E,
-			PROPERTY_MODEL_NAME            = 0x30,
-			PROPERTY_MODEL_LOCATION        = 0x33,
-			PROPERTY_MODEL_ROTATION        = 0x34,
-			PROPERTY_LIGHTTYPE_AMBIENT     = 0x35,
-			PROPERTY_EVENT                 = 0x37,
-			PROPERTY_LIGHT_COLOR           = 0x38,
-			PROPERTY_LIGHT_DIRECTION       = 0x39,
+			PROPERTY_CAMERA = 0x29,
+			PROPERTY_CAMERA_NAME = 0x2A,
+			PROPERTY_START_FRAME = 0x2B,
+			PROPERTY_DURATION = 0x2C,
+			PROPERTY_ANIM_SEQ_ID = 0x2D,
+			PROPERTY_MODEL = 0x2E,
+			PROPERTY_MODEL_NAME = 0x30,
+			PROPERTY_MODEL_LOCATION = 0x33,
+			PROPERTY_MODEL_ROTATION = 0x34,
+			PROPERTY_LIGHTTYPE_AMBIENT = 0x35,
+			PROPERTY_EVENT = 0x37,
+			PROPERTY_LIGHT_COLOR = 0x38,
+			PROPERTY_LIGHT_DIRECTION = 0x39,
 			PROPERTY_LIGHTTYPE_DIRECTIONAL = 0x3A,
-			PROPERTY_SPEED                 = 0x3B;
+			PROPERTY_SPEED = 0x3B;
 		
-		private string[]                         m_WDBs;
+		private string[] m_WDBs;
 		private Dictionary<string, CDB_Cutscene> m_cutscenes;
 		
 		public string[] WDBs
@@ -85,28 +85,28 @@ namespace LibLR1
 	public class CDB_Cutscene
 	{
 		private const byte
-			PROPERTY_CAMERA                = 0x29,
-			PROPERTY_CAMERA_NAME           = 0x2A,
-			PROPERTY_START_FRAME           = 0x2B,
-			PROPERTY_DURATION              = 0x2C,
-			PROPERTY_ANIM_SEQ_ID           = 0x2D,
-			PROPERTY_MODEL                 = 0x2E,
-			PROPERTY_MODEL_NAME            = 0x30,
-			PROPERTY_MODEL_LOCATION        = 0x33,
-			PROPERTY_MODEL_ROTATION        = 0x34,
-			PROPERTY_LIGHTTYPE_AMBIENT     = 0x35,
-			PROPERTY_EVENT                 = 0x37,
-			PROPERTY_LIGHT_COLOR           = 0x38,
-			PROPERTY_LIGHT_DIRECTION       = 0x39,
+			PROPERTY_CAMERA = 0x29,
+			PROPERTY_CAMERA_NAME = 0x2A,
+			PROPERTY_START_FRAME = 0x2B,
+			PROPERTY_DURATION = 0x2C,
+			PROPERTY_ANIM_SEQ_ID = 0x2D,
+			PROPERTY_MODEL = 0x2E,
+			PROPERTY_MODEL_NAME = 0x30,
+			PROPERTY_MODEL_LOCATION = 0x33,
+			PROPERTY_MODEL_ROTATION = 0x34,
+			PROPERTY_LIGHTTYPE_AMBIENT = 0x35,
+			PROPERTY_EVENT = 0x37,
+			PROPERTY_LIGHT_COLOR = 0x38,
+			PROPERTY_LIGHT_DIRECTION = 0x39,
 			PROPERTY_LIGHTTYPE_DIRECTIONAL = 0x3A,
-			PROPERTY_SPEED                 = 0x3B;
+			PROPERTY_SPEED = 0x3B;
 		
 		public int Speed;
 		public int Duration;
-		public KeyValuePair<string, CDB_Camera>[]           Cameras           = new KeyValuePair<string, CDB_Camera>[0];
-		public KeyValuePair<string, CDB_Model>[]            Models            = new KeyValuePair<string, CDB_Model>[0];
-		public KeyValuePair<string, CDB_Event>[]            Events            = new KeyValuePair<string, CDB_Event>[0];
-		public KeyValuePair<string, CDB_AmbientLight>[]     AmbientLights     = new KeyValuePair<string, CDB_AmbientLight>[0];
+		public KeyValuePair<string, CDB_Camera>[] Cameras = new KeyValuePair<string, CDB_Camera>[0];
+		public KeyValuePair<string, CDB_Model>[] Models = new KeyValuePair<string, CDB_Model>[0];
+		public KeyValuePair<string, CDB_Event>[] Events = new KeyValuePair<string, CDB_Event>[0];
+		public KeyValuePair<string, CDB_AmbientLight>[] AmbientLights = new KeyValuePair<string, CDB_AmbientLight>[0];
 		public KeyValuePair<string, CDB_DirectionalLight>[] DirectionalLights = new KeyValuePair<string, CDB_DirectionalLight>[0];
 		
 		public static CDB_Cutscene Read(LRBinaryReader p_reader)
@@ -185,13 +185,13 @@ namespace LibLR1
 		private const byte
 			PROPERTY_CAMERA_NAME = 0x2A,
 			PROPERTY_START_FRAME = 0x2B,
-			PROPERTY_DURATION    = 0x2C,
+			PROPERTY_DURATION = 0x2C,
 			PROPERTY_ANIM_SEQ_ID = 0x2D;
 		
 		public string ModelName;
-		public int    StartFrame;
-		public int    Duration;
-		public int    AnimationSequenceId;
+		public int StartFrame;
+		public int Duration;
+		public int AnimationSequenceId;
 
 		public static CDB_Camera Read(LRBinaryReader p_reader)
 		{
@@ -237,26 +237,26 @@ namespace LibLR1
 	public class CDB_Model
 	{
 		private const byte
-			PROPERTY_START_FRAME            = 0x2B,
-			PROPERTY_DURATION               = 0x2C,
-			PROPERTY_ANIM_SEQ_ID            = 0x2D,
-			PROPERTY_MODEL_NAME_STATIC      = 0x2F,
-			PROPERTY_MODEL_NAME             = 0x30,
+			PROPERTY_START_FRAME = 0x2B,
+			PROPERTY_DURATION = 0x2C,
+			PROPERTY_ANIM_SEQ_ID = 0x2D,
+			PROPERTY_MODEL_NAME_STATIC = 0x2F,
+			PROPERTY_MODEL_NAME = 0x30,
 			PROPERTY_MODEL_SPRITE_REFERENCE = 0x32,
-			PROPERTY_MODEL_LOCATION         = 0x33,
-			PROPERTY_MODEL_ROTATION         = 0x34,
-			PROPERTY_LIGHTTYPE_AMBIENT      = 0x35,
-			PROPERTY_UNKNOWN_36             = 0x36,
-			PROPERTY_SPEED                  = 0x3B;
+			PROPERTY_MODEL_LOCATION = 0x33,
+			PROPERTY_MODEL_ROTATION = 0x34,
+			PROPERTY_LIGHTTYPE_AMBIENT = 0x35,
+			PROPERTY_UNKNOWN_36 = 0x36,
+			PROPERTY_SPEED = 0x3B;
 		
-		public string      ModelName;
-		public string      StaticModelName;
-		public int         SpriteRefSceneId, SpriteRefItemId;
-		public LRVector3   Location;
-		public LRVector3   RotationFwd, RotationUp;
-		public int         StartFrame;
-		public int         Duration;
-		public int         AnimationSequenceId;
+		public string ModelName;
+		public string StaticModelName;
+		public int SpriteRefSceneId, SpriteRefItemId;
+		public LRVector3 Location;
+		public LRVector3 RotationFwd, RotationUp;
+		public int StartFrame;
+		public int Duration;
+		public int AnimationSequenceId;
 		public CDB_5ints[] Unknown;
 
 		public static CDB_Model Read(LRBinaryReader p_reader)
@@ -291,7 +291,7 @@ namespace LibLR1
 					case PROPERTY_MODEL_ROTATION:
 					{
 						val.RotationFwd = LRVector3.Read(p_reader);
-						val.RotationUp  = LRVector3.Read(p_reader);
+						val.RotationUp = LRVector3.Read(p_reader);
 						break;
 					}
 					case PROPERTY_START_FRAME:
@@ -333,11 +333,11 @@ namespace LibLR1
 	{
 		private const byte
 			PROPERTY_START_FRAME = 0x2B,
-			PROPERTY_DURATION    = 0x2C,
+			PROPERTY_DURATION = 0x2C,
 			PROPERTY_LIGHT_COLOR = 0x38;
 		
-		public int     StartFrame;
-		public int     EndFrame;
+		public int StartFrame;
+		public int EndFrame;
 		public LRColor Color;
 
 		public static CDB_AmbientLight Read(LRBinaryReader p_reader)
@@ -379,15 +379,15 @@ namespace LibLR1
 	public class CDB_Event
 	{
 		private const byte
-			PROPERTY_START_FRAME    = 0x2B,
-			PROPERTY_DURATION       = 0x2C,
+			PROPERTY_START_FRAME = 0x2B,
+			PROPERTY_DURATION = 0x2C,
 			PROPERTY_MODEL_LOCATION = 0x33,
 			PROPERTY_MODEL_ROTATION = 0x34;
 		
 		public LRVector3 Location;
 		public LRVector3 RotationFwd, RotationUp;
-		public int       StartFrame;
-		public int       Duration;
+		public int StartFrame;
+		public int Duration;
 
 		public static CDB_Event Read(LRBinaryReader p_reader)
 		{
@@ -405,7 +405,7 @@ namespace LibLR1
 					case PROPERTY_MODEL_ROTATION:
 					{
 						val.RotationFwd = LRVector3.Read(p_reader);
-						val.RotationUp  = LRVector3.Read(p_reader);
+						val.RotationUp = LRVector3.Read(p_reader);
 						break;
 					}
 					case PROPERTY_START_FRAME:
@@ -434,17 +434,17 @@ namespace LibLR1
 	public class CDB_DirectionalLight
 	{
 		private const byte
-			PROPERTY_START_FRAME     = 0x2B,
-			PROPERTY_DURATION        = 0x2C,
-			PROPERTY_LIGHT_COLOR     = 0x38,
+			PROPERTY_START_FRAME = 0x2B,
+			PROPERTY_DURATION = 0x2C,
+			PROPERTY_LIGHT_COLOR = 0x38,
 			PROPERTY_LIGHT_DIRECTION = 0x39,
-			PROPERTY_UNKNOWN_3C      = 0x3C;
+			PROPERTY_UNKNOWN_3C = 0x3C;
 		
-		public int       StartFrame;
-		public int       EndFrame;
-		public LRColor   Color;
+		public int StartFrame;
+		public int EndFrame;
+		public LRColor Color;
 		public LRVector3 Direction;
-		public int[]     Unknown3C;
+		public int[] Unknown3C;
 
 		public static CDB_DirectionalLight Read(LRBinaryReader p_reader)
 		{
@@ -476,7 +476,7 @@ namespace LibLR1
 					}
 					case PROPERTY_UNKNOWN_3C:
 					{
-						val.Unknown3C    = new int[2];
+						val.Unknown3C = new int[2];
 						val.Unknown3C[0] = p_reader.ReadIntWithHeader();
 						val.Unknown3C[1] = p_reader.ReadIntWithHeader();
 						break;

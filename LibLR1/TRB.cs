@@ -1,4 +1,4 @@
-﻿using LibLR1.Exceptions;
+using LibLR1.Exceptions;
 using LibLR1.IO;
 using LibLR1.Utils;
 
@@ -60,11 +60,11 @@ namespace LibLR1
 			PROPERTY_2F = 0x2F;
 
 		public LRVector3 Vec29;
-		public float     Float2A;
-		public int       Int2B;
-		public string    String2D;
-		public int       Int2E;
-		public bool      Bool2F;
+		public float Float2A;
+		public int Int2B;
+		public string String2D;
+		public int Int2E;
+		public bool Bool2F;
 
 		public static TRB_Unknown27 Read(LRBinaryReader p_reader)
 		{

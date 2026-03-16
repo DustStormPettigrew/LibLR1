@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -11,7 +11,7 @@ namespace LibLR1
 		private int m_width, m_height;
 		private BitmapColor[] m_image;
 
-		public int Width  { get { return m_width;  } }
+		public int Width { get { return m_width; } }
 		public int Height { get { return m_height; } }
 
 		public BitmapColor GetPixel(int p_x, int p_y)
@@ -27,7 +27,7 @@ namespace LibLR1
 		{
 			Palette4Bit = 0x04,
 			Palette8Bit = 0x08,
-			RGB         = 0x98,
+			RGB = 0x98,
 		}
 
 		public BMP(string p_filepath)
@@ -44,7 +44,7 @@ namespace LibLR1
 
 				byte paletteSize = br.ReadByte();
 
-				m_width  = br.ReadInt16();
+				m_width = br.ReadInt16();
 				m_height = br.ReadInt16();
 
 				BitmapColor[] palette;

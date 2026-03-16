@@ -1,4 +1,4 @@
-﻿using LibLR1.Exceptions;
+using LibLR1.Exceptions;
 using LibLR1.IO;
 using LibLR1.Utils;
 using System.Collections.Generic;
@@ -9,10 +9,10 @@ namespace LibLR1
 	public class PWB
 	{
 		public const byte
-			COLOR_RED    = 0x2A,
+			COLOR_RED = 0x2A,
 			COLOR_YELLOW = 0x2B,
-			COLOR_BLUE   = 0x2C,
-			COLOR_GREEN  = 0x2D;
+			COLOR_BLUE = 0x2C,
+			COLOR_GREEN = 0x2D;
 
 		private const byte
 			ID_COLOR_BRICKS = 0x27,
@@ -106,11 +106,11 @@ namespace LibLR1
 	public class PWB_ColorBrick
 	{
 		private const byte
-			PROPERTY_POSITION     = 0x28,
-			PROPERTY_COLOR_RED    = 0x2A,
+			PROPERTY_POSITION = 0x28,
+			PROPERTY_COLOR_RED = 0x2A,
 			PROPERTY_COLOR_YELLOW = 0x2B,
-			PROPERTY_COLOR_BLUE   = 0x2C,
-			PROPERTY_COLOR_GREEN  = 0x2D;
+			PROPERTY_COLOR_BLUE = 0x2C,
+			PROPERTY_COLOR_GREEN = 0x2D;
 
 		public LRVector3 Position;
 		public byte Color;
