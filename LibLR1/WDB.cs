@@ -35,11 +35,11 @@ namespace LibLR1
 			PROPERTY_OBJECT_POSITION = 0x31,
 			PROPERTY_OBJECT_ROTATION = 0x32,
 			PROPERTY_GDB_ADB_SDB = 0x33,
-			PROPERTY_UNKNOWN_35 = 0x35,
+			PROPERTY_UNKNOWN_35 = 0x35, // Only appears in animated models, set as a flag. Removal doesn't seem to change game behavior. One object in the entire game has a non-zero value (value=3), which causes it to trigger a shot counter shortcut when shot. Likely an interaction/behaviour type ID, but types other than 3 are unknown.
 			PROPERTY_UNKNOWN_3E = 0x3E,
 			PROPERTY_UNKNOWN_3F = 0x3F,
 			PROPERTY_BVB = 0x40,
-			PROPERTY_UNKNOWN_42 = 0x42,
+			PROPERTY_UNKNOWN_42 = 0x42, // Only appears in static and animated models, set as a flag. Removal doesn't seem to change game behavior.
 			PROPERTY_CAMERA_NEAR_PLANE = 0x45,
 			PROPERTY_CAMERA_FAR_PLANE = 0x46,
 			PROPERTY_CAMERA_FOV = 0x47,
@@ -85,6 +85,11 @@ namespace LibLR1
 			get { return m_GDBs; }
 			set { m_GDBs = value; }
 		}
+		public string[] GDB2s
+		{
+			get { return m_GDB2s; }
+			set { m_GDB2s = value; }
+		}
 		public string[] SDBs
 		{
 			get { return m_SDBs; }
@@ -120,6 +125,11 @@ namespace LibLR1
 			get { return m_BDBModels; }
 			set { m_BDBModels = value; }
 		}
+		public WDB_Billboard[] Billboards
+		{
+			get { return m_billboards; }
+			set { m_billboards = value; }
+		}
 		public Dictionary<string, WDB_BVBModel> BVBModels
 		{
 			get { return m_BVBModels; }
@@ -152,6 +162,7 @@ namespace LibLR1
 			m_MDBs = new string[0];
 			m_ADBs = new string[0];
 			m_GDBs = new string[0];
+			m_GDB2s = new string[0];
 			m_SDBs = new string[0];
 			m_BDBs = new string[0];
 			m_MABs = new string[0];
@@ -205,7 +216,7 @@ namespace LibLR1
 					}
 					case ID_MAB:
 					{
-						m_SDBs = p_reader.ReadStringArrayBlock();
+						m_MABs = p_reader.ReadStringArrayBlock();
 						break;
 					}
 					case ID_BVB:
@@ -672,6 +683,9 @@ namespace LibLR1
 		public WDB_Ref_GDB_ADB_SDB ModelRef;
 		public LRVector3 Position;
 		public LRVector3 RotationFwd, RotationUp;
+		// Only one object in the entire game has a non-zero value: 'adshtct1' in RACEC0R2/TEST.WDB (value=3).
+		// Testing showed: absent = falls like a standard pillar; wrong value = object doesn't spawn; value 3 = shot counter shortcut trigger.
+		// Likely an interaction/behaviour type ID. Value 3 may be the "shot counter" type, but types 1, 2 etc. are unknown.
 		public int Unknown_35;
 		public WDB_Unknown3E[] Unknown_3E;
 		public WDB_Unknown3F Unknown_3F;
@@ -717,8 +731,8 @@ namespace LibLR1
 						val.Unknown_3E = p_reader.ReadArrayBlock<WDB_Unknown3E>(
 							WDB_Unknown3E.Read
 						);
+						break;
 					}
-					break;
 					case PROPERTY_UNKNOWN_3F:
 					{
 						val.Unknown_3F = WDB_Unknown3F.Read(p_reader);
@@ -753,7 +767,6 @@ namespace LibLR1
 			PROPERTY_ANIMATED_MODEL = 0x2F,
 			PROPERTY_OBJECT_POSITION = 0x31,
 			PROPERTY_OBJECT_ROTATION = 0x32,
-			PROPERTY_UNKNOWN_35 = 0x35,
 			PROPERTY_CAMERA_NEAR_PLANE = 0x45,
 			PROPERTY_CAMERA_FAR_PLANE = 0x46,
 			PROPERTY_CAMERA_FOV = 0x47;
@@ -761,6 +774,7 @@ namespace LibLR1
 		public WDB_Ref_CameraModel Model;
 		public LRVector3 Position;
 		public LRVector3 RotationFwd, RotationUp;
+		// No camera in the game has a non-zero value. See WDB_AnimatedModel.Unknown_35 for findings.
 		public int Unknown_35;
 		public float NearPlane;
 		public float FarPlane;
@@ -788,11 +802,6 @@ namespace LibLR1
 					{
 						val.RotationFwd = LRVector3.Read(p_reader);
 						val.RotationUp = LRVector3.Read(p_reader);
-						break;
-					}
-					case PROPERTY_UNKNOWN_35:
-					{
-						val.Unknown_35 = p_reader.ReadIntWithHeader();
 						break;
 					}
 					case PROPERTY_CAMERA_NEAR_PLANE:

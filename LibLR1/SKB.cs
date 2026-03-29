@@ -6,6 +6,9 @@ using System.Collections.Generic;
 
 namespace LibLR1
 {
+	/// <summary>
+	/// Skin/color gradient database format.
+	/// </summary>
 	public class SKB
 	{
 		private const byte

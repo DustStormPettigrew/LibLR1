@@ -4,6 +4,9 @@ using LibLR1.Utils;
 
 namespace LibLR1
 {
+	/// <summary>
+	/// Ghost race path format.
+	/// </summary>
 	public class GHB
 	{
 		private const byte

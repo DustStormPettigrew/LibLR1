@@ -5,6 +5,9 @@ using System.IO;
 
 namespace LibLR1
 {
+	/// <summary>
+	/// Load screen format.
+	/// </summary>
 	public class LSB
 	{
 		private const byte

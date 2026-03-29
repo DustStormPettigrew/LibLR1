@@ -7,6 +7,9 @@ using System.IO;
 
 namespace LibLR1
 {
+	/// <summary>
+	/// Menu item format.
+	/// </summary>
 	public class MIB
 	{
 		private const byte

@@ -6,6 +6,9 @@ using System.IO;
 
 namespace LibLR1
 {
+	/// <summary>
+	/// Material database format.
+	/// </summary>
 	public class MDB
 	{
 		public const byte

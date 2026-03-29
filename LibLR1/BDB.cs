@@ -4,6 +4,9 @@ using LibLR1.Utils;
 
 namespace LibLR1
 {
+	/// <summary>
+	/// Bounding box database format.
+	/// </summary>
 	public class BDB
 	{
 		private const byte

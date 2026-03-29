@@ -4,6 +4,9 @@ using LibLR1.Utils;
 
 namespace LibLR1
 {
+	/// <summary>
+	/// Texture index format.
+	/// </summary>
 	public class TIB
 	{
 		private const byte

@@ -6,6 +6,9 @@ using System.IO;
 
 namespace LibLR1
 {
+	/// <summary>
+	/// Car configuration format.
+	/// </summary>
 	public class CCB
 	{
 		private const byte

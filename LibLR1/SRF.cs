@@ -2,6 +2,9 @@ using LibLR1.IO;
 using System.IO;
 
 namespace LibLR1 {
+	/// <summary>
+	/// String resource format.
+	/// </summary>
 	public class SRF
 	{
 		private string[] m_strings;

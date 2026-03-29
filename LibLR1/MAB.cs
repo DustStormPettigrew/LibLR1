@@ -5,6 +5,9 @@ using System.IO;
 
 namespace LibLR1
 {
+	/// <summary>
+	/// Material animation format.
+	/// </summary>
 	public class MAB
 	{
 		private const byte

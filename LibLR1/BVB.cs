@@ -4,6 +4,9 @@ using LibLR1.Utils;
 
 namespace LibLR1
 {
+	/// <summary>
+	/// 3D mesh format containing vertices, polygons, and materials.
+	/// </summary>
 	public class BVB
 	{
 		private const byte

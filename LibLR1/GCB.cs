@@ -5,6 +5,9 @@ using System.Collections.Generic;
 
 namespace LibLR1
 {
+	/// <summary>
+	/// Graphics configuration format with vertices and model sets.
+	/// </summary>
 	public class GCB
 	{
 		private const byte

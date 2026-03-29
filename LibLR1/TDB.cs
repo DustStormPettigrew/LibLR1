@@ -6,6 +6,9 @@ using System.IO;
 
 namespace LibLR1
 {
+	/// <summary>
+	/// Texture database format.
+	/// </summary>
 	public class TDB
 	{
 		private const byte

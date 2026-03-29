@@ -6,6 +6,9 @@ using System.Linq;
 
 namespace LibLR1
 {
+	/// <summary>
+	/// Bitmap image format.
+	/// </summary>
 	public class BMP
 	{
 		private int m_width, m_height;

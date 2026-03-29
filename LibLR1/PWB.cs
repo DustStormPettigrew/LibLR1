@@ -6,6 +6,9 @@ using System.IO;
 
 namespace LibLR1
 {
+	/// <summary>
+	/// LEGO brick placement format.
+	/// </summary>
 	public class PWB
 	{
 		public const byte

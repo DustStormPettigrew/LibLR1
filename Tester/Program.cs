@@ -1,4 +1,4 @@
-﻿using LibLR1;
+using LibLR1;
 using System;
 using System.IO;
 
@@ -39,6 +39,18 @@ namespace Tester
 			Test(gameFolder, "*.SKB", (path) => new SKB(path));
 			Test(gameFolder, "*.TDB", (path) => new TDB(path));
 			Test(gameFolder, "*.WDB", (path) => new WDB(path));
+			Test(gameFolder, "*.CEB", (path) => new CEB(path));
+			Test(gameFolder, "*.CMB", (path) => new CMB(path));
+			Test(gameFolder, "*.EMB", (path) => new EMB(path));
+			Test(gameFolder, "*.EVB", (path) => new EVB(path));
+			Test(gameFolder, "*.FDB", (path) => new FDB(path));
+			Test(gameFolder, "*.HZB", (path) => new HZB(path));
+			Test(gameFolder, "*.IDB", (path) => new IDB(path));
+			Test(gameFolder, "*.LEB", (path) => new LEB(path));
+			Test(gameFolder, "*.MSB", (path) => new MSB(path));
+			Test(gameFolder, "*.PCB", (path) => new PCB(path));
+			Test(gameFolder, "*.SPB", (path) => new SPB(path));
+			Test(gameFolder, "*.TGB", (path) => new TGB(path));
 			PrintStats();
 			Console.ReadLine();
 		}

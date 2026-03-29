@@ -4,6 +4,9 @@ using LibLR1.Utils;
 
 namespace LibLR1
 {
+	/// <summary>
+	/// Track records format.
+	/// </summary>
 	public class TRB
 	{
 		private const byte
