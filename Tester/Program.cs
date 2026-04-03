@@ -11,6 +11,12 @@ namespace Tester
 
 		public static void Main(string[] p_args)
 		{
+			if (p_args != null && p_args.Length > 0 && string.Equals(p_args[0], "export-json", StringComparison.OrdinalIgnoreCase))
+			{
+				ExportRunner.Run(p_args);
+				return;
+			}
+
 			const string gameFolder = @"D:\Games\Lego Racers";
 
 			Test(gameFolder, "*.ADB", (path) => new ADB(path));

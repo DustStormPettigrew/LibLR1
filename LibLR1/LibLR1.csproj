@@ -36,61 +36,105 @@
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.Bcl.AsyncInterfaces">
+      <HintPath>..\dependencies\net472\SystemTextJson\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Numerics.Vectors" />
+    <Reference Include="System.Buffers">
+      <HintPath>..\dependencies\net472\SystemTextJson\System.Buffers.dll</HintPath>
+    </Reference>
     <Reference Include="System.Data" />
+    <Reference Include="System.Memory">
+      <HintPath>..\dependencies\net472\SystemTextJson\System.Memory.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.CompilerServices.Unsafe">
+      <HintPath>..\dependencies\net472\SystemTextJson\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Text.Encodings.Web">
+      <HintPath>..\dependencies\net472\SystemTextJson\System.Text.Encodings.Web.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Text.Json">
+      <HintPath>..\dependencies\net472\SystemTextJson\System.Text.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Threading.Tasks.Extensions">
+      <HintPath>..\dependencies\net472\SystemTextJson\System.Threading.Tasks.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ValueTuple">
+      <HintPath>..\dependencies\net472\SystemTextJson\System.ValueTuple.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ADB.cs" />
-    <Compile Include="BDB.cs" />
-    <Compile Include="BMP.cs" />
-    <Compile Include="BVB.cs" />
-    <Compile Include="CCB.cs" />
-    <Compile Include="CDB.cs" />
-    <Compile Include="CPB.cs" />
-    <Compile Include="CRB.cs" />
-    <Compile Include="DDB.cs" />
+    <Compile Include="Adapters\AdapterCommon.cs" />
+    <Compile Include="Adapters\GDBAdapter.cs" />
+    <Compile Include="Adapters\RRBAdapter.cs" />
+    <Compile Include="Adapters\SKBAdapter.cs" />
+    <Compile Include="Adapters\WDBAdapter.cs" />
+    <Compile Include="Contracts\TrackColor.cs" />
+    <Compile Include="Contracts\TrackGradient.cs" />
+    <Compile Include="Contracts\TrackGradientStop.cs" />
+    <Compile Include="Contracts\TrackMaterial.cs" />
+    <Compile Include="Contracts\TrackMesh.cs" />
+    <Compile Include="Contracts\TrackObject.cs" />
+    <Compile Include="Contracts\TrackPath.cs" />
+    <Compile Include="Contracts\TrackPathNode.cs" />
+    <Compile Include="Export\TrackSceneJsonDtos.cs" />
+    <Compile Include="Export\TrackSceneJsonExporter.cs" />
+    <Compile Include="Contracts\TrackScene.cs" />
+    <Compile Include="Contracts\TrackTransform.cs" />
+    <Compile Include="Contracts\TrackVertex.cs" />
+    <Compile Include="Formats\ADB.cs" />
+    <Compile Include="Formats\BDB.cs" />
+    <Compile Include="Formats\BMP.cs" />
+    <Compile Include="Formats\BVB.cs" />
+    <Compile Include="Formats\CCB.cs" />
+    <Compile Include="Formats\CDB.cs" />
+    <Compile Include="Formats\CPB.cs" />
+    <Compile Include="Formats\CRB.cs" />
+    <Compile Include="Formats\DDB.cs" />
     <Compile Include="Exceptions\UnexpectedBlockException.cs" />
     <Compile Include="Exceptions\UnexpectedTypeException.cs" />
-    <Compile Include="GCB.cs" />
-    <Compile Include="GDB.cs" />
-    <Compile Include="GHB.cs" />
+    <Compile Include="Formats\GCB.cs" />
+    <Compile Include="Formats\GDB.cs" />
+    <Compile Include="Formats\GHB.cs" />
     <Compile Include="IO\LRBinaryReader.cs" />
     <Compile Include="IO\LRBinaryWriter.cs" />
-    <Compile Include="TIB.cs" />
-    <Compile Include="TRB.cs" />
+    <Compile Include="Formats\TIB.cs" />
+    <Compile Include="Formats\TRB.cs" />
     <Compile Include="Utils\Fract16Bit.cs" />
     <Compile Include="Utils\LRColor.cs" />
     <Compile Include="Utils\LRQuaternion.cs" />
     <Compile Include="Utils\LRRect.cs" />
     <Compile Include="Utils\Fract8Bit.cs" />
-    <Compile Include="LSB.cs" />
-    <Compile Include="MAB.cs" />
-    <Compile Include="MDB.cs" />
-    <Compile Include="MIB.cs" />
-    <Compile Include="PWB.cs" />
-    <Compile Include="RAB.cs" />
-    <Compile Include="RCB.cs" />
-    <Compile Include="RRB.cs" />
-    <Compile Include="SDB.cs" />
+    <Compile Include="Formats\LSB.cs" />
+    <Compile Include="Formats\MAB.cs" />
+    <Compile Include="Formats\MDB.cs" />
+    <Compile Include="Formats\MIB.cs" />
+    <Compile Include="Formats\PWB.cs" />
+    <Compile Include="Formats\RAB.cs" />
+    <Compile Include="Formats\RCB.cs" />
+    <Compile Include="Formats\RRB.cs" />
+    <Compile Include="Formats\SDB.cs" />
     <Compile Include="Utils\BinaryFileHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SKB.cs" />
-    <Compile Include="SRF.cs" />
-    <Compile Include="TDB.cs" />
+    <Compile Include="Formats\SKB.cs" />
+    <Compile Include="Formats\SRF.cs" />
+    <Compile Include="Formats\TDB.cs" />
     <Compile Include="Utils\Token.cs" />
-    <Compile Include="WDB.cs" />
-    <Compile Include="CEB.cs" />
-    <Compile Include="CMB.cs" />
-    <Compile Include="EMB.cs" />
-    <Compile Include="EVB.cs" />
-    <Compile Include="FDB.cs" />
-    <Compile Include="HZB.cs" />
-    <Compile Include="IDB.cs" />
-    <Compile Include="LEB.cs" />
-    <Compile Include="MSB.cs" />
-    <Compile Include="PCB.cs" />
-    <Compile Include="SPB.cs" />
-    <Compile Include="TGB.cs" />
+    <Compile Include="Formats\WDB.cs" />
+    <Compile Include="Formats\CEB.cs" />
+    <Compile Include="Formats\CMB.cs" />
+    <Compile Include="Formats\EMB.cs" />
+    <Compile Include="Formats\EVB.cs" />
+    <Compile Include="Formats\FDB.cs" />
+    <Compile Include="Formats\HZB.cs" />
+    <Compile Include="Formats\IDB.cs" />
+    <Compile Include="Formats\LEB.cs" />
+    <Compile Include="Formats\MSB.cs" />
+    <Compile Include="Formats\PCB.cs" />
+    <Compile Include="Formats\SPB.cs" />
+    <Compile Include="Formats\TGB.cs" />
     <Compile Include="Exceptions\UnexpectedPropertyException.cs" />
     <Compile Include="Utils\LRVector2.cs" />
     <Compile Include="Utils\LRVector3.cs" />

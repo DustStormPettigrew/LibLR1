@@ -13,26 +13,32 @@ namespace LibLR1
 	{
 		private const byte
 			ID_MATERIALS = 0x27,
+			ID_VERTEX_UV = 0x28,
 			ID_VERTEX_NORMALED = 0x29,
 			ID_VERTEX_COLORED = 0x2A,
 			ID_INDICES = 0x2D,
 			ID_INDICES_META = 0x2E,
 			ID_SCALE = 0x33,
+			ID_VERTEX_POSITION = 0x34,
 			PROPERTY_MATERIAL_ID = 0x27,
 			PROPERTY_INDICES_META = 0x2D,
 			PROPERTY_VERTEX_META = 0x31,
 			PROPERTY_BONE_ID = 0x32;
 
 		private string[] m_materials;
+		private GDB_Vertex_UV[] m_vertexUVs;
 		private GDB_Vertex_Normal[] m_vertexNormals;
 		private GDB_Vertex_Color[] m_vertexColors;
+		private GDB_Vertex_Position[] m_vertexPositions;
 		private GDB_Polygon[] m_polygons;
 		private float m_scale;
 		private GDB_Meta[] m_meta;
 
 		public string[] Materials { get { return m_materials; } set { m_materials = value; } }
+		public GDB_Vertex_UV[] VertexUVs { get { return m_vertexUVs; } set { m_vertexUVs = value; } }
 		public GDB_Vertex_Normal[] VertexNormals { get { return m_vertexNormals; } set { m_vertexNormals = value; } }
 		public GDB_Vertex_Color[] VertexColors { get { return m_vertexColors; } set { m_vertexColors = value; } }
+		public GDB_Vertex_Position[] VertexPositions { get { return m_vertexPositions; } set { m_vertexPositions = value; } }
 		public GDB_Polygon[] Polygons { get { return m_polygons; } set { m_polygons = value; } }
 		public float Scale { get { return m_scale; } set { m_scale = value; } }
 		public GDB_Meta[] Meta { get { return m_meta; } set { m_meta = value; } }
@@ -40,8 +46,10 @@ namespace LibLR1
 		public GDB()
 		{
 			m_materials = new string[0];
+			m_vertexUVs = new GDB_Vertex_UV[0];
 			m_vertexNormals = new GDB_Vertex_Normal[0];
 			m_vertexColors = new GDB_Vertex_Color[0];
+			m_vertexPositions = new GDB_Vertex_Position[0];
 			m_polygons = new GDB_Polygon[0];
 			m_scale = 1;
 			m_meta = new GDB_Meta[0];
@@ -55,8 +63,10 @@ namespace LibLR1
 		public GDB(LRBinaryReader p_reader)
 		{
 			m_materials = new string[0];
+			m_vertexUVs = new GDB_Vertex_UV[0];
 			m_vertexNormals = new GDB_Vertex_Normal[0];
 			m_vertexColors = new GDB_Vertex_Color[0];
+			m_vertexPositions = new GDB_Vertex_Position[0];
 			m_polygons = new GDB_Polygon[0];
 			m_scale = 1;
 			while (p_reader.BaseStream.Position < p_reader.BaseStream.Length)
@@ -72,6 +82,13 @@ namespace LibLR1
 					case ID_SCALE:
 					{
 						m_scale = p_reader.ReadFloatWithHeader();
+						break;
+					}
+					case ID_VERTEX_UV:
+					{
+						m_vertexUVs = p_reader.ReadArrayBlock<GDB_Vertex_UV>(
+							GDB_Vertex_UV.Read
+						);
 						break;
 					}
 					case ID_VERTEX_NORMALED:
@@ -92,6 +109,13 @@ namespace LibLR1
 					{
 						m_polygons = p_reader.ReadArrayBlock<GDB_Polygon>(
 							GDB_Polygon.Read
+						);
+						break;
+					}
+					case ID_VERTEX_POSITION:
+					{
+						m_vertexPositions = p_reader.ReadArrayBlock<GDB_Vertex_Position>(
+							GDB_Vertex_Position.Read
 						);
 						break;
 					}
@@ -130,6 +154,14 @@ namespace LibLR1
 				p_writer.WriteByte(ID_SCALE);
 				p_writer.WriteFloatWithHeader(m_scale);
 			}
+			if (m_vertexUVs.Length > 0)
+			{
+				p_writer.WriteByte(ID_VERTEX_UV);
+				p_writer.WriteArrayBlock<GDB_Vertex_UV>(
+					GDB_Vertex_UV.Write,
+					m_vertexUVs
+				);
+			}
 			if (m_vertexNormals.Length > 0)
 			{
 				p_writer.WriteByte(ID_VERTEX_NORMALED);
@@ -144,6 +176,14 @@ namespace LibLR1
 				p_writer.WriteArrayBlock<GDB_Vertex_Color>(
 					GDB_Vertex_Color.Write,
 					m_vertexColors
+				);
+			}
+			if (m_vertexPositions.Length > 0)
+			{
+				p_writer.WriteByte(ID_VERTEX_POSITION);
+				p_writer.WriteArrayBlock<GDB_Vertex_Position>(
+					GDB_Vertex_Position.Write,
+					m_vertexPositions
 				);
 			}
 			p_writer.WriteByte(ID_INDICES);
@@ -264,6 +304,8 @@ namespace LibLR1
 		public const byte
 			PROPERTY_MATERIAL_ID = 0x27,
 			PROPERTY_INDICES_META = 0x2D,
+			PROPERTY_META_2F = 0x2F,
+			PROPERTY_META_30 = 0x30,
 			PROPERTY_VERTEX_META = 0x31,
 			PROPERTY_BONE_ID = 0x32;
 
@@ -281,6 +323,14 @@ namespace LibLR1
 				case PROPERTY_INDICES_META:
 				{
 					return GDB_Meta_Indices.Read(p_reader);
+				}
+				case PROPERTY_META_2F:
+				{
+					return GDB_Meta_2F.Read(p_reader);
+				}
+				case PROPERTY_META_30:
+				{
+					return new GDB_Meta_30();
 				}
 				case PROPERTY_VERTEX_META:
 				{
@@ -312,6 +362,16 @@ namespace LibLR1
 				case PROPERTY_INDICES_META:
 				{
 					GDB_Meta_Indices.Write(p_writer, (GDB_Meta_Indices)p_value);
+					break;
+				}
+				case PROPERTY_META_2F:
+				{
+					GDB_Meta_2F.Write(p_writer, (GDB_Meta_2F)p_value);
+					break;
+				}
+				case PROPERTY_META_30:
+				{
+					GDB_Meta_30.Write(p_writer);
 					break;
 				}
 				case PROPERTY_VERTEX_META:
@@ -430,6 +490,96 @@ namespace LibLR1
 		{
 			p_writer.WriteByte(p_value.Type);
 			p_writer.WriteUShortWithHeader(p_value.BoneId);
+		}
+	}
+
+	public class GDB_Meta_2F : GDB_Meta
+	{
+		public override byte Type
+		{
+			get { return PROPERTY_META_2F; }
+		}
+
+		public int Value;
+
+		public static new GDB_Meta_2F Read(LRBinaryReader p_reader)
+		{
+			GDB_Meta_2F val = new GDB_Meta_2F();
+			val.Value = p_reader.ReadIntWithHeader();
+			return val;
+		}
+
+		public static void Write(LRBinaryWriter p_writer, GDB_Meta_2F p_value)
+		{
+			p_writer.WriteByte(p_value.Type);
+			p_writer.WriteIntWithHeader(p_value.Value);
+		}
+	}
+
+	public class GDB_Meta_30 : GDB_Meta
+	{
+		public override byte Type
+		{
+			get { return PROPERTY_META_30; }
+		}
+
+		public static void Write(LRBinaryWriter p_writer)
+		{
+			p_writer.WriteByte(PROPERTY_META_30);
+		}
+	}
+
+	public class GDB_Vertex_UV
+	{
+		public LRVector3 Position;
+		public LRVector2 TexCoords;
+
+		public GDB_Vertex_UV()
+			: this(new LRVector3(), new LRVector2()) { }
+
+		public GDB_Vertex_UV(LRVector3 position, LRVector2 texcoords)
+		{
+			Position = position;
+			TexCoords = texcoords;
+		}
+
+		public static GDB_Vertex_UV Read(LRBinaryReader p_reader)
+		{
+			GDB_Vertex_UV val = new GDB_Vertex_UV();
+			val.Position = LRVector3.Read(p_reader);
+			val.TexCoords = LRVector2.Read(p_reader);
+			return val;
+		}
+
+		public static void Write(LRBinaryWriter p_writer, GDB_Vertex_UV p_value)
+		{
+			LRVector3.Write(p_writer, p_value.Position);
+			LRVector2.Write(p_writer, p_value.TexCoords);
+		}
+	}
+
+	public class GDB_Vertex_Position
+	{
+		public LRVector3 Position;
+
+		public GDB_Vertex_Position()
+			: this(new LRVector3()) { }
+
+		public GDB_Vertex_Position(LRVector3 position)
+		{
+			Position = position;
+		}
+
+		public static GDB_Vertex_Position Read(LRBinaryReader p_reader)
+		{
+			GDB_Vertex_Position val = new GDB_Vertex_Position();
+			val.Position = LRVector3.Read(p_reader);
+			return val;
+		}
+
+		public static void Write(LRBinaryWriter p_writer, GDB_Vertex_Position p_value)
+		{
+			LRVector3.Write(p_writer, p_value.Position);
 		}
 	}
 }

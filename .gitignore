@@ -459,3 +459,6 @@ $RECYCLE.BIN/
 # .NET compiler/builder logs and tools
 .dotnet/
 .dotnet-cli/
+
+# Local Machine Info
+locals.json
