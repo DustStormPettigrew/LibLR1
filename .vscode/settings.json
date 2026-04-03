@@ -1,6 +1,0 @@
-{
-    "claudeCode.allowDangerouslySkipPermissions": true,
-    "claudeCode.hideOnboarding": true,
-    "claudeCode.useCtrlEnterToSend": true,
-    "dotnet.preferCSharpExtension": true
-}
