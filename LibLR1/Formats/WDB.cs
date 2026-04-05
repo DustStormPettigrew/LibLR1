@@ -406,6 +406,7 @@ namespace LibLR1
 			PROPERTY_GDB = 0x2A,
 			PROPERTY_OBJECT_POSITION = 0x31,
 			PROPERTY_OBJECT_ROTATION = 0x32,
+			PROPERTY_UNKNOWN_35 = 0x35,
 			PROPERTY_UNKNOWN_3E = 0x3E,
 			PROPERTY_UNKNOWN_3F = 0x3F,
 			PROPERTY_UNKNOWN_42 = 0x42;
@@ -413,6 +414,8 @@ namespace LibLR1
 		public WDB_Ref_GDB ModelRef;
 		public LRVector3 Position;
 		public LRVector3 RotationFwd, RotationUp;
+		// Usually zero. Mirrors the interaction/behaviour field seen on animated models.
+		public int Unknown_35;
 		public WDB_Unknown3E[] Unknown_3E;
 		public WDB_Unknown3F Unknown_3F;
 		public bool Unknown_42;
@@ -439,6 +442,11 @@ namespace LibLR1
 					{
 						val.RotationFwd = LRVector3.Read(p_reader);
 						val.RotationUp = LRVector3.Read(p_reader);
+						break;
+					}
+					case PROPERTY_UNKNOWN_35:
+					{
+						val.Unknown_35 = p_reader.ReadIntWithHeader();
 						break;
 					}
 					case PROPERTY_UNKNOWN_3E:
@@ -477,12 +485,14 @@ namespace LibLR1
 			PROPERTY_OBJECT_POSITION = 0x31,
 			PROPERTY_OBJECT_ROTATION = 0x32,
 			PROPERTY_BDB = 0x34,
+			PROPERTY_UNKNOWN_35 = 0x35,
 			PROPERTY_UNKNOWN_3E = 0x3E,
 			PROPERTY_UNKNOWN_42 = 0x42;
 
 		public WDB_Ref_GDB_BDB ModelRef;
 		public LRVector3 Position;
 		public LRVector3 RotationFwd, RotationUp;
+		public int Unknown_35;
 		public WDB_Unknown3E[] Unknown_3E;
 		public bool Unknown_42;
 
@@ -508,6 +518,11 @@ namespace LibLR1
 					{
 						val.RotationFwd = LRVector3.Read(p_reader);
 						val.RotationUp = LRVector3.Read(p_reader);
+						break;
+					}
+					case PROPERTY_UNKNOWN_35:
+					{
+						val.Unknown_35 = p_reader.ReadIntWithHeader();
 						break;
 					}
 					case PROPERTY_UNKNOWN_3E:
@@ -624,11 +639,13 @@ namespace LibLR1
 		private const byte
 			PROPERTY_BVB = 0x40,
 			PROPERTY_OBJECT_POSITION = 0x31,
-			PROPERTY_OBJECT_ROTATION = 0x32;
+			PROPERTY_OBJECT_ROTATION = 0x32,
+			PROPERTY_UNKNOWN_35 = 0x35;
 
 		public int ModelRef;
 		public LRVector3 Position;
 		public LRVector3 RotationFwd, RotationUp;
+		public int Unknown_35;
 
 		public static WDB_BVBModel Read(LRBinaryReader p_reader)
 		{
@@ -652,6 +669,11 @@ namespace LibLR1
 					{
 						val.RotationFwd = LRVector3.Read(p_reader);
 						val.RotationUp = LRVector3.Read(p_reader);
+						break;
+					}
+					case PROPERTY_UNKNOWN_35:
+					{
+						val.Unknown_35 = p_reader.ReadIntWithHeader();
 						break;
 					}
 					default:
@@ -767,6 +789,7 @@ namespace LibLR1
 			PROPERTY_ANIMATED_MODEL = 0x2F,
 			PROPERTY_OBJECT_POSITION = 0x31,
 			PROPERTY_OBJECT_ROTATION = 0x32,
+			PROPERTY_UNKNOWN_35 = 0x35,
 			PROPERTY_CAMERA_NEAR_PLANE = 0x45,
 			PROPERTY_CAMERA_FAR_PLANE = 0x46,
 			PROPERTY_CAMERA_FOV = 0x47;
@@ -802,6 +825,11 @@ namespace LibLR1
 					{
 						val.RotationFwd = LRVector3.Read(p_reader);
 						val.RotationUp = LRVector3.Read(p_reader);
+						break;
+					}
+					case PROPERTY_UNKNOWN_35:
+					{
+						val.Unknown_35 = p_reader.ReadIntWithHeader();
 						break;
 					}
 					case PROPERTY_CAMERA_NEAR_PLANE:
