@@ -462,3 +462,7 @@ $RECYCLE.BIN/
 
 # Local Machine Info
 locals.json
+
+# AI Agents Files
+AGENTS.md
+CLAUDE.md

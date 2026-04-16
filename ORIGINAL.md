@@ -2,7 +2,7 @@
 
 This project is based on the original code from:
 
-- https://bitbucket.org/WillKirkby/liblr1/src/master/
+- https://bitbucket.org/WillKirkby/liblr1
 
 ## Acknowledgements
 

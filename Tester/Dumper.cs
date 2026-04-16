@@ -1,10 +1,9 @@
 using LibLR1.IO;
 using LibLR1.Utils;
 using System;
-using System.Collections.Generic;
 using System.IO;
 
-namespace Tester
+namespace LibLR1.Tester
 {
 	public static class Dumper
 	{
@@ -111,7 +110,7 @@ namespace Tester
 				}
 				else
 				{
-					Console.WriteLine($"  [END OF FILE]");
+					Console.WriteLine("  [END OF FILE]");
 				}
 			}
 			catch (Exception ex)

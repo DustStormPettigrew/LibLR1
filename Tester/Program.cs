@@ -1,8 +1,7 @@
-using LibLR1;
 using System;
 using System.IO;
 
-namespace Tester
+namespace LibLR1.Tester
 {
 	public class Program
 	{
@@ -11,52 +10,54 @@ namespace Tester
 
 		public static void Main(string[] p_args)
 		{
-			if (p_args != null && p_args.Length > 0 && string.Equals(p_args[0], "export-json", StringComparison.OrdinalIgnoreCase))
+			string gameFolder;
+			string configurationError;
+			if (!TesterConfiguration.TryGetInstallationPath(out gameFolder, out configurationError))
 			{
-				ExportRunner.Run(p_args);
+				Console.ForegroundColor = ConsoleColor.Yellow;
+				Console.WriteLine(configurationError);
+				Console.ResetColor();
 				return;
 			}
 
-			const string gameFolder = @"D:\Games\Lego Racers";
-
-			Test(gameFolder, "*.ADB", (path) => new ADB(path));
-			Test(gameFolder, "*.BDB", (path) => new BDB(path));
-			Test(gameFolder, "*.BMP", (path) => new BMP(path));
-			Test(gameFolder, "*.BVB", (path) => new BVB(path));
-			Test(gameFolder, "*.CCB", (path) => new CCB(path));
-			Test(gameFolder, "*.CDB", (path) => new CDB(path));
-			Test(gameFolder, "*.CPB", (path) => new CPB(path));
-			Test(gameFolder, "*.CRB", (path) => new CRB(path));
-			Test(gameFolder, "*.DDB", (path) => new DDB(path));
-			Test(gameFolder, "*.GCB", (path) => new GCB(path));
-			Test(gameFolder, "*.GDB", (path) => new GDB(path));
-			Test(gameFolder, "*.GHB", (path) => new GHB(path));
-			Test(gameFolder, "*.TIB", (path) => new TIB(path));
-			Test(gameFolder, "*.TRB", (path) => new TRB(path));
-			Test(gameFolder, "*.LSB", (path) => new LSB(path));
-			Test(gameFolder, "*.MAB", (path) => new MAB(path));
-			Test(gameFolder, "*.MDB", (path) => new MDB(path));
-			Test(gameFolder, "*.MIB", (path) => new MIB(path));
-			Test(gameFolder, "*.PWB", (path) => new PWB(path));
-			Test(gameFolder, "*.RAB", (path) => new RAB(path));
-			Test(gameFolder, "*.RCB", (path) => new RCB(path));
-			Test(gameFolder, "*.RRB", (path) => new RRB(path));
-			Test(gameFolder, "*.SDB", (path) => new SDB(path));
-			Test(gameFolder, "*.SKB", (path) => new SKB(path));
-			Test(gameFolder, "*.TDB", (path) => new TDB(path));
-			Test(gameFolder, "*.WDB", (path) => new WDB(path));
-			Test(gameFolder, "*.CEB", (path) => new CEB(path));
-			Test(gameFolder, "*.CMB", (path) => new CMB(path));
-			Test(gameFolder, "*.EMB", (path) => new EMB(path));
-			Test(gameFolder, "*.EVB", (path) => new EVB(path));
-			Test(gameFolder, "*.FDB", (path) => new FDB(path));
-			Test(gameFolder, "*.HZB", (path) => new HZB(path));
-			Test(gameFolder, "*.IDB", (path) => new IDB(path));
-			Test(gameFolder, "*.LEB", (path) => new LEB(path));
-			Test(gameFolder, "*.MSB", (path) => new MSB(path));
-			Test(gameFolder, "*.PCB", (path) => new PCB(path));
-			Test(gameFolder, "*.SPB", (path) => new SPB(path));
-			Test(gameFolder, "*.TGB", (path) => new TGB(path));
+			Test(gameFolder, "*.ADB", (path) => new LibLR1.ADB(path));
+			Test(gameFolder, "*.BDB", (path) => new LibLR1.BDB(path));
+			Test(gameFolder, "*.BMP", (path) => new LibLR1.BMP(path));
+			Test(gameFolder, "*.BVB", (path) => new LibLR1.BVB(path));
+			Test(gameFolder, "*.CCB", (path) => new LibLR1.CCB(path));
+			Test(gameFolder, "*.CDB", (path) => new LibLR1.CDB(path));
+			Test(gameFolder, "*.CPB", (path) => new LibLR1.CPB(path));
+			Test(gameFolder, "*.CRB", (path) => new LibLR1.CRB(path));
+			Test(gameFolder, "*.DDB", (path) => new LibLR1.DDB(path));
+			Test(gameFolder, "*.GCB", (path) => new LibLR1.GCB(path));
+			Test(gameFolder, "*.GDB", (path) => new LibLR1.GDB(path));
+			Test(gameFolder, "*.GHB", (path) => new LibLR1.GHB(path));
+			Test(gameFolder, "*.TIB", (path) => new LibLR1.TIB(path));
+			Test(gameFolder, "*.TRB", (path) => new LibLR1.TRB(path));
+			Test(gameFolder, "*.LSB", (path) => new LibLR1.LSB(path));
+			Test(gameFolder, "*.MAB", (path) => new LibLR1.MAB(path));
+			Test(gameFolder, "*.MDB", (path) => new LibLR1.MDB(path));
+			Test(gameFolder, "*.MIB", (path) => new LibLR1.MIB(path));
+			Test(gameFolder, "*.PWB", (path) => new LibLR1.PWB(path));
+			Test(gameFolder, "*.RAB", (path) => new LibLR1.RAB(path));
+			Test(gameFolder, "*.RCB", (path) => new LibLR1.RCB(path));
+			Test(gameFolder, "*.RRB", (path) => new LibLR1.RRB(path));
+			Test(gameFolder, "*.SDB", (path) => new LibLR1.SDB(path));
+			Test(gameFolder, "*.SKB", (path) => new LibLR1.SKB(path));
+			Test(gameFolder, "*.TDB", (path) => new LibLR1.TDB(path));
+			Test(gameFolder, "*.WDB", (path) => new LibLR1.WDB(path));
+			Test(gameFolder, "*.CEB", (path) => new LibLR1.CEB(path));
+			Test(gameFolder, "*.CMB", (path) => new LibLR1.CMB(path));
+			Test(gameFolder, "*.EMB", (path) => new LibLR1.EMB(path));
+			Test(gameFolder, "*.EVB", (path) => new LibLR1.EVB(path));
+			Test(gameFolder, "*.FDB", (path) => new LibLR1.FDB(path));
+			Test(gameFolder, "*.HZB", (path) => new LibLR1.HZB(path));
+			Test(gameFolder, "*.IDB", (path) => new LibLR1.IDB(path));
+			Test(gameFolder, "*.LEB", (path) => new LibLR1.LEB(path));
+			Test(gameFolder, "*.MSB", (path) => new LibLR1.MSB(path));
+			Test(gameFolder, "*.PCB", (path) => new LibLR1.PCB(path));
+			Test(gameFolder, "*.SPB", (path) => new LibLR1.SPB(path));
+			Test(gameFolder, "*.TGB", (path) => new LibLR1.TGB(path));
 			PrintStats();
 			Console.ReadLine();
 		}
@@ -81,6 +82,7 @@ namespace Tester
 					Console.WriteLine("Fail!");
 					Console.WriteLine(ex.Message);
 				}
+
 				Console.ResetColor();
 			}
 		}
@@ -99,6 +101,7 @@ namespace Tester
 			{
 				Console.ForegroundColor = ConsoleColor.Yellow;
 			}
+
 			Console.WriteLine("{0}/{1} ({2:0.0%}) tests passed!", ms_testsPassed, ms_testsRun, (float)ms_testsPassed / ms_testsRun);
 			Console.ResetColor();
 		}
