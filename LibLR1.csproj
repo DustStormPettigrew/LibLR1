@@ -8,4 +8,8 @@
     <ImplicitUsings>disable</ImplicitUsings>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Tester\**\*.cs" />
+  </ItemGroup>
 </Project>

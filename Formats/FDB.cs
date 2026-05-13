@@ -23,7 +23,7 @@ namespace LibLR1
 		}
 
 		public FDB(string p_filepath)
-			: this(BinaryFileHelper.Decompress(p_filepath))
+			: this(BinaryFileHelper.Decompress(p_filepath, true))
 		{
 		}
 
@@ -89,6 +89,80 @@ namespace LibLR1
 		public bool HasUnknown2C;
 		public int Unknown2C;
 
+		private static object ReadCharacterItem(LRBinaryReader p_reader)
+		{
+			if (p_reader.Next(Token.LeftBracket))
+			{
+				p_reader.Expect(Token.LeftBracket);
+				List<object> items = new List<object>();
+				while (!p_reader.Next(Token.RightBracket))
+				{
+					items.Add(ReadCharacterItem(p_reader));
+				}
+				p_reader.Expect(Token.RightBracket);
+				return items.ToArray();
+			}
+			if (p_reader.Next(Token.String))
+			{
+				return p_reader.ReadStringWithHeader();
+			}
+			if (p_reader.Next(Token.Int32))
+			{
+				return p_reader.ReadIntWithHeader();
+			}
+			throw new UnexpectedTypeException(
+				p_reader.ReadToken(),
+				p_reader.BaseStream.Position - 1
+			);
+		}
+
+		private static void WriteCharacterItem(LRBinaryWriter p_writer, object p_value)
+		{
+			if (p_value is string s)
+			{
+				p_writer.WriteStringWithHeader(s);
+				return;
+			}
+			if (p_value is int n)
+			{
+				p_writer.WriteIntWithHeader(n);
+				return;
+			}
+			if (p_value is object[] arr)
+			{
+				p_writer.WriteToken(Token.LeftBracket);
+				for (int i = 0; i < arr.Length; i++)
+				{
+					WriteCharacterItem(p_writer, arr[i]);
+				}
+				p_writer.WriteToken(Token.RightBracket);
+				return;
+			}
+			if (p_value is string[] stringArr)
+			{
+				p_writer.WriteToken(Token.LeftBracket);
+				for (int i = 0; i < stringArr.Length; i++)
+				{
+					p_writer.WriteStringWithHeader(stringArr[i]);
+				}
+				p_writer.WriteToken(Token.RightBracket);
+				return;
+			}
+			if (p_value is int[] intArr)
+			{
+				p_writer.WriteToken(Token.LeftBracket);
+				for (int i = 0; i < intArr.Length; i++)
+				{
+					p_writer.WriteIntWithHeader(intArr[i]);
+				}
+				p_writer.WriteToken(Token.RightBracket);
+				return;
+			}
+			throw new System.ArgumentException(
+				"Unsupported FDB character item type: " + (p_value?.GetType().FullName ?? "null")
+			);
+		}
+
 		public static FDB_Font Read(LRBinaryReader p_reader)
 		{
 			FDB_Font val = new FDB_Font();
@@ -116,12 +190,7 @@ namespace LibLR1
 						List<object> chars = new List<object>();
 						while (!p_reader.Next(Token.RightBracket))
 						{
-							if (p_reader.Next(Token.String))
-								chars.Add(p_reader.ReadStringWithHeader());
-							else if (p_reader.Next(Token.Int32))
-								chars.Add(p_reader.ReadIntWithHeader());
-							else
-								break;
+							chars.Add(ReadCharacterItem(p_reader));
 						}
 						p_reader.Expect(Token.RightBracket);
 						val.Characters = chars.ToArray();
@@ -172,10 +241,7 @@ namespace LibLR1
 				p_writer.WriteToken(Token.LeftBracket);
 				for (int i = 0; i < p_value.Characters.Length; i++)
 				{
-					if (p_value.Characters[i] is string s)
-						p_writer.WriteStringWithHeader(s);
-					else if (p_value.Characters[i] is int n)
-						p_writer.WriteIntWithHeader(n);
+					WriteCharacterItem(p_writer, p_value.Characters[i]);
 				}
 				p_writer.WriteToken(Token.RightBracket);
 			}

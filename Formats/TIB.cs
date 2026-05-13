@@ -64,6 +64,7 @@ namespace LibLR1
 		public int Int28;
 		public int Int29;
 		public int Int2A;
+		public int Int2B;
 		public int Int2D;
 
 		public static TIB_Unknown27 Read(LRBinaryReader p_reader)
@@ -76,37 +77,26 @@ namespace LibLR1
 				{
 					case PROPERTY_28:
 					{
-						if (!p_reader.Next(Token.Int32))
-						{
-							p_reader.BaseStream.Position++; // 0x2B bodge
-						}
 						val.Int28 = p_reader.ReadIntWithHeader();
 						break;
 					}
 					case PROPERTY_29:
 					{
-						if (!p_reader.Next(Token.Int32))
-						{
-							p_reader.BaseStream.Position++; // 0x2B bodge
-						}
 						val.Int29 = p_reader.ReadIntWithHeader();
 						break;
 					}
 					case PROPERTY_2A:
 					{
-						if (!p_reader.Next(Token.Int32))
-						{
-							p_reader.BaseStream.Position++; // 0x2B bodge
-						}
 						val.Int2A = p_reader.ReadIntWithHeader();
+						break;
+					}
+					case PROPERTY_2B:
+					{
+						val.Int2B = p_reader.ReadIntWithHeader();
 						break;
 					}
 					case PROPERTY_2D:
 					{
-						if (!p_reader.Next(Token.Int32))
-						{
-							p_reader.BaseStream.Position++; // 0x2B bodge
-						}
 						val.Int2D = p_reader.ReadIntWithHeader();
 						break;
 					}

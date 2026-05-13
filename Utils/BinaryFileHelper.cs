@@ -6,15 +6,15 @@ namespace LibLR1.Utils
 {
 	public static class BinaryFileHelper
 	{
-		public static LRBinaryReader Decompress(string p_filepath)
+		public static LRBinaryReader Decompress(string p_filepath, bool p_preserveInlineArrays = false)
 		{
 			using (LRBinaryReader reader = new LRBinaryReader(File.OpenRead(p_filepath)))
 			{
-				return Decompress(reader);
+				return Decompress(reader, p_preserveInlineArrays);
 			}
 		}
 
-		private static LRBinaryReader Decompress(LRBinaryReader p_reader)
+		private static LRBinaryReader Decompress(LRBinaryReader p_reader, bool p_preserveInlineArrays)
 		{
 			Dictionary<Token, Token[]> structs = new Dictionary<Token, Token[]>();
 			MemoryStream msOut = new MemoryStream();
@@ -23,14 +23,14 @@ namespace LibLR1.Utils
 				while (p_reader.BaseStream.Position < p_reader.BaseStream.Length)
 				{
 					Token block_id = p_reader.ReadToken();
-					RecursiveDecompress(block_id, p_reader, writer, structs);
+					RecursiveDecompress(block_id, p_reader, writer, structs, p_preserveInlineArrays);
 				}
 			}
 			msOut.Position = 0;
 			return new LRBinaryReader(msOut);
 		}
 
-		private static void RecursiveDecompress(Token p_blockId, LRBinaryReader p_reader, LRBinaryWriter p_writer, Dictionary<Token, Token[]> p_structs)
+		private static void RecursiveDecompress(Token p_blockId, LRBinaryReader p_reader, LRBinaryWriter p_writer, Dictionary<Token, Token[]> p_structs, bool p_preserveInlineArrays)
 		{
 			switch (p_blockId)
 			{
@@ -73,9 +73,17 @@ namespace LibLR1.Utils
 				{ // decompression pass.
 					short arraylen = p_reader.ReadShort();
 					Token arraytype = p_reader.ReadToken();
+					if (p_preserveInlineArrays)
+					{
+						p_writer.WriteToken(Token.LeftBracket);
+					}
 					for (int i = 0; i < arraylen; i++)
 					{
-						RecursiveDecompress(arraytype, p_reader, p_writer, p_structs);
+						RecursiveDecompress(arraytype, p_reader, p_writer, p_structs, p_preserveInlineArrays);
+					}
+					if (p_preserveInlineArrays)
+					{
+						p_writer.WriteToken(Token.RightBracket);
 					}
 					break;
 				}
@@ -97,7 +105,7 @@ namespace LibLR1.Utils
 					{ // it's a struct
 						for (int i = 0; i < p_structs[p_blockId].Length; i++)
 						{
-							RecursiveDecompress(p_structs[p_blockId][i], p_reader, p_writer, p_structs);
+							RecursiveDecompress(p_structs[p_blockId][i], p_reader, p_writer, p_structs, p_preserveInlineArrays);
 						}
 					}
 					else

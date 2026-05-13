@@ -131,7 +131,7 @@ namespace LibLR1
 			val.c = p_reader.ReadIntegralWithHeader();
 			val.d = p_reader.ReadFloatWithHeader();
 			val.e = p_reader.ReadFloatWithHeader();
-			val.d = p_reader.ReadFloatWithHeader();
+			val.f = p_reader.ReadFloatWithHeader();
 			val.g = p_reader.ReadFloatWithHeader();
 			return val;
 		}
