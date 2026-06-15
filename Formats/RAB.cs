@@ -64,41 +64,42 @@ namespace LibLR1
 	public class RAB_Track
 	{
 		private const byte
-			PROPERTY_UNKNOWN_27 = 0x27,
+			PROPERTY_BACKGROUND_SCENE = 0x27,
 			PROPERTY_UNKNOWN_28 = 0x28,
 			PROPERTY_UNKNOWN_29 = 0x29,
-			PROPERTY_MAYBE_COLLISION_MESHES = 0x2B,
+			PROPERTY_COLLISION_MESHES = 0x2B,
 			PROPERTY_EVENT_SCRIPT_FILE = 0x2C,
-			PROPERTY_UNKNOWN_2D = 0x2D,
+			PROPERTY_FONT_FILE_REF = 0x2D,
 			PROPERTY_TRACK_SCENE = 0x2E,
 			PROPERTY_HUD_IMAGES_FILE = 0x2F,
 
 			PROPERTY_MUSIC_LIST_FILE = 0x30,
-			PROPERTY_UNKNOWN_31 = 0x31,
-			PROPERTY_UNKNOWN_32 = 0x32,
+			PROPERTY_TRACK_OBJECTS_FILE = 0x31,
+			PROPERTY_PATH_FILE = 0x32,
 			PROPERTY_POWERUP_FILES = 0x33,
-			PROPERTY_UNKNOWN_34 = 0x34,
-			PROPERTY_UNKNOWN_37 = 0x37,
-			PROPERTY_UNKNOWN_38 = 0x38,
-			PROPERTY_UNKNOWN_39 = 0x39,
+			PROPERTY_PROJECTED_SHADOW_SCENE = 0x34,
+			PROPERTY_ENVIRONMENT_TRIGGER_REF = 0x37,
+			PROPERTY_TIMER_REF = 0x38,
+			PROPERTY_TRACK_TRIGGER_REF = 0x39,
 			PROPERTY_EMITTER_FILES = 0x3A,
-			PROPERTY_UNKNOWN_3B = 0x3B,
+			PROPERTY_BLENDED_SCENE = 0x3B,
 			PROPERTY_COMMON_SOUNDS_FILE = 0x3C,
-			PROPERTY_UNKNOWN_3D = 0x3D,
+			PROPERTY_VOICE_BANK = 0x3D,
 			PROPERTY_SOUND_LIST_FILE = 0x3F,
 
-			PROPERTY_UNKNOWN_40 = 0x40,
+			PROPERTY_GLOBAL_WDF_REF = 0x40,
 			PROPERTY_START_POS = 0x41,
 			PROPERTY_SKYBOX = 0x42,
-			PROPERTY_UNKNOWN_43 = 0x43,
+			PROPERTY_TRACK_MATERIAL = 0x43,
 			PROPERTY_HAZARD_FILE = 0x44,
-			PROPERTY_UNKNOWN_45 = 0x45,
+			PROPERTY_LOCAL_WDF_REF = 0x45,
 			PROPERTY_BOUNDING_XZ = 0x46,
-			PROPERTY_UNKNOWN_48 = 0x48,
-			PROPERTY_UNKNOWN_49 = 0x49,
-			PROPERTY_UNKNOWN_4A = 0x4A;
+			PROPERTY_CHECKPOINT_FILES = 0x48,
+			PROPERTY_CAMERA_RIG_BASENAME = 0x49,
+			PROPERTY_TRACK_GAMEPLAY_REF = 0x4A;
 
-		public string Unknown27;
+		/// <summary>Logical .wdf ref resolving to a background/sky WDB scene. Evidence: backgrd.wdf -> WDB across all 14 tracks (03-Track-Loading-Graph.md).</summary>
+		public string BackgroundScene;
 		public LRVector3 Unknown28_A, Unknown28_B;
 		public LRVector3 Unknown29;
 
@@ -107,14 +108,16 @@ namespace LibLR1
 		/// [1] : secondary collision mesh. Implicit extension (BVB/MDB)
 		/// [2] : startfin collision mesh. Implicit extension (BVB/MDB)
 		/// </summary>
-		public string[] MaybeCollisionMeshes;
+		public string[] CollisionMeshes;
 		public string EventScriptFile;
-		public string Unknown2D;
-		public string MaybeTrackScene;
+		public string FontFileRef;
+		public string TrackScene;
 		public string HudImagesFile;
 		public string MusicListFile;
-		public string Unknown31;
-		public string Unknown32;
+		/// <summary>Logical .tob ref. No loose .TOB in install; JAM-resident suspected. Evidence: racecXrY.tob across all 14 tracks (03-Track-Loading-Graph.md).</summary>
+		public string TrackObjectsFile;
+		/// <summary>Logical .pth ref. No loose .PTB in install; JAM-resident suspected. Evidence: theme-named .pth across all 14 tracks (03-Track-Loading-Graph.md).</summary>
+		public string PathFile;
 
 		/// <summary>
 		/// [0] : powerup layout. PW[F|B]
@@ -122,26 +125,30 @@ namespace LibLR1
 		/// [2] : powerup scene? from /COMMON. WD[F|B]
 		/// </summary>
 		public string[] PowerupFiles;
-		public string Unknown34;
-		public string Unknown37;
-		public string Unknown38;
-		public string Unknown39;
+		/// <summary>Logical .wdf ref for a projected shadow WDB scene. File absent from loose install (JAM-resident suspected). Evidence: pshadow.wdf across all 14 tracks (03-Track-Loading-Graph.md).</summary>
+		public string ProjectedShadowScene;
+		public string EnvironmentTriggerFileRef;
+		public string TimerFileRef;
+		public string MainTriggerFileRef;
 
 		/// <summary>
 		/// [0] global from /COMMON EM[T|B]
 		/// [1] track specific EM[T|B]
 		/// </summary>
 		public string[] EmitterFiles;
-		public string Unknown3B;
+		/// <summary>Logical .wdf ref resolving to a blended/alpha-objects WDB scene. Evidence: blended.wdf -> WDB across all 14 tracks (03-Track-Loading-Graph.md).</summary>
+		public string BlendedScene;
 		public string CommonSoundsFile;
-		public string Unknown3D;
+		/// <summary>Voice SBK bank for this circuit's opponents. Evidence: voiceCx -> VOICES/voiceCx.SBK across all 14 tracks (03-Track-Loading-Graph.md).</summary>
+		public string VoiceBank;
 		public string SoundListFile;
-		public string Unknown40;
+		public string GlobalWdfRef;
 		public string StartPosFile;
 		public string SkyBoxFile;
-		public string Unknown43;
+		/// <summary>Logical .tmt ref resolving to track material physics TMB. Evidence: racecXrY.tmt -> TMB across all 14 tracks (03-Track-Loading-Graph.md).</summary>
+		public string TrackMaterial;
 		public string HazardFile;
-		public string Unknown45;
+		public string LocalWdfRef;
 		public LRVector2 BoundingXY_A, BoundingXY_B;
 
 		/// <summary>
@@ -149,8 +156,8 @@ namespace LibLR1
 		/// [1] collision mesh. implicit extensions. BVB/MDB
 		/// </summary>
 		public string[] CheckpointFiles;
-		public string Unknown49;
-		public string Unknown4A;
+		public string CameraRigBasename;
+		public string TrackGameplayRef;
 
 		public static RAB_Track Read(LRBinaryReader p_reader)
 		{
@@ -160,9 +167,9 @@ namespace LibLR1
 				byte propertyId = p_reader.ReadByte();
 				switch (propertyId)
 				{
-					case PROPERTY_UNKNOWN_27:
+					case PROPERTY_BACKGROUND_SCENE:
 					{
-						val.Unknown27 = p_reader.ReadStringWithHeader();
+						val.BackgroundScene = p_reader.ReadStringWithHeader();
 						break;
 					}
 					case PROPERTY_UNKNOWN_28:
@@ -176,12 +183,12 @@ namespace LibLR1
 						val.Unknown29 = LRVector3.Read(p_reader);
 						break;
 					}
-					case PROPERTY_MAYBE_COLLISION_MESHES:
+					case PROPERTY_COLLISION_MESHES:
 					{
-						val.MaybeCollisionMeshes = new string[3];
-						for (int i = 0; i < val.MaybeCollisionMeshes.Length; i++)
+						val.CollisionMeshes = new string[3];
+						for (int i = 0; i < val.CollisionMeshes.Length; i++)
 						{
-							val.MaybeCollisionMeshes[i] = p_reader.ReadStringWithHeader();
+							val.CollisionMeshes[i] = p_reader.ReadStringWithHeader();
 						}
 						break;
 					}
@@ -190,14 +197,14 @@ namespace LibLR1
 						val.EventScriptFile = p_reader.ReadStringWithHeader();
 						break;
 					}
-					case PROPERTY_UNKNOWN_2D:
+					case PROPERTY_FONT_FILE_REF:
 					{
-						val.Unknown2D = p_reader.ReadStringWithHeader();
+						val.FontFileRef = p_reader.ReadStringWithHeader();
 						break;
 					}
 					case PROPERTY_TRACK_SCENE:
 					{
-						val.MaybeTrackScene = p_reader.ReadStringWithHeader();
+						val.TrackScene = p_reader.ReadStringWithHeader();
 						break;
 					}
 					case PROPERTY_HUD_IMAGES_FILE:
@@ -210,14 +217,14 @@ namespace LibLR1
 						val.MusicListFile = p_reader.ReadStringWithHeader();
 						break;
 					}
-					case PROPERTY_UNKNOWN_31:
+					case PROPERTY_TRACK_OBJECTS_FILE:
 					{
-						val.Unknown31 = p_reader.ReadStringWithHeader();
+						val.TrackObjectsFile = p_reader.ReadStringWithHeader();
 						break;
 					}
-					case PROPERTY_UNKNOWN_32:
+					case PROPERTY_PATH_FILE:
 					{
-						val.Unknown32 = p_reader.ReadStringWithHeader();
+						val.PathFile = p_reader.ReadStringWithHeader();
 						break;
 					}
 					case PROPERTY_POWERUP_FILES:
@@ -229,24 +236,24 @@ namespace LibLR1
 						}
 						break;
 					}
-					case PROPERTY_UNKNOWN_34:
+					case PROPERTY_PROJECTED_SHADOW_SCENE:
 					{
-						val.Unknown34 = p_reader.ReadStringWithHeader();
+						val.ProjectedShadowScene = p_reader.ReadStringWithHeader();
 						break;
 					}
-					case PROPERTY_UNKNOWN_37:
+					case PROPERTY_ENVIRONMENT_TRIGGER_REF:
 					{
-						val.Unknown37 = p_reader.ReadStringWithHeader();
+						val.EnvironmentTriggerFileRef = p_reader.ReadStringWithHeader();
 						break;
 					}
-					case PROPERTY_UNKNOWN_38:
+					case PROPERTY_TIMER_REF:
 					{
-						val.Unknown38 = p_reader.ReadStringWithHeader();
+						val.TimerFileRef = p_reader.ReadStringWithHeader();
 						break;
 					}
-					case PROPERTY_UNKNOWN_39:
+					case PROPERTY_TRACK_TRIGGER_REF:
 					{
-						val.Unknown39 = p_reader.ReadStringWithHeader();
+						val.MainTriggerFileRef = p_reader.ReadStringWithHeader();
 						break;
 					}
 					case PROPERTY_EMITTER_FILES:
@@ -258,9 +265,9 @@ namespace LibLR1
 						}
 						break;
 					}
-					case PROPERTY_UNKNOWN_3B:
+					case PROPERTY_BLENDED_SCENE:
 					{
-						val.Unknown3B = p_reader.ReadStringWithHeader();
+						val.BlendedScene = p_reader.ReadStringWithHeader();
 						break;
 					}
 					case PROPERTY_COMMON_SOUNDS_FILE:
@@ -268,9 +275,9 @@ namespace LibLR1
 						val.CommonSoundsFile = p_reader.ReadStringWithHeader();
 						break;
 					}
-					case PROPERTY_UNKNOWN_3D:
+					case PROPERTY_VOICE_BANK:
 					{
-						val.Unknown3D = p_reader.ReadStringWithHeader();
+						val.VoiceBank = p_reader.ReadStringWithHeader();
 						break;
 					}
 					case PROPERTY_SOUND_LIST_FILE:
@@ -278,9 +285,9 @@ namespace LibLR1
 						val.SoundListFile = p_reader.ReadStringWithHeader();
 						break;
 					}
-					case PROPERTY_UNKNOWN_40:
+					case PROPERTY_GLOBAL_WDF_REF:
 					{
-						val.Unknown40 = p_reader.ReadStringWithHeader();
+						val.GlobalWdfRef = p_reader.ReadStringWithHeader();
 						break;
 					}
 					case PROPERTY_START_POS:
@@ -293,9 +300,9 @@ namespace LibLR1
 						val.SkyBoxFile = p_reader.ReadStringWithHeader();
 						break;
 					}
-					case PROPERTY_UNKNOWN_43:
+					case PROPERTY_TRACK_MATERIAL:
 					{
-						val.Unknown43 = p_reader.ReadStringWithHeader();
+						val.TrackMaterial = p_reader.ReadStringWithHeader();
 						break;
 					}
 					case PROPERTY_HAZARD_FILE:
@@ -303,9 +310,9 @@ namespace LibLR1
 						val.HazardFile = p_reader.ReadStringWithHeader();
 						break;
 					}
-					case PROPERTY_UNKNOWN_45:
+					case PROPERTY_LOCAL_WDF_REF:
 					{
-						val.Unknown45 = p_reader.ReadStringWithHeader();
+						val.LocalWdfRef = p_reader.ReadStringWithHeader();
 						break;
 					}
 					case PROPERTY_BOUNDING_XZ:
@@ -314,7 +321,7 @@ namespace LibLR1
 						val.BoundingXY_B = LRVector2.Read(p_reader);
 						break;
 					}
-					case PROPERTY_UNKNOWN_48:
+					case PROPERTY_CHECKPOINT_FILES:
 					{
 						val.CheckpointFiles = new string[2];
 						for (int i = 0; i < val.CheckpointFiles.Length; i++)
@@ -323,14 +330,14 @@ namespace LibLR1
 						}
 						break;
 					}
-					case PROPERTY_UNKNOWN_49:
+					case PROPERTY_CAMERA_RIG_BASENAME:
 					{
-						val.Unknown49 = p_reader.ReadStringWithHeader();
+						val.CameraRigBasename = p_reader.ReadStringWithHeader();
 						break;
 					}
-					case PROPERTY_UNKNOWN_4A:
+					case PROPERTY_TRACK_GAMEPLAY_REF:
 					{
-						val.Unknown4A = p_reader.ReadStringWithHeader();
+						val.TrackGameplayRef = p_reader.ReadStringWithHeader();
 						break;
 					}
 					default:
