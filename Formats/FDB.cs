@@ -78,7 +78,7 @@ namespace LibLR1
 			PROPERTY_FLAGS = 0x28,
 			PROPERTY_CHARACTERS = 0x2B,
 			PROPERTY_COLOR = 0x2A,
-			PROPERTY_UNKNOWN_2C = 0x2C;
+			PROPERTY_SPACING = 0x2C;
 
 		public bool HasFlags;
 		public bool HasColor;
@@ -86,8 +86,8 @@ namespace LibLR1
 		public int ColorG;
 		public int ColorB;
 		public object[] Characters;
-		public bool HasUnknown2C;
-		public int Unknown2C;
+		public bool HasSpacing;
+		public int Spacing;
 
 		private static object ReadCharacterItem(LRBinaryReader p_reader)
 		{
@@ -196,10 +196,10 @@ namespace LibLR1
 						val.Characters = chars.ToArray();
 						break;
 					}
-					case PROPERTY_UNKNOWN_2C:
+					case PROPERTY_SPACING:
 					{
-						val.HasUnknown2C = true;
-						val.Unknown2C = p_reader.ReadIntWithHeader();
+						val.HasSpacing = true;
+						val.Spacing = p_reader.ReadIntWithHeader();
 						break;
 					}
 					default:
@@ -229,10 +229,10 @@ namespace LibLR1
 				p_writer.WriteIntWithHeader(p_value.ColorB);
 			}
 
-			if (p_value.HasUnknown2C)
+			if (p_value.HasSpacing)
 			{
-				p_writer.WriteByte(PROPERTY_UNKNOWN_2C);
-				p_writer.WriteIntWithHeader(p_value.Unknown2C);
+				p_writer.WriteByte(PROPERTY_SPACING);
+				p_writer.WriteIntWithHeader(p_value.Spacing);
 			}
 
 			if (p_value.Characters != null)

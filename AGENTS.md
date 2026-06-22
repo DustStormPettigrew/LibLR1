@@ -17,12 +17,12 @@ All other tools (Track Editor, Binary Editor, Online Mod, etc.) depend on LibLR1
 
 ## Project Structure & Module Organization
 
-`LibLR1.sln` contains two C# projects targeting .NET Framework 4.8.
+`LibLR1.sln` contains the `LibLR1` library and `Tester` console projects targeting .NET 8.
 
 ### LibLR1/
 Core library containing parsers and data structures.
 
-- Most top-level `*.cs` files are parsers named after file types:
+- Most parser `*.cs` files are under `Formats/` and are named after file types:
   - `ADB.cs`, `GDB.cs`, `SKB.cs`, etc.
 - Shared helpers:
   - `IO/`
@@ -31,7 +31,7 @@ Core library containing parsers and data structures.
 
 ### Tester/
 Console-based validation harness for running parsers against real game assets.
-Location of the locally extracted LEGO.JAM files is located in localGameFiles.json.
+Configure the game installation with `LR1_INSTALLATION_PATH`, `LEGO_RACERS_INSTALLATION_PATH`, or a local `locals.json` file.
 
 ---
 
@@ -123,17 +123,17 @@ Changes in this repository affect all downstream tools.
 ## Repository Guidelines
 
 ### Project Structure & Module Organization
-`LibLR1.sln` contains two C# projects targeting .NET Framework 4.8. `LibLR1/` is the library: most top-level `*.cs` files are parsers named after LEGO Racers file types (`ADB.cs`, `GDB.cs`, `SKB.cs`). Shared helpers live in `LibLR1/IO`, `LibLR1/Utils`, and `LibLR1/Exceptions`. `Tester/` is a console harness for manual validation against real game assets.
+`LibLR1.sln` contains the .NET 8 library and tester projects. Format parsers live in `Formats/`; shared helpers live in `IO`, `Utils`, and `Exceptions`. `Tester/` is a console harness for manual validation against real game assets.
 
 ### Build, Test, and Development Commands
-Build from a Visual Studio Developer PowerShell or any shell with `msbuild` on `PATH`:
+Build with the .NET SDK:
 
 ```powershell
-msbuild LibLR1.sln /p:Configuration=Debug
-msbuild LibLR1.sln /p:Configuration=Release
+dotnet build LibLR1.sln --configuration Debug
+dotnet build LibLR1.sln --configuration Release
 ```
 
-Use the `Tester` project to exercise parsers against installed game files. Update the hard-coded `gameFolder` in `Tester/Program.cs` first, then run the built executable from `Tester\bin\Debug\Tester.exe`.
+Use the `Tester` project to exercise parsers against installed game files. Configure the installation path with `LR1_INSTALLATION_PATH`, `LEGO_RACERS_INSTALLATION_PATH`, or `locals.json`, then run `dotnet run --project Tester/Tester.csproj -- --builder-formats` for builder fixtures or run the tester without that option for the full suite.
 
 ### Coding Style & Naming Conventions
 Follow the existing C# style in the repo:

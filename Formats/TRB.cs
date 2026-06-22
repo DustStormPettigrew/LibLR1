@@ -62,6 +62,7 @@ namespace LibLR1
 			PROPERTY_2E = 0x2E,
 			PROPERTY_2F = 0x2F;
 
+		public bool HasVec29;
 		public LRVector3 Vec29;
 		public float Float2A;
 		public int Int2B;
@@ -79,6 +80,7 @@ namespace LibLR1
 				{
 					case PROPERTY_29:
 					{
+						val.HasVec29 = true;
 						val.Vec29 = LRVector3.Read(p_reader);
 						break;
 					}

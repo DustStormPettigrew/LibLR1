@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text;
 
 namespace LibLR1
 {
@@ -11,6 +12,8 @@ namespace LibLR1
 	/// </summary>
 	public class BMP
 	{
+		private const int RawBlockMaxLength = short.MaxValue;
+
 		private int m_width, m_height;
 		private BitmapColor[] m_image;
 
@@ -26,6 +29,34 @@ namespace LibLR1
 			return m_image[p_y * m_width + p_x];
 		}
 
+		public BMP(int p_width, int p_height, BitmapColor[] p_image)
+		{
+			if (p_width <= 0 || p_width > short.MaxValue)
+			{
+				throw new ArgumentOutOfRangeException(nameof(p_width));
+			}
+
+			if (p_height <= 0 || p_height > short.MaxValue)
+			{
+				throw new ArgumentOutOfRangeException(nameof(p_height));
+			}
+
+			if (p_image == null)
+			{
+				throw new ArgumentNullException(nameof(p_image));
+			}
+
+			if (p_image.Length != p_width * p_height)
+			{
+				throw new ArgumentException("Pixel buffer length does not match image dimensions.", nameof(p_image));
+			}
+
+			m_width = p_width;
+			m_height = p_height;
+			m_image = new BitmapColor[p_image.Length];
+			Array.Copy(p_image, m_image, p_image.Length);
+		}
+
 		private enum ImageEncoding : byte
 		{
 			Palette4Bit = 0x04,
@@ -37,99 +68,136 @@ namespace LibLR1
 		{
 			using (BinaryReader br = new BinaryReader(File.OpenRead(p_filepath)))
 			{
-				ImageEncoding encoding = (ImageEncoding)br.ReadByte();
+				Read(br);
+			}
+		}
 
-				// check if it's a valid encoding
-				if (((ImageEncoding[])Enum.GetValues(typeof(ImageEncoding))).Contains(encoding) == false)
+		public void Save(string p_filepath)
+		{
+			using (FileStream stream = File.Create(p_filepath))
+			{
+				Save(stream);
+			}
+		}
+
+		public void Save(Stream p_stream)
+		{
+			if (p_stream == null)
+			{
+				throw new ArgumentNullException(nameof(p_stream));
+			}
+
+			using (BinaryWriter writer = new BinaryWriter(p_stream, Encoding.ASCII, leaveOpen: true))
+			{
+				writer.Write((byte)ImageEncoding.RGB);
+				writer.Write((byte)0x00);
+				writer.Write((short)m_width);
+				writer.Write((short)m_height);
+
+				byte[] imageBuffer = new byte[m_width * m_height * 3];
+				for (int i = 0; i < m_image.Length; ++i)
 				{
-					throw new InvalidDataException(string.Format("Unexpected bitmap encoding 0x{0:X2}", (byte)encoding));
+					imageBuffer[i * 3 + 0] = m_image[i].r;
+					imageBuffer[i * 3 + 1] = m_image[i].g;
+					imageBuffer[i * 3 + 2] = m_image[i].b;
 				}
 
-				byte paletteSize = br.ReadByte();
+				WriteRawBlocks(writer, imageBuffer);
+			}
+		}
 
-				m_width = br.ReadInt16();
-				m_height = br.ReadInt16();
+		private void Read(BinaryReader p_reader)
+		{
+			ImageEncoding encoding = (ImageEncoding)p_reader.ReadByte();
 
-				BitmapColor[] palette;
-				if (encoding == ImageEncoding.RGB)
+			if (((ImageEncoding[])Enum.GetValues(typeof(ImageEncoding))).Contains(encoding) == false)
+			{
+				throw new InvalidDataException(string.Format("Unexpected bitmap encoding 0x{0:X2}", (byte)encoding));
+			}
+
+			byte paletteSize = p_reader.ReadByte();
+
+			m_width = p_reader.ReadInt16();
+			m_height = p_reader.ReadInt16();
+
+			BitmapColor[] palette;
+			if (encoding == ImageEncoding.RGB)
+			{
+				palette = new BitmapColor[0];
+			}
+			else
+			{
+				palette = new BitmapColor[paletteSize + 1];
+				for (int i = 0; i < palette.Length; ++i)
 				{
-					palette = new BitmapColor[0];
+					palette[i] = new BitmapColor(p_reader);
 				}
-				else
-				{
-					palette = new BitmapColor[paletteSize + 1];
-					for (int i = 0; i < palette.Length; ++i)
-					{
-						palette[i] = new BitmapColor(br);
-					}
-				}
+			}
 
-				int bufferLength = 0;
-				switch (encoding)
+			int bufferLength = 0;
+			switch (encoding)
+			{
+				case ImageEncoding.Palette4Bit:
 				{
-					case ImageEncoding.Palette4Bit:
-					{
-						//TODO: check the +1
-						bufferLength = (m_width * m_height + 1) / 2;
-						break;
-					}
-					case ImageEncoding.Palette8Bit:
-					{
-						bufferLength = m_width * m_height;
-						break;
-					}
-					case ImageEncoding.RGB:
-					{
-						bufferLength = m_width * m_height * 3;
-						break;
-					}
+					//TODO: check the +1
+					bufferLength = (m_width * m_height + 1) / 2;
+					break;
 				}
-
-				byte[] imageBuffer = new byte[bufferLength];
-				int bufferPos = 0;
-				while (bufferPos < bufferLength)
+				case ImageEncoding.Palette8Bit:
 				{
-					byte[] block = ReadBlock(br);
-					Array.Copy(block, 0, imageBuffer, bufferPos, block.Length);
-					bufferPos += block.Length;
+					bufferLength = m_width * m_height;
+					break;
 				}
-
-				m_image = new BitmapColor[m_width * m_height];
-				switch (encoding)
+				case ImageEncoding.RGB:
 				{
-					case ImageEncoding.RGB:
+					bufferLength = m_width * m_height * 3;
+					break;
+				}
+			}
+
+			byte[] imageBuffer = new byte[bufferLength];
+			int bufferPos = 0;
+			while (bufferPos < bufferLength)
+			{
+				byte[] block = ReadBlock(p_reader);
+				Array.Copy(block, 0, imageBuffer, bufferPos, block.Length);
+				bufferPos += block.Length;
+			}
+
+			m_image = new BitmapColor[m_width * m_height];
+			switch (encoding)
+			{
+				case ImageEncoding.RGB:
+				{
+					for (int i = 0; i < m_width * m_height; ++i)
 					{
-						for (int i = 0; i < m_width * m_height; ++i)
-						{
-							//TODO: possibly the other way round? (bgr vs rgb)
-							m_image[i] = new BitmapColor(
-								imageBuffer[i * 3 + 0],
-								imageBuffer[i * 3 + 1],
-								imageBuffer[i * 3 + 2]
-							);
-						}
-						break;
+						m_image[i] = new BitmapColor(
+							imageBuffer[i * 3 + 0],
+							imageBuffer[i * 3 + 1],
+							imageBuffer[i * 3 + 2]
+						);
 					}
-					case ImageEncoding.Palette4Bit:
+					break;
+				}
+				case ImageEncoding.Palette4Bit:
+				{
+					for (int i = 0; i < m_width * m_height; ++i)
 					{
-						for (int i = 0; i < m_width * m_height; ++i)
-						{
-							byte index = imageBuffer[i / 2];
-							index >>= 4 * (1 - (i % 2));
-							index &= 0xF;
-							m_image[i] = palette[index];
-						}
-						break;
+						byte index = imageBuffer[i / 2];
+						index >>= 4 * (1 - (i % 2));
+						index &= 0xF;
+						m_image[i] = palette[index];
 					}
-					case ImageEncoding.Palette8Bit:
+					break;
+				}
+				case ImageEncoding.Palette8Bit:
+				{
+					for (int i = 0; i < m_width * m_height; ++i)
 					{
-						for (int i = 0; i < m_width * m_height; ++i)
-						{
-							byte index = imageBuffer[i];
-							m_image[i] = palette[index];
-						}
-						break;
+						byte index = imageBuffer[i];
+						m_image[i] = palette[index];
 					}
+					break;
 				}
 			}
 		}
@@ -193,6 +261,19 @@ namespace LibLR1
 				blockMap <<= 1; // move to next bit
 			}
 			return true;
+		}
+
+		private static void WriteRawBlocks(BinaryWriter p_writer, byte[] p_imageBuffer)
+		{
+			int offset = 0;
+			while (offset < p_imageBuffer.Length)
+			{
+				short blockLength = (short)Math.Min(RawBlockMaxLength, p_imageBuffer.Length - offset);
+				p_writer.Write(blockLength);
+				p_writer.Write(blockLength);
+				p_writer.Write(p_imageBuffer, offset, blockLength);
+				offset += blockLength;
+			}
 		}
 	}
 

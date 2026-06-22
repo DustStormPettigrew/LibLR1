@@ -7,7 +7,22 @@ namespace LibLR1
 {
 
 	/// <summary>
-	/// "AI" path format
+	/// Computer racer (AI) cart path. Each file encodes one spline-like path for one racer/tier/variant combination.
+	/// Naming convention: R{0-5}_{F,M,S}_{0-N}.RRB
+	///   R0    = attract-mode demo racer. Exists ONLY on the 4 c0 demo-eligible tracks
+	///           (RACEC0R1, RACEC0R2, RACEC0R3, RACEC1R0); always F-tier.
+	///           Demo mode loads 6 RRBs (R0 + R1-R5); normal play loads 5 (R1-R5).
+	///   R1–R5 = 5 AI opponent slots for normal races.
+	///   F/M/S = speed tier (Fast, Medium, Slow).
+	///           Confirmed slot/tier assignments (215 files across all 14 race folders):
+	///             R1: always F (39/39)
+	///             R2: always M (39/39)
+	///             R3: M-dominant (35/43); S on 5 tracks
+	///             R4: S-dominant (32/39); M on 7 tracks
+	///             R5: S-dominant (38/40); R5_F_0 on RACEC2R0; R5_M_0 on RACEC2R3
+	///   0..N  = variant index within the tier. Most tracks 0-2; R3_M reaches index 3
+	///           on RACEC0R0, RACEC1R1, RACEC2R1.
+	/// At race init, one variant per occupied slot is selected randomly.
 	/// </summary>
 	public class RRB
 	{

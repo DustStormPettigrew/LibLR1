@@ -13,15 +13,18 @@ namespace LibLR1
 	{
 		private const byte
 			ID_TEXTURES = 0x27,
-			PROPERTY_28 = 0x28,
-			PROPERTY_BMP_TGA = 0x2A,
-			PROPERTY_COLOR_2C = 0x2C,
-			PROPERTY_2D = 0x2D;
+			PROPERTY_FLIP_VERTICAL = 0x28,
+			PROPERTY_UNKNOWN_29 = 0x29,
+			PROPERTY_BMP = 0x2A,
+			PROPERTY_TGA = 0x2B,
+			PROPERTY_CHROMA_KEY = 0x2C,
+			PROPERTY_2D = 0x2D,
+			PROPERTY_UNKNOWN_2E = 0x2E;
 
 		private Dictionary<string, TDB_Texture> m_textures;
 
 		public Dictionary<string, TDB_Texture> Textures { get { return m_textures; } set { m_textures = value; } }
-		
+
 		public TDB(string p_filepath)
 			: this(BinaryFileHelper.Decompress(p_filepath))
 		{
@@ -76,29 +79,34 @@ namespace LibLR1
 	public class TDB_Texture
 	{
 		private const byte
-			PROPERTY_28 = 0x28,
-			PROPERTY_BMP_TGA = 0x2A,
-			PROPERTY_2B = 0x2B,
-			PROPERTY_COLOR_2C = 0x2C,
-			PROPERTY_2D = 0x2D;
+			PROPERTY_FLIP_VERTICAL = 0x28,
+			PROPERTY_UNKNOWN_29 = 0x29,
+			PROPERTY_BMP = 0x2A,
+			PROPERTY_TGA = 0x2B,
+			PROPERTY_CHROMA_KEY = 0x2C,
+			PROPERTY_2D = 0x2D,
+			PROPERTY_UNKNOWN_2E = 0x2E;
 
-		public bool Bool28;
+		public bool FlipVertical;
+		public bool HasUnknown29;
+		public int Unknown29;
 		public bool IsBitmap;
-		public bool Bool2B;
-		public bool HasColor2C;
-		public LRColor Color2C;
+		public bool IsTga;
+		public bool HasChromaKey;
+		public LRColor ChromaKey;
 		public bool Bool2D;
+		public bool Unknown2E;
 
 		public TDB_Texture()
 			: this(false, false, false, false, new LRColor(), false) { }
 
-		public TDB_Texture(bool p_bool28, bool p_isbitmap, bool p_bool2b, bool p_hascolor2c, LRColor p_color2c, bool p_bool2d)
+		public TDB_Texture(bool p_flipvertical, bool p_isbitmap, bool p_istga, bool p_haschromakey, LRColor p_chromakey, bool p_bool2d)
 		{
-			Bool28 = p_bool28;
+			FlipVertical = p_flipvertical;
 			IsBitmap = p_isbitmap;
-			Bool2B = p_bool2b;
-			HasColor2C = p_hascolor2c;
-			Color2C = p_color2c;
+			IsTga = p_istga;
+			HasChromaKey = p_haschromakey;
+			ChromaKey = p_chromakey;
 			Bool2D = p_bool2d;
 		}
 
@@ -110,30 +118,41 @@ namespace LibLR1
 				byte propertyId = p_reader.ReadByte();
 				switch (propertyId)
 				{
-					case PROPERTY_28:
+					case PROPERTY_FLIP_VERTICAL:
 					{
-						val.Bool28 = true;
+						val.FlipVertical = true;
 						break;
 					}
-					case PROPERTY_BMP_TGA:
+					case PROPERTY_UNKNOWN_29:
+					{
+						val.HasUnknown29 = true;
+						val.Unknown29 = p_reader.ReadIntWithHeader();
+						break;
+					}
+					case PROPERTY_BMP:
 					{
 						val.IsBitmap = true;
 						break;
 					}
-					case PROPERTY_2B:
+					case PROPERTY_TGA:
 					{
-						val.Bool2B = true;
+						val.IsTga = true;
 						break;
 					}
-					case PROPERTY_COLOR_2C:
+					case PROPERTY_CHROMA_KEY:
 					{
-						val.HasColor2C = true;
-						val.Color2C = LRColor.ReadNoAlpha(p_reader);
+						val.HasChromaKey = true;
+						val.ChromaKey = LRColor.ReadNoAlpha(p_reader);
 						break;
 					}
 					case PROPERTY_2D:
 					{
 						val.Bool2D = true;
+						break;
+					}
+					case PROPERTY_UNKNOWN_2E:
+					{
+						val.Unknown2E = true;
 						break;
 					}
 					default:
@@ -150,26 +169,35 @@ namespace LibLR1
 
 		public static void Write(LRBinaryWriter p_writer, TDB_Texture p_value)
 		{
-			if (p_value.Bool28)
+			if (p_value.FlipVertical)
 			{
-				p_writer.WriteByte(PROPERTY_28);
+				p_writer.WriteByte(PROPERTY_FLIP_VERTICAL);
+			}
+			if (p_value.HasUnknown29)
+			{
+				p_writer.WriteByte(PROPERTY_UNKNOWN_29);
+				p_writer.WriteIntWithHeader(p_value.Unknown29);
 			}
 			if (p_value.IsBitmap)
 			{
-				p_writer.WriteByte(PROPERTY_BMP_TGA);
+				p_writer.WriteByte(PROPERTY_BMP);
 			}
-			if (p_value.Bool2B)
+			if (p_value.IsTga)
 			{
-				p_writer.WriteByte(PROPERTY_2B);
+				p_writer.WriteByte(PROPERTY_TGA);
 			}
-			if (p_value.HasColor2C)
+			if (p_value.HasChromaKey)
 			{
-				p_writer.WriteByte(PROPERTY_COLOR_2C);
-				LRColor.WriteNoAlpha(p_writer, p_value.Color2C);
+				p_writer.WriteByte(PROPERTY_CHROMA_KEY);
+				LRColor.WriteNoAlpha(p_writer, p_value.ChromaKey);
 			}
 			if (p_value.Bool2D)
 			{
 				p_writer.WriteByte(PROPERTY_2D);
+			}
+			if (p_value.Unknown2E)
+			{
+				p_writer.WriteByte(PROPERTY_UNKNOWN_2E);
 			}
 		}
 	}

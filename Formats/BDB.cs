@@ -5,35 +5,33 @@ using LibLR1.Utils;
 namespace LibLR1
 {
 	/// <summary>
-	/// Bounding box database format.
+	/// Bounding box / visibility tree database format.
 	/// </summary>
 	public class BDB
 	{
 		private const byte
-			ID_UNKNOWN_27 = 0x27,
-			ID_UNKNOWN_28 = 0x28,
-			ID_UNKNOWN_29 = 0x29,
+			ID_TREE = 0x27,
 			ID_BOUNDING_BOXES = 0x2A,
-			ID_UNKNOWN_2B = 0x2B;
-		
-		private BDB_Unknown27[] m_unknown27;
+			ID_VISIBLE_REGIONS = 0x2B;
+
+		private BDB_TreeNode[] m_tree;
 		private BDB_BoundingBox[] m_boundingBoxes;
-		private int[] m_unknown2B;
-		
-		public BDB_Unknown27[] Unknown27
+		private int[] m_visibleRegions;
+
+		public BDB_TreeNode[] Tree
 		{
-			get { return m_unknown27; }
-			set { m_unknown27 = value; }
+			get { return m_tree; }
+			set { m_tree = value; }
 		}
 		public BDB_BoundingBox[] BoundingBoxes
 		{
 			get { return m_boundingBoxes; }
 			set { m_boundingBoxes = value; }
 		}
-		public int[] Unknown2B
+		public int[] VisibleRegions
 		{
-			get { return m_unknown2B; }
-			set { m_unknown2B = value; }
+			get { return m_visibleRegions; }
+			set { m_visibleRegions = value; }
 		}
 
 		public BDB(string p_filepath)
@@ -43,16 +41,16 @@ namespace LibLR1
 
 		public BDB(LRBinaryReader p_reader)
 		{
-			m_unknown2B = new int[0];
+			m_visibleRegions = new int[0];
 			while (p_reader.BaseStream.Position < p_reader.BaseStream.Length)
 			{
 				byte blockId = p_reader.ReadByte();
 				switch (blockId)
 				{
-					case ID_UNKNOWN_27:
+					case ID_TREE:
 					{
-						m_unknown27 = p_reader.ReadArrayBlock<BDB_Unknown27>(
-							BDB_Unknown27.Read
+						m_tree = p_reader.ReadArrayBlock<BDB_TreeNode>(
+							BDB_TreeNode.Read
 						);
 						break;
 					}
@@ -63,9 +61,9 @@ namespace LibLR1
 						);
 						break;
 					}
-					case ID_UNKNOWN_2B:
+					case ID_VISIBLE_REGIONS:
 					{
-						m_unknown2B = p_reader.ReadIntArrayBlock();
+						m_visibleRegions = p_reader.ReadIntArrayBlock();
 						break;
 					}
 					default:
@@ -79,28 +77,27 @@ namespace LibLR1
 			}
 		}
 	}
-	
-	public abstract class BDB_Unknown27
+
+	public abstract class BDB_TreeNode
 	{
 		public const byte
-			ID_UNKNOWN_27 = 0x27,
-			ID_UNKNOWN_28 = 0x28,
-			ID_UNKNOWN_29 = 0x29;
-		
+			BLOCK_TREE_PARENT = 0x28,
+			BLOCK_TREE_LEAF = 0x29;
+
 		public virtual byte Type { get { return 0; } }
 
-		public static BDB_Unknown27 Read(LRBinaryReader p_reader)
+		public static BDB_TreeNode Read(LRBinaryReader p_reader)
 		{
 			byte type = p_reader.ReadByte();
 			switch (type)
 			{
-				case ID_UNKNOWN_28:
+				case BLOCK_TREE_PARENT:
 				{
-					return BDB_Unknown28.Read(p_reader);
+					return BDB_TreeParent.Read(p_reader);
 				}
-				case ID_UNKNOWN_29:
+				case BLOCK_TREE_LEAF:
 				{
-					return BDB_Unknown29.Read(p_reader);
+					return BDB_TreeLeaf.Read(p_reader);
 				}
 				default:
 				{
@@ -112,54 +109,63 @@ namespace LibLR1
 			}
 		}
 	}
-	
-	public class BDB_Unknown28 : BDB_Unknown27
+
+	public class BDB_TreeParent : BDB_TreeNode
 	{
 		public override byte Type
 		{
-			get { return ID_UNKNOWN_28; }
+			get { return BLOCK_TREE_PARENT; }
 		}
-		
-		public int a, b, c;
-		public float d, e, f, g;
 
-		public static new BDB_Unknown28 Read(LRBinaryReader p_reader)
+		public int Parent;
+		public int Child1;
+		public int Child2;
+		public float SelectorX;
+		public float SelectorY;
+		public float SelectorZ;
+		public float SelectorValue;
+
+		public static new BDB_TreeParent Read(LRBinaryReader p_reader)
 		{
-			BDB_Unknown28 val = new BDB_Unknown28();
-			val.a = p_reader.ReadIntegralWithHeader();
-			val.b = p_reader.ReadIntegralWithHeader();
-			val.c = p_reader.ReadIntegralWithHeader();
-			val.d = p_reader.ReadFloatWithHeader();
-			val.e = p_reader.ReadFloatWithHeader();
-			val.f = p_reader.ReadFloatWithHeader();
-			val.g = p_reader.ReadFloatWithHeader();
+			BDB_TreeParent val = new BDB_TreeParent();
+			val.Parent = p_reader.ReadIntegralWithHeader();
+			val.Child1 = p_reader.ReadIntegralWithHeader();
+			val.Child2 = p_reader.ReadIntegralWithHeader();
+			val.SelectorX = p_reader.ReadFloatWithHeader();
+			val.SelectorY = p_reader.ReadFloatWithHeader();
+			val.SelectorZ = p_reader.ReadFloatWithHeader();
+			val.SelectorValue = p_reader.ReadFloatWithHeader();
 			return val;
 		}
 	}
-	
-	public class BDB_Unknown29 : BDB_Unknown27
+
+	public class BDB_TreeLeaf : BDB_TreeNode
 	{
 		public override byte Type
 		{
-			get { return ID_UNKNOWN_29; }
+			get { return BLOCK_TREE_LEAF; }
 		}
-		
-		public ushort a, b, c;
-		public Fract16Bit d, e, f;
 
-		public static new BDB_Unknown29 Read(LRBinaryReader p_reader)
+		public ushort Parent;
+		public ushort GraphOffset;
+		public ushort GraphLength;
+		public Fract16Bit CarInRegion;
+		public Fract16Bit VisibleRegionOffset;
+		public Fract16Bit VisibleRegionLength;
+
+		public static new BDB_TreeLeaf Read(LRBinaryReader p_reader)
 		{
-			BDB_Unknown29 val = new BDB_Unknown29();
-			val.a = p_reader.ReadUShortWithHeader();
-			val.b = p_reader.ReadUShortWithHeader();
-			val.c = p_reader.ReadUShortWithHeader();
-			val.d = p_reader.ReadFract16BitWithHeader();
-			val.e = p_reader.ReadFract16BitWithHeader();
-			val.f = p_reader.ReadFract16BitWithHeader();
+			BDB_TreeLeaf val = new BDB_TreeLeaf();
+			val.Parent = p_reader.ReadUShortWithHeader();
+			val.GraphOffset = p_reader.ReadUShortWithHeader();
+			val.GraphLength = p_reader.ReadUShortWithHeader();
+			val.CarInRegion = p_reader.ReadFract16BitWithHeader();
+			val.VisibleRegionOffset = p_reader.ReadFract16BitWithHeader();
+			val.VisibleRegionLength = p_reader.ReadFract16BitWithHeader();
 			return val;
 		}
 	}
-	
+
 	public class BDB_BoundingBox
 	{
 		public LRVector3 MinPoint, MaxPoint;

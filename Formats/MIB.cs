@@ -8,7 +8,8 @@ using System.IO;
 namespace LibLR1
 {
 	/// <summary>
-	/// Menu item format.
+	/// Menu Interface Binary (MIB) layout file. MIBs contain UI scaffold records;
+	/// game data supplies dynamic picker contents such as chassis sets and pieces.
 	/// </summary>
 	public class MIB
 	{
@@ -34,6 +35,12 @@ namespace LibLR1
 			PROPERTY_UNKNOWN_33 = 0x33,
 			PROPERTY_POSITION = 0x36;
 
+		/// <summary>Attribute tokens observed in the MIB grammar.</summary>
+		internal static readonly ISet<byte> KnownAttributeTokens = new HashSet<byte>
+		{
+			0x28, 0x2A, 0x2D, 0x2E, 0x2F, 0x31, 0x32, 0x33, 0x36
+		};
+
 		private Dictionary<string, MIB_Item_37> m_items37;
 		private Dictionary<string, MIB_ImageItem_38> m_imageItems;
 		private Dictionary<string, MIB_TextItem_39> m_textItems;
@@ -47,6 +54,12 @@ namespace LibLR1
 		private Dictionary<string, MIB_TextButtonItem_46> m_items43;
 		private Dictionary<string, MIB_SceneItem_45> m_scene45Items;
 		private Dictionary<string, MIB_TextButtonItem_46> m_textButtonItems;
+
+		/// <summary>
+		/// Widget names referenced by containers but not defined in this file.
+		/// Runtime-populated slots such as <c>racer</c> and <c>piece</c> are valid.
+		/// </summary>
+		public List<string> UnresolvedReferences { get; private set; }
 
 		public int NumItems
 		{
@@ -153,6 +166,7 @@ namespace LibLR1
 			m_items43 = new Dictionary<string, MIB_TextButtonItem_46>();
 			m_scene45Items = new Dictionary<string, MIB_SceneItem_45>();
 			m_textButtonItems = new Dictionary<string, MIB_TextButtonItem_46>();
+			UnresolvedReferences = new List<string>();
 
 			while (p_reader.BaseStream.Position < p_reader.BaseStream.Length)
 			{
@@ -278,6 +292,7 @@ namespace LibLR1
 					}
 				}
 			}
+			RefreshUnresolvedReferences();
 		}
 
 		public void Save(string p_filepath)
@@ -466,6 +481,44 @@ namespace LibLR1
 				return m_textButtonItems[key];
 			}
 			throw new Exception("Could not find item `" + key + "`.");
+		}
+		private void RefreshUnresolvedReferences()
+		{
+			foreach (MIB_SceneItem_42 scene in m_scene42Items.Values)
+			{
+				if (scene.HasSceneName) AddUnresolvedReference(scene.SceneName);
+			}
+
+			foreach (MIB_Item_3E container in m_items3E.Values)
+			{
+				AddUnresolvedReferences(container.Unknown3A);
+				AddUnresolvedReferences(container.Unknown3B);
+			}
+		}
+
+		private void AddUnresolvedReferences(IEnumerable<string> references)
+		{
+			foreach (string reference in references)
+			{
+				AddUnresolvedReference(reference);
+			}
+		}
+
+		private void AddUnresolvedReference(string reference)
+		{
+			if (!HasItem(reference) && !UnresolvedReferences.Contains(reference))
+			{
+				UnresolvedReferences.Add(reference);
+			}
+		}
+
+		private bool HasItem(string key)
+		{
+			return m_items37.ContainsKey(key) || m_imageItems.ContainsKey(key) || m_textItems.ContainsKey(key)
+				|| m_items3A.ContainsKey(key) || m_items3B.ContainsKey(key) || m_items3D.ContainsKey(key)
+				|| m_items3E.ContainsKey(key) || m_items3F.ContainsKey(key) || m_items40.ContainsKey(key)
+				|| m_scene42Items.ContainsKey(key) || m_items43.ContainsKey(key) || m_scene45Items.ContainsKey(key)
+				|| m_textButtonItems.ContainsKey(key);
 		}
 	}
 

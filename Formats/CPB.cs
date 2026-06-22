@@ -1,4 +1,4 @@
-﻿using LibLR1.Exceptions;
+using LibLR1.Exceptions;
 using LibLR1.IO;
 using LibLR1.Utils;
 
@@ -22,7 +22,7 @@ namespace LibLR1
 			get { return m_checkpoints; }
 			set { m_checkpoints = value; }
 		}
-		
+
 		public CPB(string p_filepath)
 			: this(BinaryFileHelper.Decompress(p_filepath))
 		{
@@ -62,14 +62,14 @@ namespace LibLR1
 			PROPERTY_TIMING = 0x29,
 			PROPERTY_LOCATION = 0x2A;
 
-		public CPB_Checkpoint_Normal Direction;
+		public CPB_Checkpoint_Direction Direction;
 		public CPB_Checkpoint_Timing Timing;
 		public LRVector3 Location;
 
 		public CPB_Checkpoint()
-			: this(new CPB_Checkpoint_Normal(), new CPB_Checkpoint_Timing(), new LRVector3()) { }
+			: this(new CPB_Checkpoint_Direction(), new CPB_Checkpoint_Timing(), new LRVector3()) { }
 
-		public CPB_Checkpoint(CPB_Checkpoint_Normal direction, CPB_Checkpoint_Timing timing, LRVector3 location)
+		public CPB_Checkpoint(CPB_Checkpoint_Direction direction, CPB_Checkpoint_Timing timing, LRVector3 location)
 		{
 			Direction = direction;
 			Timing = timing;
@@ -86,7 +86,7 @@ namespace LibLR1
 				{
 					case PROPERTY_DIRECTION:
 					{
-						val.Direction = CPB_Checkpoint_Normal.Read(p_reader);
+						val.Direction = CPB_Checkpoint_Direction.Read(p_reader);
 						break;
 					}
 					case PROPERTY_TIMING:
@@ -112,16 +112,16 @@ namespace LibLR1
 		}
 	}
 
-	public class CPB_Checkpoint_Normal
+	public class CPB_Checkpoint_Direction
 	{
 		public LRVector3 Normal;
-		public float Unknown;
+		public float VarD;
 
-		public static CPB_Checkpoint_Normal Read(LRBinaryReader p_reader)
+		public static CPB_Checkpoint_Direction Read(LRBinaryReader p_reader)
 		{
-			CPB_Checkpoint_Normal val = new CPB_Checkpoint_Normal();
+			CPB_Checkpoint_Direction val = new CPB_Checkpoint_Direction();
 			val.Normal = LRVector3.Read(p_reader);
-			val.Unknown = p_reader.ReadFloatWithHeader();
+			val.VarD = p_reader.ReadFloatWithHeader();
 			return val;
 		}
 	}
@@ -129,18 +129,18 @@ namespace LibLR1
 	public class CPB_Checkpoint_Timing
 	{
 		public int
-			Unknown1,
-			Unknown2,
-			Unknown3,
-			Unknown4;
+			VarA,
+			VarB,
+			VarC,
+			VarD;
 
 		public static CPB_Checkpoint_Timing Read(LRBinaryReader p_reader)
 		{
 			CPB_Checkpoint_Timing val = new CPB_Checkpoint_Timing();
-			val.Unknown1 = p_reader.ReadIntWithHeader();
-			val.Unknown2 = p_reader.ReadIntWithHeader();
-			val.Unknown3 = p_reader.ReadIntWithHeader();
-			val.Unknown4 = p_reader.ReadIntWithHeader();
+			val.VarA = p_reader.ReadIntWithHeader();
+			val.VarB = p_reader.ReadIntWithHeader();
+			val.VarC = p_reader.ReadIntWithHeader();
+			val.VarD = p_reader.ReadIntWithHeader();
 			return val;
 		}
 	}

@@ -466,3 +466,7 @@ locals.json
 # AI Agents Files
 AGENTS.md
 CLAUDE.md
+
+# AI generated stuff
+_buildcheck/
+python/

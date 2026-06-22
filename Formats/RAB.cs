@@ -113,10 +113,11 @@ namespace LibLR1
 		public string FontFileRef;
 		public string TrackScene;
 		public string HudImagesFile;
+		/// <summary>Track music playlist. Resolves to GAMEDATA\{folder}\legomsc at race start. Distinct from MENUDATA\legomsc, which is the menu playlist loaded at boot and on return-to-menu. Two separate files for two separate scenes; not alternate resolutions of the same string.</summary>
 		public string MusicListFile;
-		/// <summary>Logical .tob ref. No loose .TOB in install; JAM-resident suspected. Evidence: racecXrY.tob across all 14 tracks (03-Track-Loading-Graph.md).</summary>
+		/// <summary>Logical .tob ref. String preserved in RAB but no observed CreateFile dispatch in retail load trace; suspected vestigial dev-pipeline reference, RE confirmation pending. No loose .TOB in install. Evidence: racecXrY.tob across all 14 tracks (03-Track-Loading-Graph.md).</summary>
 		public string TrackObjectsFile;
-		/// <summary>Logical .pth ref. No loose .PTB in install; JAM-resident suspected. Evidence: theme-named .pth across all 14 tracks (03-Track-Loading-Graph.md).</summary>
+		/// <summary>Logical .pth ref. String preserved in RAB but no observed CreateFile dispatch in retail load trace; suspected vestigial dev-pipeline reference, RE confirmation pending. No loose .PTB in install. Evidence: theme-named .pth across all 14 tracks (03-Track-Loading-Graph.md).</summary>
 		public string PathFile;
 
 		/// <summary>
@@ -157,6 +158,7 @@ namespace LibLR1
 		/// </summary>
 		public string[] CheckpointFiles;
 		public string CameraRigBasename;
+		/// <summary>Logical .tgf ref; resolves to TGB on disk. Present in 5 of 14 race folders (RACEC0R1, RACEC0R2, RACEC2R0, RACEC2R3, RACEC3R0). TGB load confirmed in ProcMon trace for RACEC0R1; not restricted to RACEC3R0.</summary>
 		public string TrackGameplayRef;
 
 		public static RAB_Track Read(LRBinaryReader p_reader)

@@ -1,4 +1,4 @@
-﻿using LibLR1.Exceptions;
+using LibLR1.Exceptions;
 using LibLR1.IO;
 using LibLR1.Utils;
 using System.Collections.Generic;
@@ -75,43 +75,45 @@ namespace LibLR1
 	public class DDB_Driver
 	{
 		private const byte
-			PROPERTY_UNKNOWN_28 = 0x28,
-			PROPERTY_UNKNOWN_29 = 0x29,
-			PROPERTY_UNKNOWN_2A = 0x2A,
-			PROPERTY_UNKNOWN_2B = 0x2B,
-			PROPERTY_UNKNOWN_2C = 0x2C,
-			PROPERTY_UNKNOWN_2D = 0x2D,
-			PROPERTY_UNKNOWN_2E = 0x2E,
-			PROPERTY_UNKNOWN_2F = 0x2F,
-			PROPERTY_UNKNOWN_30 = 0x30,
-			PROPERTY_UNKNOWN_31 = 0x31,
-			PROPERTY_UNKNOWN_33 = 0x33,
+			PROPERTY_MODEL_REF_1 = 0x28,
+			PROPERTY_SKELETON_MODEL = 0x29,
+			PROPERTY_MODEL_REF_2 = 0x2A,
+			PROPERTY_ASSET_PREFIX = 0x2B,
+			PROPERTY_STAT_1 = 0x2C,
+			PROPERTY_STAT_2 = 0x2D,
+			PROPERTY_STAT_3 = 0x2E,
+			PROPERTY_STAT_4 = 0x2F,
+			PROPERTY_STAT_5 = 0x30,
+			PROPERTY_STAT_6 = 0x31,
+			PROPERTY_DRIVER_ID = 0x33,
 			PROPERTY_UNKNOWN_34 = 0x34,
-			PROPERTY_UNKNOWN_35 = 0x35,
-			PROPERTY_UNKNOWN_36 = 0x36,
-			PROPERTY_UNKNOWN_37 = 0x37,
-			PROPERTY_UNKNOWN_38 = 0x38,
-			PROPERTY_UNKNOWN_3A = 0x3A;
+			PROPERTY_HAT_INDEX = 0x35,
+			PROPERTY_HEAD_INDEX = 0x36,
+			PROPERTY_BODY_INDEX = 0x37,
+			PROPERTY_LEGS_INDEX = 0x38,
+			PROPERTY_BOSS_DATA = 0x3A;
 
-		public string Unknown28;
-		public string Unknown29;
-		public string Unknown2A;
-		public string Unknown2B;
-		public int Unknown2C;
-		public int Unknown2D;
-		public int Unknown2E;
-		public int Unknown2F;
-		public int Unknown30;
-		public int Unknown31;
-		public int Unknown33;
+		public string ModelRef1;
+		public string SkeletonModel;
+		public string ModelRef2;
+		public string AssetPrefix;
+		// TODO: resolve specific stat/param names via in-game mutation testing
+		public int Stat1;
+		public int Stat2;
+		public int Stat3;
+		public int Stat4;
+		public int Stat5;
+		public int Stat6;
+		public int DriverId;
+		// TODO: does not cleanly map to circuit number; semantics unresolved
 		public int Unknown34;
-		public int Unknown35;
-		public int Unknown36;
-		public int Unknown37;
-		public int Unknown38;
-		public bool HasUnknown3A = false;
-		public int Unknown3A_0;
-		public int Unknown3A_1;
+		public int HatIndex;
+		public int HeadIndex;
+		public int BodyIndex;
+		public int LegsIndex;
+		public bool HasBossData = false;
+		public int BossCircuit;
+		public int BossTrack;
 
 		public static DDB_Driver Read(LRBinaryReader p_reader)
 		{
@@ -121,59 +123,59 @@ namespace LibLR1
 				byte propertyId = p_reader.ReadByte();
 				switch (propertyId)
 				{
-					case PROPERTY_UNKNOWN_28:
+					case PROPERTY_MODEL_REF_1:
 					{
-						val.Unknown28 = p_reader.ReadStringWithHeader();
+						val.ModelRef1 = p_reader.ReadStringWithHeader();
 						break;
 					}
-					case PROPERTY_UNKNOWN_29:
+					case PROPERTY_SKELETON_MODEL:
 					{
-						val.Unknown29 = p_reader.ReadStringWithHeader();
+						val.SkeletonModel = p_reader.ReadStringWithHeader();
 						break;
 					}
-					case PROPERTY_UNKNOWN_2A:
+					case PROPERTY_MODEL_REF_2:
 					{
-						val.Unknown2A = p_reader.ReadStringWithHeader();
+						val.ModelRef2 = p_reader.ReadStringWithHeader();
 						break;
 					}
-					case PROPERTY_UNKNOWN_2B:
+					case PROPERTY_ASSET_PREFIX:
 					{
-						val.Unknown2B = p_reader.ReadStringWithHeader();
+						val.AssetPrefix = p_reader.ReadStringWithHeader();
 						break;
 					}
-					case PROPERTY_UNKNOWN_2C:
+					case PROPERTY_STAT_1:
 					{
-						val.Unknown2C = p_reader.ReadIntWithHeader();
+						val.Stat1 = p_reader.ReadIntWithHeader();
 						break;
 					}
-					case PROPERTY_UNKNOWN_2D:
+					case PROPERTY_STAT_2:
 					{
-						val.Unknown2D = p_reader.ReadIntWithHeader();
+						val.Stat2 = p_reader.ReadIntWithHeader();
 						break;
 					}
-					case PROPERTY_UNKNOWN_2E:
+					case PROPERTY_STAT_3:
 					{
-						val.Unknown2E = p_reader.ReadIntWithHeader();
+						val.Stat3 = p_reader.ReadIntWithHeader();
 						break;
 					}
-					case PROPERTY_UNKNOWN_2F:
+					case PROPERTY_STAT_4:
 					{
-						val.Unknown2F = p_reader.ReadIntWithHeader();
+						val.Stat4 = p_reader.ReadIntWithHeader();
 						break;
 					}
-					case PROPERTY_UNKNOWN_30:
+					case PROPERTY_STAT_5:
 					{
-						val.Unknown30 = p_reader.ReadIntWithHeader();
+						val.Stat5 = p_reader.ReadIntWithHeader();
 						break;
 					}
-					case PROPERTY_UNKNOWN_31:
+					case PROPERTY_STAT_6:
 					{
-						val.Unknown31 = p_reader.ReadIntWithHeader();
+						val.Stat6 = p_reader.ReadIntWithHeader();
 						break;
 					}
-					case PROPERTY_UNKNOWN_33:
+					case PROPERTY_DRIVER_ID:
 					{
-						val.Unknown33 = p_reader.ReadIntWithHeader();
+						val.DriverId = p_reader.ReadIntWithHeader();
 						break;
 					}
 					case PROPERTY_UNKNOWN_34:
@@ -181,31 +183,31 @@ namespace LibLR1
 						val.Unknown34 = p_reader.ReadIntWithHeader();
 						break;
 					}
-					case PROPERTY_UNKNOWN_35:
+					case PROPERTY_HAT_INDEX:
 					{
-						val.Unknown35 = p_reader.ReadIntWithHeader();
+						val.HatIndex = p_reader.ReadIntWithHeader();
 						break;
 					}
-					case PROPERTY_UNKNOWN_36:
+					case PROPERTY_HEAD_INDEX:
 					{
-						val.Unknown36 = p_reader.ReadIntWithHeader();
+						val.HeadIndex = p_reader.ReadIntWithHeader();
 						break;
 					}
-					case PROPERTY_UNKNOWN_37:
+					case PROPERTY_BODY_INDEX:
 					{
-						val.Unknown37 = p_reader.ReadIntWithHeader();
+						val.BodyIndex = p_reader.ReadIntWithHeader();
 						break;
 					}
-					case PROPERTY_UNKNOWN_38:
+					case PROPERTY_LEGS_INDEX:
 					{
-						val.Unknown38 = p_reader.ReadIntWithHeader();
+						val.LegsIndex = p_reader.ReadIntWithHeader();
 						break;
 					}
-					case PROPERTY_UNKNOWN_3A:
+					case PROPERTY_BOSS_DATA:
 					{
-						val.HasUnknown3A = true;
-						val.Unknown3A_0 = p_reader.ReadIntWithHeader();
-						val.Unknown3A_1 = p_reader.ReadIntWithHeader();
+						val.HasBossData = true;
+						val.BossCircuit = p_reader.ReadIntWithHeader();
+						val.BossTrack = p_reader.ReadIntWithHeader();
 						break;
 					}
 					default:
@@ -222,59 +224,59 @@ namespace LibLR1
 
 		public static void Write(LRBinaryWriter p_writer, DDB_Driver p_value)
 		{
-			p_writer.WriteByte(PROPERTY_UNKNOWN_28);
-			p_writer.WriteStringWithHeader(p_value.Unknown28);
+			p_writer.WriteByte(PROPERTY_MODEL_REF_1);
+			p_writer.WriteStringWithHeader(p_value.ModelRef1);
 
-			p_writer.WriteByte(PROPERTY_UNKNOWN_29);
-			p_writer.WriteStringWithHeader(p_value.Unknown29);
+			p_writer.WriteByte(PROPERTY_SKELETON_MODEL);
+			p_writer.WriteStringWithHeader(p_value.SkeletonModel);
 
-			p_writer.WriteByte(PROPERTY_UNKNOWN_2A);
-			p_writer.WriteStringWithHeader(p_value.Unknown2A);
+			p_writer.WriteByte(PROPERTY_MODEL_REF_2);
+			p_writer.WriteStringWithHeader(p_value.ModelRef2);
 
-			p_writer.WriteByte(PROPERTY_UNKNOWN_2B);
-			p_writer.WriteStringWithHeader(p_value.Unknown2B);
+			p_writer.WriteByte(PROPERTY_ASSET_PREFIX);
+			p_writer.WriteStringWithHeader(p_value.AssetPrefix);
 
-			p_writer.WriteByte(PROPERTY_UNKNOWN_2C);
-			p_writer.WriteIntWithHeader(p_value.Unknown2C);
+			p_writer.WriteByte(PROPERTY_STAT_1);
+			p_writer.WriteIntWithHeader(p_value.Stat1);
 
-			p_writer.WriteByte(PROPERTY_UNKNOWN_2D);
-			p_writer.WriteIntWithHeader(p_value.Unknown2D);
+			p_writer.WriteByte(PROPERTY_STAT_2);
+			p_writer.WriteIntWithHeader(p_value.Stat2);
 
-			p_writer.WriteByte(PROPERTY_UNKNOWN_2E);
-			p_writer.WriteIntWithHeader(p_value.Unknown2E);
+			p_writer.WriteByte(PROPERTY_STAT_3);
+			p_writer.WriteIntWithHeader(p_value.Stat3);
 
-			p_writer.WriteByte(PROPERTY_UNKNOWN_2F);
-			p_writer.WriteIntWithHeader(p_value.Unknown2F);
+			p_writer.WriteByte(PROPERTY_STAT_4);
+			p_writer.WriteIntWithHeader(p_value.Stat4);
 
-			p_writer.WriteByte(PROPERTY_UNKNOWN_30);
-			p_writer.WriteIntWithHeader(p_value.Unknown30);
+			p_writer.WriteByte(PROPERTY_STAT_5);
+			p_writer.WriteIntWithHeader(p_value.Stat5);
 
-			p_writer.WriteByte(PROPERTY_UNKNOWN_31);
-			p_writer.WriteIntWithHeader(p_value.Unknown31);
+			p_writer.WriteByte(PROPERTY_STAT_6);
+			p_writer.WriteIntWithHeader(p_value.Stat6);
 
-			p_writer.WriteByte(PROPERTY_UNKNOWN_33);
-			p_writer.WriteIntWithHeader(p_value.Unknown33);
+			p_writer.WriteByte(PROPERTY_DRIVER_ID);
+			p_writer.WriteIntWithHeader(p_value.DriverId);
 
 			p_writer.WriteByte(PROPERTY_UNKNOWN_34);
 			p_writer.WriteIntWithHeader(p_value.Unknown34);
 
-			p_writer.WriteByte(PROPERTY_UNKNOWN_35);
-			p_writer.WriteIntWithHeader(p_value.Unknown35);
+			p_writer.WriteByte(PROPERTY_HAT_INDEX);
+			p_writer.WriteIntWithHeader(p_value.HatIndex);
 
-			p_writer.WriteByte(PROPERTY_UNKNOWN_36);
-			p_writer.WriteIntWithHeader(p_value.Unknown36);
+			p_writer.WriteByte(PROPERTY_HEAD_INDEX);
+			p_writer.WriteIntWithHeader(p_value.HeadIndex);
 
-			p_writer.WriteByte(PROPERTY_UNKNOWN_37);
-			p_writer.WriteIntWithHeader(p_value.Unknown37);
+			p_writer.WriteByte(PROPERTY_BODY_INDEX);
+			p_writer.WriteIntWithHeader(p_value.BodyIndex);
 
-			p_writer.WriteByte(PROPERTY_UNKNOWN_38);
-			p_writer.WriteIntWithHeader(p_value.Unknown38);
+			p_writer.WriteByte(PROPERTY_LEGS_INDEX);
+			p_writer.WriteIntWithHeader(p_value.LegsIndex);
 
-			if (p_value.HasUnknown3A)
+			if (p_value.HasBossData)
 			{
-				p_writer.WriteByte(PROPERTY_UNKNOWN_3A);
-				p_writer.WriteIntWithHeader(p_value.Unknown3A_0);
-				p_writer.WriteIntWithHeader(p_value.Unknown3A_1);
+				p_writer.WriteByte(PROPERTY_BOSS_DATA);
+				p_writer.WriteIntWithHeader(p_value.BossCircuit);
+				p_writer.WriteIntWithHeader(p_value.BossTrack);
 			}
 		}
 	}
