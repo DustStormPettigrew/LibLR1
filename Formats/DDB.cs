@@ -79,14 +79,14 @@ namespace LibLR1
 			PROPERTY_SKELETON_MODEL = 0x29,
 			PROPERTY_MODEL_REF_2 = 0x2A,
 			PROPERTY_ASSET_PREFIX = 0x2B,
-			PROPERTY_STAT_1 = 0x2C,
-			PROPERTY_STAT_2 = 0x2D,
-			PROPERTY_STAT_3 = 0x2E,
-			PROPERTY_STAT_4 = 0x2F,
-			PROPERTY_STAT_5 = 0x30,
-			PROPERTY_STAT_6 = 0x31,
+			PROPERTY_AI_ACTION_GROUP1_CHANCE = 0x2C,
+			PROPERTY_AI_SPECIAL_POWERUP_CHANCE = 0x2D,
+			PROPERTY_AI_TURBO_CHANCE = 0x2E,
+			PROPERTY_AI_SHIELD_CHANCE = 0x2F,
+			PROPERTY_AI_RESERVED_STAT5 = 0x30,
+			PROPERTY_AI_RESERVED_STAT6 = 0x31,
 			PROPERTY_DRIVER_ID = 0x33,
-			PROPERTY_UNKNOWN_34 = 0x34,
+			PROPERTY_AI_SPEED_CLASS = 0x34,
 			PROPERTY_HAT_INDEX = 0x35,
 			PROPERTY_HEAD_INDEX = 0x36,
 			PROPERTY_BODY_INDEX = 0x37,
@@ -97,16 +97,52 @@ namespace LibLR1
 		public string SkeletonModel;
 		public string ModelRef2;
 		public string AssetPrefix;
-		// TODO: resolve specific stat/param names via in-game mutation testing
-		public int Stat1;
-		public int Stat2;
-		public int Stat3;
-		public int Stat4;
-		public int Stat5;
-		public int Stat6;
+		/// <summary>
+		/// AI action-group-1 probability threshold (0–100). At runtime, normalized to
+		/// 0.0–1.0 via min(1.0, 0.20 + (value * difficulty_scale * 0.01)). Compared
+		/// against a random byte to trigger action state 1 (proximity-based actions).
+		/// File stores as int32; engine narrows to byte.
+		/// </summary>
+		public int AiActionGroup1Chance;
+		/// <summary>
+		/// AI special-powerup probability threshold (0–100). Controls action state 4,
+		/// which includes magnet/curse effects at higher action classes.
+		/// File stores as int32; engine narrows to byte.
+		/// </summary>
+		public int AiSpecialPowerupChance;
+		/// <summary>
+		/// AI turbo-use probability threshold (0–100). Controls action state 3.
+		/// On success, creates TurboL0/1/2 effect via the effect dispatcher.
+		/// File stores as int32; engine narrows to byte.
+		/// </summary>
+		public int AiTurboChance;
+		/// <summary>
+		/// AI shield-use probability threshold (0–100). Controls action state 2.
+		/// On success, creates shield0/1/2/3 effect via the effect dispatcher.
+		/// File stores as int32; engine narrows to byte.
+		/// </summary>
+		public int AiShieldChance;
+		/// <summary>
+		/// Reserved AI stat copied to racer[+0xD14] at initialization but never
+		/// read by any function in the retail executable. Likely vestigial.
+		/// File stores as int32; engine narrows to byte.
+		/// </summary>
+		public int AiReservedStat5;
+		/// <summary>
+		/// Reserved AI stat copied to racer[+0xD15] at initialization but never
+		/// read by any function in the retail executable. Likely vestigial.
+		/// File stores as int32; engine narrows to byte.
+		/// </summary>
+		public int AiReservedStat6;
 		public int DriverId;
-		// TODO: does not cleanly map to circuit number; semantics unresolved
-		public int Unknown34;
+		/// <summary>
+		/// AI speed class index. At runtime, converted to a speed constant via
+		/// racer[+0xD34] = 0x44C + (12 * AiSpeedClass), then mapped to a class
+		/// index at racer[+0xD17] through a lookup table. Values 0–5 observed
+		/// in install corpus; value 6 falls through the lookup table (untested).
+		/// File stores as int32; engine narrows to byte.
+		/// </summary>
+		public int AiSpeedClass;
 		public int HatIndex;
 		public int HeadIndex;
 		public int BodyIndex;
@@ -143,34 +179,34 @@ namespace LibLR1
 						val.AssetPrefix = p_reader.ReadStringWithHeader();
 						break;
 					}
-					case PROPERTY_STAT_1:
+					case PROPERTY_AI_ACTION_GROUP1_CHANCE:
 					{
-						val.Stat1 = p_reader.ReadIntWithHeader();
+						val.AiActionGroup1Chance = p_reader.ReadIntWithHeader();
 						break;
 					}
-					case PROPERTY_STAT_2:
+					case PROPERTY_AI_SPECIAL_POWERUP_CHANCE:
 					{
-						val.Stat2 = p_reader.ReadIntWithHeader();
+						val.AiSpecialPowerupChance = p_reader.ReadIntWithHeader();
 						break;
 					}
-					case PROPERTY_STAT_3:
+					case PROPERTY_AI_TURBO_CHANCE:
 					{
-						val.Stat3 = p_reader.ReadIntWithHeader();
+						val.AiTurboChance = p_reader.ReadIntWithHeader();
 						break;
 					}
-					case PROPERTY_STAT_4:
+					case PROPERTY_AI_SHIELD_CHANCE:
 					{
-						val.Stat4 = p_reader.ReadIntWithHeader();
+						val.AiShieldChance = p_reader.ReadIntWithHeader();
 						break;
 					}
-					case PROPERTY_STAT_5:
+					case PROPERTY_AI_RESERVED_STAT5:
 					{
-						val.Stat5 = p_reader.ReadIntWithHeader();
+						val.AiReservedStat5 = p_reader.ReadIntWithHeader();
 						break;
 					}
-					case PROPERTY_STAT_6:
+					case PROPERTY_AI_RESERVED_STAT6:
 					{
-						val.Stat6 = p_reader.ReadIntWithHeader();
+						val.AiReservedStat6 = p_reader.ReadIntWithHeader();
 						break;
 					}
 					case PROPERTY_DRIVER_ID:
@@ -178,9 +214,9 @@ namespace LibLR1
 						val.DriverId = p_reader.ReadIntWithHeader();
 						break;
 					}
-					case PROPERTY_UNKNOWN_34:
+					case PROPERTY_AI_SPEED_CLASS:
 					{
-						val.Unknown34 = p_reader.ReadIntWithHeader();
+						val.AiSpeedClass = p_reader.ReadIntWithHeader();
 						break;
 					}
 					case PROPERTY_HAT_INDEX:
@@ -224,11 +260,14 @@ namespace LibLR1
 
 		public static void Write(LRBinaryWriter p_writer, DDB_Driver p_value)
 		{
-			p_writer.WriteByte(PROPERTY_MODEL_REF_1);
-			p_writer.WriteStringWithHeader(p_value.ModelRef1);
+			p_writer.WriteByte(PROPERTY_DRIVER_ID);
+			p_writer.WriteIntWithHeader(p_value.DriverId);
 
 			p_writer.WriteByte(PROPERTY_SKELETON_MODEL);
 			p_writer.WriteStringWithHeader(p_value.SkeletonModel);
+
+			p_writer.WriteByte(PROPERTY_MODEL_REF_1);
+			p_writer.WriteStringWithHeader(p_value.ModelRef1);
 
 			p_writer.WriteByte(PROPERTY_MODEL_REF_2);
 			p_writer.WriteStringWithHeader(p_value.ModelRef2);
@@ -236,29 +275,26 @@ namespace LibLR1
 			p_writer.WriteByte(PROPERTY_ASSET_PREFIX);
 			p_writer.WriteStringWithHeader(p_value.AssetPrefix);
 
-			p_writer.WriteByte(PROPERTY_STAT_1);
-			p_writer.WriteIntWithHeader(p_value.Stat1);
+			p_writer.WriteByte(PROPERTY_AI_ACTION_GROUP1_CHANCE);
+			p_writer.WriteIntWithHeader(p_value.AiActionGroup1Chance);
 
-			p_writer.WriteByte(PROPERTY_STAT_2);
-			p_writer.WriteIntWithHeader(p_value.Stat2);
+			p_writer.WriteByte(PROPERTY_AI_SPECIAL_POWERUP_CHANCE);
+			p_writer.WriteIntWithHeader(p_value.AiSpecialPowerupChance);
 
-			p_writer.WriteByte(PROPERTY_STAT_3);
-			p_writer.WriteIntWithHeader(p_value.Stat3);
+			p_writer.WriteByte(PROPERTY_AI_TURBO_CHANCE);
+			p_writer.WriteIntWithHeader(p_value.AiTurboChance);
 
-			p_writer.WriteByte(PROPERTY_STAT_4);
-			p_writer.WriteIntWithHeader(p_value.Stat4);
+			p_writer.WriteByte(PROPERTY_AI_SHIELD_CHANCE);
+			p_writer.WriteIntWithHeader(p_value.AiShieldChance);
 
-			p_writer.WriteByte(PROPERTY_STAT_5);
-			p_writer.WriteIntWithHeader(p_value.Stat5);
+			p_writer.WriteByte(PROPERTY_AI_RESERVED_STAT5);
+			p_writer.WriteIntWithHeader(p_value.AiReservedStat5);
 
-			p_writer.WriteByte(PROPERTY_STAT_6);
-			p_writer.WriteIntWithHeader(p_value.Stat6);
+			p_writer.WriteByte(PROPERTY_AI_RESERVED_STAT6);
+			p_writer.WriteIntWithHeader(p_value.AiReservedStat6);
 
-			p_writer.WriteByte(PROPERTY_DRIVER_ID);
-			p_writer.WriteIntWithHeader(p_value.DriverId);
-
-			p_writer.WriteByte(PROPERTY_UNKNOWN_34);
-			p_writer.WriteIntWithHeader(p_value.Unknown34);
+			p_writer.WriteByte(PROPERTY_AI_SPEED_CLASS);
+			p_writer.WriteIntWithHeader(p_value.AiSpeedClass);
 
 			p_writer.WriteByte(PROPERTY_HAT_INDEX);
 			p_writer.WriteIntWithHeader(p_value.HatIndex);

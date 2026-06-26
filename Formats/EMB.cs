@@ -75,8 +75,8 @@ namespace LibLR1
 	public class EMB_Emitter
 	{
 		private const byte
-			PROPERTY_SIZE = 0x28,
-			PROPERTY_UNKNOWN_29 = 0x29,
+			PROPERTY_PARTICLE_COUNT = 0x28,
+			PROPERTY_PARTICLE_TYPE = 0x29,
 			PROPERTY_DIRECTION = 0x2A,
 			PROPERTY_POSITIONS = 0x2B,
 			PROPERTY_SCALE_MIN = 0x2C,
@@ -90,14 +90,17 @@ namespace LibLR1
 			PROPERTY_TEXTURE = 0x34,
 			PROPERTY_COLOR = 0x35;
 
-		public float Size;
-		public float Unknown29;
+		/// <summary>Max simultaneous particle count. File token is FLOAT; engine truncates to int32 via __ftol (stored at emitter+0x14).</summary>
+		public float ParticleCount;
+		/// <summary>Emitter type/mode enum. File token is FLOAT; engine truncates to single byte (stored at emitter+0x18).</summary>
+		public float ParticleType;
 		public LRVector3 Direction;
 		public LRVector3[] Positions;
 		public float ScaleMin;
 		public float ScaleMax;
 		public int Lifetime;
-		public int Loop;
+		// 0xFFFFFFFF (-1) = infinite; engine default from emitter constructor at 0x004ACFF0. Files omitting 0x30 loop forever.
+		public int Loop = -1;
 		public float SpeedMin;
 		public float SpeedMax;
 		public float Range;
@@ -115,14 +118,14 @@ namespace LibLR1
 				byte propertyId = p_reader.ReadByte();
 				switch (propertyId)
 				{
-					case PROPERTY_SIZE:
+					case PROPERTY_PARTICLE_COUNT:
 					{
-						val.Size = p_reader.ReadFloatWithHeader();
+						val.ParticleCount = p_reader.ReadFloatWithHeader();
 						break;
 					}
-					case PROPERTY_UNKNOWN_29:
+					case PROPERTY_PARTICLE_TYPE:
 					{
-						val.Unknown29 = p_reader.ReadFloatWithHeader();
+						val.ParticleType = p_reader.ReadFloatWithHeader();
 						break;
 					}
 					case PROPERTY_DIRECTION:
@@ -201,11 +204,11 @@ namespace LibLR1
 
 		public static void Write(LRBinaryWriter p_writer, EMB_Emitter p_value)
 		{
-			p_writer.WriteByte(PROPERTY_SIZE);
-			p_writer.WriteFloatWithHeader(p_value.Size);
+			p_writer.WriteByte(PROPERTY_PARTICLE_COUNT);
+			p_writer.WriteFloatWithHeader(p_value.ParticleCount);
 
-			p_writer.WriteByte(PROPERTY_UNKNOWN_29);
-			p_writer.WriteFloatWithHeader(p_value.Unknown29);
+			p_writer.WriteByte(PROPERTY_PARTICLE_TYPE);
+			p_writer.WriteFloatWithHeader(p_value.ParticleType);
 
 			p_writer.WriteByte(PROPERTY_SCALE_MIN);
 			p_writer.WriteFloatWithHeader(p_value.ScaleMin);

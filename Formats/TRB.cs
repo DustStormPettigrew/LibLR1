@@ -58,16 +58,18 @@ namespace LibLR1
 			PROPERTY_29 = 0x29,
 			PROPERTY_2A = 0x2A,
 			PROPERTY_2B = 0x2B,
+			PROPERTY_2C = 0x2C,
 			PROPERTY_2D = 0x2D,
 			PROPERTY_2E = 0x2E,
 			PROPERTY_2F = 0x2F;
 
-		public bool HasVec29;
-		public LRVector3 Vec29;
-		public float Float2A;
+		public bool HasPosition;
+		public LRVector3 Position;
+		public float Radius;
 		public int Int2B;
-		public string String2D;
-		public int Int2E;
+		public bool UnusedFlag2C;
+		public string Name;
+		public int UnusedInt2E;
 		public bool Bool2F;
 
 		public static TRB_Unknown27 Read(LRBinaryReader p_reader)
@@ -80,13 +82,13 @@ namespace LibLR1
 				{
 					case PROPERTY_29:
 					{
-						val.HasVec29 = true;
-						val.Vec29 = LRVector3.Read(p_reader);
+						val.HasPosition = true;
+						val.Position = LRVector3.Read(p_reader);
 						break;
 					}
 					case PROPERTY_2A:
 					{
-						val.Float2A = p_reader.ReadFloatWithHeader();
+						val.Radius = p_reader.ReadFloatWithHeader();
 						break;
 					}
 					case PROPERTY_2B:
@@ -94,14 +96,19 @@ namespace LibLR1
 						val.Int2B = p_reader.ReadIntWithHeader();
 						break;
 					}
+					case PROPERTY_2C:
+					{
+						val.UnusedFlag2C = true;
+						break;
+					}
 					case PROPERTY_2D:
 					{
-						val.String2D = p_reader.ReadStringWithHeader();
+						val.Name = p_reader.ReadStringWithHeader();
 						break;
 					}
 					case PROPERTY_2E:
 					{
-						val.Int2E = p_reader.ReadIntWithHeader();
+						val.UnusedInt2E = p_reader.ReadIntWithHeader();
 						break;
 					}
 					case PROPERTY_2F:

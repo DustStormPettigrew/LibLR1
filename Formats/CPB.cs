@@ -10,10 +10,7 @@ namespace LibLR1
 	public class CPB
 	{
 		private const byte
-			ID_CHECKPOINT = 0x27,
-			PROPERTY_DIRECTION = 0x28,
-			PROPERTY_TIMING = 0x29,
-			PROPERTY_LOCATION = 0x2A;
+			ID_CHECKPOINT = 0x27;
 
 		private CPB_Checkpoint[] m_checkpoints;
 
@@ -59,21 +56,21 @@ namespace LibLR1
 	{
 		private const byte
 			PROPERTY_DIRECTION = 0x28,
-			PROPERTY_TIMING = 0x29,
+			PROPERTY_NEXT_LINKS = 0x29,
 			PROPERTY_LOCATION = 0x2A;
 
 		public CPB_Checkpoint_Direction Direction;
-		public CPB_Checkpoint_Timing Timing;
+		public CPB_Checkpoint_NextLinks NextLinks;
 		public LRVector3 Location;
 
 		public CPB_Checkpoint()
-			: this(new CPB_Checkpoint_Direction(), new CPB_Checkpoint_Timing(), new LRVector3()) { }
+			: this(new CPB_Checkpoint_Direction(), new CPB_Checkpoint_NextLinks(), new LRVector3()) { }
 
-		public CPB_Checkpoint(CPB_Checkpoint_Direction direction, CPB_Checkpoint_Timing timing, LRVector3 location)
+		public CPB_Checkpoint(CPB_Checkpoint_Direction p_direction, CPB_Checkpoint_NextLinks p_nextLinks, LRVector3 p_location)
 		{
-			Direction = direction;
-			Timing = timing;
-			Location = location;
+			Direction = p_direction;
+			NextLinks = p_nextLinks;
+			Location = p_location;
 		}
 
 		public static CPB_Checkpoint Read(LRBinaryReader p_reader)
@@ -89,9 +86,9 @@ namespace LibLR1
 						val.Direction = CPB_Checkpoint_Direction.Read(p_reader);
 						break;
 					}
-					case PROPERTY_TIMING:
+					case PROPERTY_NEXT_LINKS:
 					{
-						val.Timing = CPB_Checkpoint_Timing.Read(p_reader);
+						val.NextLinks = CPB_Checkpoint_NextLinks.Read(p_reader);
 						break;
 					}
 					case PROPERTY_LOCATION:
@@ -115,32 +112,32 @@ namespace LibLR1
 	public class CPB_Checkpoint_Direction
 	{
 		public LRVector3 Normal;
-		public float VarD;
+		public float PlaneOffset;
 
 		public static CPB_Checkpoint_Direction Read(LRBinaryReader p_reader)
 		{
 			CPB_Checkpoint_Direction val = new CPB_Checkpoint_Direction();
 			val.Normal = LRVector3.Read(p_reader);
-			val.VarD = p_reader.ReadFloatWithHeader();
+			val.PlaneOffset = p_reader.ReadFloatWithHeader();
 			return val;
 		}
 	}
 
-	public class CPB_Checkpoint_Timing
+	public class CPB_Checkpoint_NextLinks
 	{
 		public int
-			VarA,
-			VarB,
-			VarC,
-			VarD;
+			NextPrimary,
+			NextAlternate1,
+			NextAlternate2,
+			UnusedNextLink;
 
-		public static CPB_Checkpoint_Timing Read(LRBinaryReader p_reader)
+		public static CPB_Checkpoint_NextLinks Read(LRBinaryReader p_reader)
 		{
-			CPB_Checkpoint_Timing val = new CPB_Checkpoint_Timing();
-			val.VarA = p_reader.ReadIntWithHeader();
-			val.VarB = p_reader.ReadIntWithHeader();
-			val.VarC = p_reader.ReadIntWithHeader();
-			val.VarD = p_reader.ReadIntWithHeader();
+			CPB_Checkpoint_NextLinks val = new CPB_Checkpoint_NextLinks();
+			val.NextPrimary = p_reader.ReadIntWithHeader();
+			val.NextAlternate1 = p_reader.ReadIntWithHeader();
+			val.NextAlternate2 = p_reader.ReadIntWithHeader();
+			val.UnusedNextLink = p_reader.ReadIntWithHeader();
 			return val;
 		}
 	}

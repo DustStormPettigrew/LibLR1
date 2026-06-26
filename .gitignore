@@ -469,4 +469,32 @@ CLAUDE.md
 
 # AI generated stuff
 _buildcheck/
+_*/
 python/
+
+# Local reports and extracted LEGO Racers game data
+*-Tree_*.txt
+*.bak
+*.ADB
+*.BDB
+*.CDB
+*.CPB
+*.DDB
+*.EDB
+*.EMB
+*.GDB
+*.JAM
+*.LEB
+*.LRS
+*.MAB
+*.MDB
+*.MIB
+*.MSB
+*.PDB
+*.PWB
+*.RDB
+*.SDB
+*.TDB
+*.TIB
+*.TRB
+*.WDB

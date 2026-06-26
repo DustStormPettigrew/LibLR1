@@ -124,6 +124,7 @@ namespace LibLR1
 				{
 					throw new InvalidDataException("LRS car list is null.");
 				}
+				RecomputeBlockChecksums(m_header);
 				writer.Write(m_header);
 				int activeRacerCount = m_decodedHeader.ActiveRacerCount;
 				for (int i = 0; i < m_cars.Count; i++)
@@ -283,7 +284,24 @@ namespace LibLR1
 			}
 			Buffer.BlockCopy(p_car.TrailingBytes, 0, record, cursor, p_car.TrailingBytes.Length);
 
+			RecomputeBlockChecksums(record);
 			p_writer.Write(record);
+		}
+
+		// On-disk LRS layout: 128-byte blocks — 127 data bytes followed by their byte-sum checksum.
+		// FUN_00429810 validates this checksum and returns error 0x11 on mismatch (fatal "Corrupt install").
+		// Every write must recompute checksums so the game's decoder accepts the file.
+		private static void RecomputeBlockChecksums(byte[] p_buffer)
+		{
+			int blockCount = p_buffer.Length / 128;
+			for (int i = 0; i < blockCount; i++)
+			{
+				int blockStart = i * 128;
+				int sum = 0;
+				for (int j = 0; j < 127; j++)
+					sum += p_buffer[blockStart + j];
+				p_buffer[blockStart + 127] = (byte)sum;
+			}
 		}
 
 		private static bool CanPreserveUnsupportedBuildTail(byte[] p_record, int p_offset)
